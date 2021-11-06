@@ -11,7 +11,7 @@
 
     <groupId>org.hui.tdd</groupId>
     <artifactId>tdd</artifactId>
-    <description>TestDrivenDevelopment</description>
+    <description>Test-Driven Development</description>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
