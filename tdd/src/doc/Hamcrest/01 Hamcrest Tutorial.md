@@ -33,20 +33,39 @@ We'll start by writing a very simple JUnit 3 test, but instead of using JUnit's 
 
 ---
 
-```java
-import org.junit.jupiter.api.Test;
-import static org.hamcrest.MatcherAssert.assertThat; 
-import static org.hamcrest.Matchers.*;
+* [Biscuit](./../../../hamcrest/src/main/java/org/hui/tdd/hamcrest/tutorial/Biscuit.java)
+* [BiscuitTest](./../../../hamcrest/src/test/java/org/hui/tdd/hamcrest/tutorial/BiscuitTest.java)
 
+```java
+package org.hui.tdd.hamcrest.tutorial;
+
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+/**
+ * @author BadMan
+ * @since 2021-11-02 18:38
+ */
 public class BiscuitTest {
-  @Test 
-  public void testEquals() { 
-    Biscuit theBiscuit = new Biscuit("Ginger"); 
-    Biscuit myBiscuit = new Biscuit("Ginger"); 
-    assertThat(theBiscuit, equalTo(myBiscuit)); 
-  } 
-} 
+    @Test
+    public void testEquals() {
+        Biscuit theBiscuit = new Biscuit("Ginger");
+        Biscuit myBiscuit = new Biscuit("Ginger");
+        assertThat("Printing", theBiscuit, equalTo(myBiscuit));
+    }
+    @Test(expected = AssertionError.class)
+    public void testNotEquals() {
+        Biscuit theBiscuit = new Biscuit("Ginger");
+        Biscuit myBiscuit = new Biscuit("Pink");
+        assertThat("biscuit color:", theBiscuit, equalTo(myBiscuit));
+    }
+}
+
 ```
+
+> `Biscuit` 在断言测试时必须重写 **`equals`** 方法， `equalTo` 匹配器内部实现调用 `equals` 判断相等性。
 
 The `assertThat` method is a stylized sentence for making a test assertion. 
 In this example, the subject of the assertion is the object `Biscuit` that is the first method parameter. 
@@ -63,8 +82,8 @@ The test passes since the Biscuit class defines an equals method.
 If you have more than one assertion in your test you can include an identifier for the tested value in the assertion:
 
 
-如果您的测试中有多个断言，您可以在断言中包含测试值的标识符：
-
+如果您的测试中有多个断言，您可以**在断言中包含测试值的标识符**：
+ 
 ---
 
 ```text
