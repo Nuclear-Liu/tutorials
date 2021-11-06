@@ -11,7 +11,12 @@
 
     <groupId>org.hui.tdd</groupId>
     <artifactId>tdd</artifactId>
+    <packaging>pom</packaging>
     <description>Test-Driven Development</description>
+    <modules>
+        <module>junit4</module>
+        <module>hamcrest</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
