@@ -33,8 +33,8 @@ We'll start by writing a very simple JUnit 3 test, but instead of using JUnit's 
 
 ---
 
-* [Biscuit](./../../../hamcrest/src/main/java/org/hui/tdd/hamcrest/tutorial/Biscuit.java)
-* [BiscuitTest](./../../../hamcrest/src/test/java/org/hui/tdd/hamcrest/tutorial/BiscuitTest.java)
+* [Biscuit](../../hamcrest/src/main/java/org/hui/tdd/hamcrest/tutorial/Biscuit.java)
+* [BiscuitTest](../../hamcrest/src/test/java/org/hui/tdd/hamcrest/tutorial/BiscuitTest.java)
 
 ```java
 package org.hui.tdd.hamcrest.tutorial;
@@ -172,7 +172,7 @@ Hamcrest 带有一个有用的匹配器库。
 
 * `hasToString` - test `Object.toString`
 
-* `instanceOf`, `isCompatibleType` - test type
+* `instanceOf`, `typeCompatibleWith` - test type
 
 * `notNullValue`, `nullValue` - test for null
 

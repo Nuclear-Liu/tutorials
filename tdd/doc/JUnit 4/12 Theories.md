@@ -66,7 +66,7 @@ The support for Theories has been absorbed from the Popper project, and more com
 A paper written on theories is here [http://web.archive.org/web/20110608210825/http://shareandenjoy.saff.net/tdd-specifications.pdf](http://web.archive.org/web/20110608210825/http://shareandenjoy.saff.net/tdd-specifications.pdf)
 
 
-一篇关于理论的论文在这里 [tdd-specifications](./tdd-specifications.pdf)
+一篇关于理论的论文在这里 [tdd-specifications](tdd-specifications.pdf)
 
 ---
 

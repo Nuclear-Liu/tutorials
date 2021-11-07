@@ -95,7 +95,7 @@ When a class is annotated with `@RunWith` or extends a class annotated with `@Ru
 
 
 * `Suite` 是一个标准的运行器，它允许您手动构建一个包含来自许多类的测试的套件。
-* 更多信息见 [Aggregating tests in Suites](./03%20Aggregating%20tests%20in%20Suites.md) 页面。
+* 更多信息见 [Aggregating tests in Suites](03%20Aggregating%20tests%20in%20Suites.md) 页面。
 * JavaDoc: [http://junit.org/javadoc/latest/org/junit/runners/Suite.html](http://junit.org/javadoc/latest/org/junit/runners/Parameterized.html)
 
 ---
@@ -110,7 +110,7 @@ When a class is annotated with `@RunWith` or extends a class annotated with `@Ru
 
 * `Parameterized` 是一个实现参数化测试的标准运行器。
     运行参数化测试类时，会为测试方法和测试数据元素的交叉产品创建实例
-* 更多页面信息 [Parameterized Tests](./09%20Parameterized%20Tests.md)
+* 更多页面信息 [Parameterized Tests](09%20Parameterized%20Tests.md)
 * JavaDoc: [http://junit.org/javadoc/latest/org/junit/runners/Parameterized.html](http://junit.org/javadoc/latest/org/junit/runners/Parameterized.html)
 
 ---
@@ -144,7 +144,7 @@ The `--filter` option takes the general form:
 
 
 * `Categories` 是一个标准的运行器，允许使用特定类别标记的测试子集在给定的测试运行中执行/排除。
-* 更多信息请访问 [Categories](./14%20Categories.md) 页面。
+* 更多信息请访问 [Categories](14%20Categories.md) 页面。
 
 ---
 
@@ -163,7 +163,7 @@ The `--filter` option takes the general form:
     通过使用 Enclosed 运行外部类，将运行内部类中的测试。
     为了方便或共享常量，您可以将测试放在内部类中以将它们分组。
 * JavaDoc: [http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html](http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html)
-* 在 ['Enclosed'-test-runner-example](./A01%20%60Enclosed%60-test-runner-example.md) 页面上使用的工作示例
+* 在 ['Enclosed'-test-runner-example](A01%20%60Enclosed%60-test-runner-example.md) 页面上使用的工作示例
 
 ---
 

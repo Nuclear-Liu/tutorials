@@ -1,6 +1,6 @@
 # Guidebook
 
-* [The Hamcrest Tutorial](./01%20Hamcrest%20Tutorial.md)
+* [The Hamcrest Tutorial](01%20Hamcrest%20Tutorial.md)
 
   > Hamcrest 官方教程（整理扩充）
 

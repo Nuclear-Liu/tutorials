@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 
 /**
@@ -20,5 +21,13 @@ public class LogicalMatcherTest {
     @Test(expected = AssertionError.class)
     public void testFailAllOf() {
         assertThat("", 4, allOf(equalTo(4), equalTo(5)));
+    }
+    @Test
+    public void testAnyOf() {
+        assertThat("", 6, anyOf(equalTo(5), equalTo(6)));
+    }
+    @Test
+    public void testNot() {
+        assertThat("", 6, not(7));
     }
 }
