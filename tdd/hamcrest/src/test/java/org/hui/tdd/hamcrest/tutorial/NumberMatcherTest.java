@@ -21,7 +21,6 @@ public class NumberMatcherTest {
         double num1 = 3.1415926528;
         double num2 = 3.1415926537;
         double prec = 0.000000001;
-        System.out.println(num1);
         assertThat("", num1, closeTo(num2, prec));
     }
     @Test(expected = AssertionError.class)
@@ -29,7 +28,6 @@ public class NumberMatcherTest {
         double num1 = 3.1415926528;
         double num2 = 3.1415926538;
         double prec = 0.000000001;
-        System.out.println(num1);
         assertThat("", num1, closeTo(num2, prec));
     }
     @Test
