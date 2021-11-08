@@ -28,12 +28,6 @@ A representative of each assert method is shown.
 
 ---
 
-* `org.junit.Assert.assertArrayEquals`
-
-    断言两个数组( `Object[]` \ `boolean[]` \ `byte[]` \ `char[]` \ `short[]` \ `int[]` \ `long[]` \ `double[]` \ `float[]` ）相等。 如果断言不成立抛出 `ArrayComparisonFailure` (extends `AssertionError`) 异常（携带可选的字符串参数）。
-    
-    * `org.junit.internal.ArrayComparisonFailure` 当两个数组元素不同时抛出
-
 * `org.junit.Assert.assertTrue`
 
     断言条件为 `true` 。如果断言不成立抛出 `AssertionError` 异常（携带可选的字符串参数）。
@@ -96,6 +90,12 @@ A representative of each assert method is shown.
     如果**预期值**(`expected`)为无穷大，则忽略增量值。
     `NaN` 被认为是相等的： `assertEquals(Double.NaN, Double.NaN, *)` 通过
 
+* `org.junit.Assert.assertArrayEquals`
+
+    断言两个数组( `Object[]` \ `boolean[]` \ `byte[]` \ `char[]` \ `short[]` \ `int[]` \ `long[]` \ `double[]` \ `float[]` ）相等。 如果断言不成立抛出 `ArrayComparisonFailure` (extends `AssertionError`) 异常（携带可选的字符串参数）。
+    
+    * `org.junit.internal.ArrayComparisonFailure` 当两个数组元素不同时抛出
+
 * `org.junit.Assert.assertThat` **已弃用**
 
     断言actual满足matcher指定的条件。 如果断言不成立抛出 `AssertionError` 异常（携带可选的字符串参数 其中包含有关匹配器和失败值的原因和信息）。
@@ -103,7 +103,7 @@ A representative of each assert method is shown.
     底层调用 `org.hamcrest.MatcherAssert.assertThat()` 。
 
 
-[AssertTests](./../../test/java/org/hui/tdd/junit4/AssertTests.java)
+[AssertTests](./../../junit4/src/test/java/org/hui/tdd/junit4/AssertTests.java)
 
 ```java
 import static org.hamcrest.CoreMatchers.allOf;
