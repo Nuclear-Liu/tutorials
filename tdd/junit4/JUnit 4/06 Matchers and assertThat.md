@@ -172,7 +172,7 @@ To use many, many more, consider downloading the full hamcrest package:
 * Hamcrest Java on GitHub: [https://github.com/hamcrest/JavaHamcrest](https://github.com/hamcrest/JavaHamcrest)
 
 
-* Hamcrest page [Hamcrest Tutorial](./../Hamcrest/Hamcrest%20Tutorial.md)
+* Hamcrest page [Hamcrest Tutorial](../../hamcrest/Hamcrest/Hamcrest%20Tutorial.md)
 * Hamcrest Java on GitHub: [https://github.com/hamcrest/JavaHamcrest]()
 
 JUnit contains special support for comparing string and array values, giving specific information on how they differ. 

@@ -103,7 +103,7 @@ A representative of each assert method is shown.
     底层调用 `org.hamcrest.MatcherAssert.assertThat()` 。
 
 
-[AssertTests](./../../junit4/src/test/java/org/hui/tdd/junit4/AssertTests.java)
+[AssertTests](../src/test/java/org/hui/tdd/junit4/AssertTests.java)
 
 ```java
 import static org.hamcrest.CoreMatchers.allOf;
