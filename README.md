@@ -4,7 +4,7 @@ My Tutorials
 
 ## My IDEA Plugins
 
-* Infinitest
+* ~~Infinitest~~
 * ExcelReader
 * GitToolBox
 * Grep Console
