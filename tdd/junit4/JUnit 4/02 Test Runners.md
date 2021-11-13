@@ -153,14 +153,14 @@ The `--filter` option takes the general form:
 ### Enclosed *封闭式*
 
 * `Enclosed` - If you put tests in inner classes, Ant, for example, won't find them. 
-    By running the outer class with Enclosed, the tests in the inner classes will be run. 
+    By running the outer class with `Enclosed`, the tests in the inner classes will be run. 
     You might put tests in inner classes to group them for convenience or to share constants.
 * JavaDoc: [http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html](http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html)
 * Working Example of use on the ['Enclosed'-test-runner-example](https://github.com/junit-team/junit4/wiki/%27Enclosed%27-test-runner-example) page
 
 
 * `Enclosed` - 如果将测试放在内部类中，Ant，示例，将找不到它们。
-    通过使用 Enclosed 运行外部类，将运行内部类中的测试。
+    通过使用 `Enclosed` 运行外部类，将运行内部类中的测试。
     为了方便或共享常量，您可以将测试放在内部类中以将它们分组。
 * JavaDoc: [http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html](http://junit.org/javadoc/latest/org/junit/experimental/runners/Enclosed.html)
 * 在 ['Enclosed'-test-runner-example](A01%20%60Enclosed%60-test-runner-example.md) 页面上使用的工作示例
