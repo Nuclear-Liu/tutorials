@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(SuiteTest.class)
+@Suite.SuiteClasses(AssertTests.class)
 public class SuiteTest {
 //    public static Test suite() {
 //        return (Test) new JUnit4TestAdapter(SuiteTest.class);
