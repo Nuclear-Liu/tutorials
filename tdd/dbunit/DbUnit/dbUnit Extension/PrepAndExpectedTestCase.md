@@ -259,3 +259,275 @@ public abstract class ColumnNames
     public static final String COLUMN1 = "column1";
 }
 ```
+
+#### ValueComparers
+
+For specific ValueComparer configurations, it is helpful to isolate them in one or more classes, possibly organized by table.,
+
+```java
+public abstract class AppValueComparers
+{
+    public static final Map<String, ValueComparer> COLUMN1_GREATER =
+        new ColumnValueComparerMapBuilder()
+            .add(ColumnNames.COLUMN1, ValueComparers.isActualGreaterThanExpected)
+            .build();
+}
+```
+
+#### VerifyTableDefinitions
+
+##### Static VerifyTableDefinition Instances
+
+Typically, most tests' VerifyTableDefinitions are the same. Some tests' VerifyTableDefinitions needs may deviate on an ignored column or a specific column ValueComparer.
+
+In this example:
+
+* "table3" in this class has the same configuration for any test, represented by the TABLE3 constant.
+* "table5" in this class has two configurations:
+        1. TABLE5 has all columns using equality comparison
+        2. TABLE5_COLUMN1_GREATER has all columns using equality comparison except COLUMN1 using ValueComparers.isActualGreaterThanExpected, verifying the COLUMN1 actual value results in a larger value than the expected value.
+
+```java
+public abstract class VerifyTableDefinitions
+{
+    public static final VerifyTableDefinition TABLE3 = make(TableNames.TABLE3);
+    public static final VerifyTableDefinition TABLE5 = make(TableNames.TABLE5);
+    public static final VerifyTableDefinition TABLE5_COLUMN1_GREATER = make(TableNames.TABLE5, ValueComparers.COLUMN1_GREATER);
+
+    private static VerifyTableDefinition make(final String tableName)
+    {
+        return new VerifyTableDefinition(tableName, null);
+    }
+
+    private static VerifyTableDefinition make(final String tableName, final Map<String, ValueComparer> columnValueComparers)
+    {
+        return new VerifyTableDefinition(tableName, null, columnValueComparers);
+    }
+
+    private static VerifyTableDefinition make(final String tableName, final ValueComparer defaultValueComparer, final Map<String, ValueComparer> columnValueComparers)
+    {
+        return new VerifyTableDefinition(tableName, defaultValueComparer, columnValueComparers);
+    }
+}
+```
+
+##### Test-Specific VerifyTableDefinitions
+
+The above VerifyTableDefinitions example class used static VerifyTableDefinition instances. 
+Some ValueComparers require test-specific values so static instances won't work when reused across tests. 
+In these cases, make a parameterized VerifyTableDefinition factory method to take the needed values.
+
+For example, a test may need to specify a different set of "in values" than other tests, such as with the ConditionalSetBiValueComparer. 
+It uses a ValueFactory to determine which of two ValueComparers to use for each table row, so make a factory method with the needed values parameters.
+
+The following example's factory method takes a list of IDs (called "in values") for a column's values requiring a different ValueComparer than the rest of the rows (called "not in values"). 
+Comparing columns happens as configured:
+
+* COLUMN1 uses the specified "isActualGreaterThanOrEqualToExpected"
+* COLUMN2 uses the specified "ConditionalSetBiValueComparer",
+    * Table rows with an ID in the specified list will use the "inValuesValueComparer" for it, which is "isActualGreaterThanExpected", verifying the value changed and increased.
+    * Table rows without an ID in the specified list will use the "notInValuesValueComparer" for it, which is "isActualEqualToExpected", verifying the value did not change.
+* The remaining columns will use the default, which is equality comparison, verifying the value did not change.
+
+```java
+public abstract class VerifyTableDefinitionFactory
+{
+    public static VerifyTableDefinition tableName_update(Long... ids)
+    {
+        return make(TableName.TABLE_NAME, ValueComparerMapFactory.makeTableName_updated(ids));
+    }
+}
+```
+
+```java
+public abstract class ValueComparerMapFactory
+{
+    public static Map<String, ValueComparer> makeTableName_updated(Long[] ids)
+    {
+        Set<Long> values = new HashSet<>(Arrays.asList(ids));
+        ValueComparer inValuesValueComparer = ValueComparers.isActualGreaterThanExpected;
+        ValueComparer notInValuesValueComparer = ValueComparers.isActualEqualToExpected;
+        ValueFactory<Long> valueFactory = (table, rowNum) -> {
+            Number id = (Number) table.getValue(rowNum, ColumnName.COLUMN1);
+            return id.longValue();
+        };
+        ValueComparer conditionalSetBiValueComparer = new ConditionalSetBiValueComparer<Long>(valueFactory, values, inValuesValueComparer, notInValuesValueComparer);
+
+        return new ColumnValueComparerMapBuilder()
+                .add(ColumnName.COLUMN1, ValueComparers.isActualGreaterThanOrEqualToExpected)
+                .add(ColumnName.COLUMN2, conditionalSetBiValueComparer)
+                .build();
+    }
+}
+```
+
+The test then uses the factory method (tableName_update) instead of a constant.
+
+### Using Default Equality Column Comparison
+
+This test uses the default equality column comparison for all columns - the VerifyTableDefinitions used do not specify any ValueComparers so it defaults to equality.
+
+```java
+public class DefaultEqualityComparisonExampleTest
+{
+    // this path is on classpath, e.g. in src/test/resources
+    private static final String DBUNIT_DATA_DIR = "/dbunit/equality/";
+
+    private static final String TABLE3_PREP = DBUNIT_DATA_DIR + "table3-prep.xml";
+    private static final String TABLE4_PREP = DBUNIT_DATA_DIR + "table4-prep.xml";
+
+    private static final String TABLE3_EXPECTED = DBUNIT_DATA_DIR + "table3-expected.xml";
+    private static final String TABLE5_EXPECTED = DBUNIT_DATA_DIR + "table5-expected.xml";
+
+    @Inject
+    private PrepAndExpectedTestCase testCase;
+
+    @Test
+    public void testExample() throws Exception
+    {
+        // COMMON_TABLE1 and COMMON_TABLE2 are defined in common location, such as parent class
+        // with value such as "src/test/resources/dbunit/common/table1.xml"
+
+        final VerifyTableDefinition[] verifyTables = { VerifyTableDefinitions.TABLE3, VerifyTableDefinitions.TABLE5 };
+        final String[] prepDataFiles = { COMMON_TABLE1, COMMON_TABLE2, TABLE3_PREP, TABLE4_PREP };
+        final String[] expectedDataFiles = { TABLE3_EXPECTED, TABLE5_EXPECTED };
+
+        testCase.runTest(verifyTables, prepDataFiles, expectedDataFiles, () -> {
+            // execute test steps that exercise production code
+            // e.g. call repository/DAO, call REST service
+
+            // assert responses or other values
+
+            // after this method exits, dbUnit will:
+            //  * verify configured tables
+            //  * cleanup tables as configured
+
+            return null; // or an object for use/assert outside the Steps
+        });
+    }
+}
+```
+
+### Using ValueComparer Column Comparison
+
+This test uses the default equality column comparison for all but one column - "table5"'s VerifyTableDefinition specifies a ValueComparer for "column1".
+
+Note the only differences between this test and the prior test are:
+
+1. This test uses VerifyTableDefinitions.TABLE5_COLUMN1_GREATER instead of VerifyTableDefinitions.TABLE5
+2. The directory location of the prep and expected files
+
+```java
+public class ValueComparerComparisonExampleTest
+{
+    // this path is on classpath, e.g. in src/test/resources
+    private static final String DBUNIT_DATA_DIR = "/dbunit/valuecomparer/";
+
+    private static final String TABLE3_PREP = DBUNIT_DATA_DIR + "table3-prep.xml";
+    private static final String TABLE4_PREP = DBUNIT_DATA_DIR + "table4-prep.xml";
+
+    private static final String TABLE3_EXPECTED = DBUNIT_DATA_DIR + "table3-expected.xml";
+    private static final String TABLE5_EXPECTED = DBUNIT_DATA_DIR + "table5-expected.xml";
+
+    @Inject
+    private PrepAndExpectedTestCase testCase;
+
+    @Test
+    public void testExample() throws Exception
+    {
+        // COMMON_TABLE1 and COMMON_TABLE2 are defined in common location, such as parent class
+        // with value such as "src/test/resources/dbunit/common/table1.xml"
+
+        final VerifyTableDefinition[] verifyTables = { VerifyTableDefinitions.TABLE3, VerifyTableDefinitions.TABLE5_COLUMN1_GREATER };
+        final String[] prepDataFiles = { COMMON_TABLE1, COMMON_TABLE2, TABLE3_PREP, TABLE4_PREP };
+        final String[] expectedDataFiles = { TABLE3_EXPECTED, TABLE5_EXPECTED };
+
+        testCase.runTest(verifyTables, prepDataFiles, expectedDataFiles, () -> {
+            // execute test steps that exercise production code
+            // e.g. call repository/DAO, call REST service
+
+            // assert responses or other values
+
+            // after this method exits, dbUnit will:
+            //  * verify configured tables
+            //  * cleanup tables as configured
+
+            return null; // or an object for use/assert outside the Steps
+        });
+    }
+}
+```
+
+## Sharing Common (but not all) Prep or Expected Data Among Test Methods
+
+As with the examples above, usually each test method requires its own prep and expected data so the test methods will each define their own.
+
+Often, we can define dataset files of test data used across multiple tests, typically master lists and a base set of data useful to multiple tests. 
+As above, place them in separate files (usually by table) for easy reuse.
+
+Then, pass the needed ones in the correct data file array (as shown in the examples).
+
+## Java 8+ and Anonymous Interfaces
+
+Release 2.5.2 introduced interface PrepAndExpectedTestCaseSteps and the PrepAndExpectedTestCase#runTest(VerifyTableDefinition[], String[], String[], PrepAndExpectedTestCaseSteps) method. 
+This allows for encapsulating test steps into an anonymous inner class or a Java 8+ lambda.
+
+```java
+@Inject
+private PrepAndExpectedTestCase testCase;
+
+@Test
+public void testExample() throws Exception
+{
+    final VerifyTableDefinition[] verifyTables = {}; // define tables to verify
+    final String[] prepDataFiles = {}; // define prep files
+    final String[] expectedDataFiles = {}; // define expected files
+    final PrepAndExpectedTestCaseSteps testSteps = () -> {
+        // execute test steps that exercise production code
+        // e.g. call repository/DAO, call REST service
+
+        // assert responses or other values
+
+        // after this method exits, dbUnit will:
+        //  * verify configured tables
+        //  * cleanup tables as configured
+
+        return null; // or an object for use/assert outside the Steps
+    };
+
+    testCase.runTest(verifyTables, prepDataFiles, expectedDataFiles, testSteps);
+}
+```
+
+When using a version prior to Java 8, either use a class (concrete or anonymous inner class) for PrepAndExpectedTestCaseSteps or the following idiom that uses a try/catch/finally template:
+
+```java
+@Inject
+private PrepAndExpectedTestCase testCase;
+
+@Test
+public void testExample() throws Exception
+{
+    try
+    {
+        final VerifyTableDefinition[] verifyTables = {}; // define tables to verify
+        final String[] prepDataFiles = {}; // define prep files
+        final String[] expectedDataFiles = {}; // define expected files
+
+        testCase.preTest(verifyTables, prepDataFiles, expectedDataFiles);
+
+        // execute test steps that exercise production code
+        // e.g. call repository/DAO, call REST service
+
+        // assert responses or other values
+    } catch (Exception e)
+    {
+        log.error("Test error.", e);
+        throw e;
+    } finally
+    {
+        // verify configured tables and cleanup tables as configured
+        testCase.postTest();
+    }
+}
+```
