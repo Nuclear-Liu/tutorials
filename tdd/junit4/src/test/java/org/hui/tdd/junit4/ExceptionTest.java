@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -49,5 +50,13 @@ public class ExceptionTest {
         exception.expect(IndexOutOfBoundsException.class);
         exception.expectMessage("Index 0 out of bounds for length 0");
         list.get(0); // execution will never get post this line
+    }
+    @Test
+    public void testExpectedExceptionAndMatcher() {
+        List<Object> list = new ArrayList<>();
+
+        exception.expect(IndexOutOfBoundsException.class);
+        exception.expectMessage(containsString("Index 0"));
+        list.get(0);
     }
 }
