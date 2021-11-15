@@ -17,6 +17,7 @@
         <module>junit4</module>
         <module>hamcrest</module>
         <module>dbunit</module>
+        <module>jmock</module>
     </modules>
 
     <properties>

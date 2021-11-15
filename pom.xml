@@ -14,6 +14,7 @@
         <module>dsaa</module>
         <module>action</module>
         <module>tdd</module>
+        <module>jmock</module>
     </modules>
 
     <properties>
