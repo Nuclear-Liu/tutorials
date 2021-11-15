@@ -68,10 +68,10 @@ public void testExceptionAndState() {
 
 ### Try/Catch Idiom *Try/Catch 惯用法*
 
-If you project is not yet using JUnit 4.13 or your code base does not support lambdas, you can use the try/catch idiom which prevailed in JUnit 3.x:
+If you project is not yet using JUnit 4.13 or your code base does not support lambdas, you can use the `try`/`catch` idiom which prevailed in JUnit 3.x:
 
 
-如果您的项目尚未使用 JUnit 4.13 或您的代码库不支持 lambda，您可以使用在 JUnit 3.x 中流行的 trycatch 惯用法：
+如果您的项目尚未使用 JUnit 4.13 或您的代码库不支持 lambda，您可以使用在 JUnit 3.x 中流行的 `try`/`catch` 惯用法：
 
 ---
 
@@ -160,11 +160,11 @@ public void shouldTestExceptionMessage() throws IndexOutOfBoundsException {
 
 ```
 
-The expectMessage also lets you use Matchers, which gives you a bit more flexibility in your tests. 
+The `expectMessage` also lets you use Matchers, which gives you a bit more flexibility in your tests. 
 An example:
 
 
-expectMessage 还允许您使用匹配器，这为您的测试提供了更大的灵活性。
+`expectMessage` 还允许您使用匹配器，这为您的测试提供了更大的灵活性。
 一个例子：
 
 ---
