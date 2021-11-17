@@ -9,9 +9,20 @@
 * Rules allow very flexible addition or redefinition of the behavior of each test method in a test class. 
     Testers can reuse or extend one of the provided Rules below, or write their own.
 
+
+* 规则允许非常灵活地添加或重新定义测试类中每个测试方法的行为。
+    测试人员可以重用或扩展下面提供的规则之一，或者编写自己的规则。
+
+---
+
 ### Example *示例*
 
-For an example of a rule usage, there follows a test using the TemporaryFolder and ExpectedException rules:
+For an example of a rule usage, there follows a test using the `TemporaryFolder` and `ExpectedException` rules:
+
+
+对于规则用法的示例，下面是使用 `TemporaryFolder` 和 `ExpectedException` 规则的测试：
+
+---
 
 ```java
 public class DigitalAssetManagerTest {
@@ -52,37 +63,42 @@ public class DigitalAssetManagerTest {
 
 ## TemporaryFolder Rule *临时文件夹规则*
 
-* The TemporaryFolder Rule allows creation of files and folders that are deleted when the test method finishes (whether it passes or fails). 
+* The `TemporaryFolder` Rule allows creation of files and folders that are deleted when the test method finishes (whether it passes or fails). 
     By default no exception is thrown if resources cannot be deleted:
 
 
-* TemporaryFolder Rule 允许创建在测试方法完成（无论通过还是失败）时删除的文件和文件夹。
+* `TemporaryFolder` Rule 允许创建在测试方法完成（无论通过还是失败）时删除的文件和文件夹。
     默认情况下，如果无法删除资源，则不会抛出异常：
 
+    ```java
+    public static class HasTempFolder {
+      @Rule
+      public final TemporaryFolder folder = new TemporaryFolder();
+    
+      @Test
+      public void testUsingTempFolder() throws IOException {
+        File createdFile = folder.newFile("myfile.txt");
+        File createdFolder = folder.newFolder("subfolder");
+        // ...
+      }
+    } 
+    
+    ```
+
 ---
-
-```java
-public static class HasTempFolder {
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
-
-  @Test
-  public void testUsingTempFolder() throws IOException {
-    File createdFile = folder.newFile("myfile.txt");
-    File createdFolder = folder.newFolder("subfolder");
-    // ...
-  }
-} 
-
-```
 
 * `TemporaryFolder#newFolder(String... folderNames)` creates recursively deep temporary folders
 
 * `TemporaryFolder#newFolder(String... folderNames)` 创建递归深度临时文件夹
 
+---
+
 * `TemporaryFolder#newFile()` creates a randomly named new file, and `#newFolder()` creates a randomly named new folder
 
 * `TemporaryFolder#newFile()` 创建一个随机命名的新文件，`newFolder()` 创建一个随机命名的新文件夹
+
+
+---
 
 * Starting with version 4.13 `TemporaryFolder` optionally allows strict verification of deleted resources which fails the test with `AssertionError` if resources cannot be deleted. 
     This feature can only be opted for by using the `#builder()` method. 
@@ -93,10 +109,13 @@ public static class HasTempFolder {
     此功能只能通过使用 `builder()` 方法来选择。
     默认情况下禁用严格验证以保持向后兼容性。
 
-```
-@Rule 
-public TemporaryFolder folder = TemporaryFolder.builder().assureDeletion().build();
-```
+    ```
+    @Rule 
+    public TemporaryFolder folder = TemporaryFolder.builder().assureDeletion().build();
+    ```
+
+
+---
 
 ## ExternalResource Rules *外部资源规则*
 
