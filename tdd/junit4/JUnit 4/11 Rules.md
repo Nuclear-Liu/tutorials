@@ -119,10 +119,10 @@ public class DigitalAssetManagerTest {
 
 ## ExternalResource Rules *外部资源规则*
 
-* ExternalResource is a base class for Rules (like TemporaryFolder) that set up an external resource before a test (a file, socket, server, database connection, etc.), and guarantee to tear it down afterward:
+* `ExternalResource` is a base class for Rules (like `TemporaryFolder`) that set up an external resource before a test (a file, socket, server, database connection, etc.), and guarantee to tear it down afterward:
 
 
-* ExternalResource 是规则（如 TemporaryFolder）的基类，它在测试之前设置外部资源（文件、套接字、服务器、数据库连接等），并保证之后将其拆除：
+* `ExternalResource` 是规则（如 `TemporaryFolder`）的基类，它在测试之前设置外部资源（文件、套接字、服务器、数据库连接等），并保证之后将其拆除：
 
 ```java
 public static class UsesExternalResource {
@@ -151,10 +151,10 @@ public static class UsesExternalResource {
 
 ## ErrorCollector Rule *ErrorCollector 规则*
 
-* The ErrorCollector Rule allows execution of a test to continue after the first problem is found (for example, to collect all the incorrect rows in a table, and report them all at once):
+* The `ErrorCollector` Rule allows execution of a test to continue after the first problem is found (for example, to collect all the incorrect rows in a table, and report them all at once):
 
 
-* ErrorCollector 规则允许在发现第一个问题后继续执行测试（例如，收集表中所有不正确的行，并一次性报告它们）：
+* `ErrorCollector` 规则允许在发现第一个问题后继续执行测试（例如，收集表中所有不正确的行，并一次性报告它们）：
 
 ---
 
@@ -174,10 +174,10 @@ public static class UsesErrorCollectorTwice {
 
 ## Verifier Rule *验证规则*
 
-* Verifier is a base class for Rules like ErrorCollector, which can turn otherwise passing test methods into failing tests if a verification check is failed.
+* `Verifier` is a base class for Rules like `ErrorCollector`, which can turn otherwise passing test methods into failing tests if a verification check is failed.
 
 
-* Verifier 是 ErrorCollector 等规则的基类，如果验证检查失败，它可以将其他通过的测试方法转换为失败的测试。
+* `Verifier` 是 ErrorCollector 等规则的基类，如果验证检查失败，它可以将其他通过的测试方法转换为失败的测试。
 
 ---
 
@@ -214,20 +214,20 @@ public static class UsesVerifier {
 ## `TestWatchman` / `TestWatcher` Rules *`TestWatchman` / `TestWatcher` 规则*
 
 * `TestWatcher` replaces `TestWatchman` from version 4.9. 
-    It implements TestRule, not MethodRule -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html)
+    It implements `TestRule`, not `MethodRule` -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html)
 
 * `TestWatchman` was introduced in JUnit 4.7, it uses a `MethodRule`, which is now deprecated. -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatchman.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatchman.html)
 
-* `TestWatcher` (and the deprecated TestWatchman) are base classes for Rules that take note of the testing action, without modifying it. 
+* `TestWatcher` (and the deprecated `TestWatchman`) are base classes for Rules that take note of the testing action, without modifying it. 
     For example, this class will keep a log of each passing and failing test:
 
 
 * `TestWatcher` 取代了 4.9 版中的 `TestWatchman`。
-    它实现了 TestRule，而不是 MethodRule -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html)
+    它实现了 `TestRule` ，而不是 `MethodRule` -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatcher.html)
 
 * `TestWatchman` 是在 JUnit 4.7 中引入的，它使用 `MethodRule`，现在已弃用。 -- [http://junit.org/javadoc/latest/org/junit/rules/TestWatchman.html](http://junit.org/javadoc/latest/org/junit/rules/TestWatchman.html)
 
-* `TestWatcher`（以及已弃用的 TestWatchman）是规则的基类，它们记录测试操作，而不对其进行修改。
+* `TestWatcher`（以及已弃用的 `TestWatchman`）是规则的基类，它们记录测试操作，而不对其进行修改。
     例如，这个类将记录每个通过和失败的测试：
 
 ---
