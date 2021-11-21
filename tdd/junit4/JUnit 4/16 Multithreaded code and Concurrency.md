@@ -14,14 +14,14 @@ Java code can be difficult to test for thread safety when multithreading.
 The article at [http://www.planetgeek.ch/2009/08/25/how-to-find-a-concurrency-bug-with-java/](http://www.planetgeek.ch/2009/08/25/how-to-find-a-concurrency-bug-with-java/) describes a method of exposing concurrency bugs that adds a new assertion method `assertConcurrent`.
 
 
-[http://www.planetgeek.ch/2009/08/25/how-to-find-a-concurrency-bug-with-java/](http://www.planetgeek.ch/2009/08/25/how-to-find-a-concurrency-bug-with-java/) 上的文章描述了一种暴露并发错误的方法，该方法添加了一个新的断言方法 `assertConcurrent`。
+[http://www.planetgeek.ch/2009/08/25/how-to-find-a-concurrency-bug-with-java/](./How%20to%20find%20a%20concurrency%20bug%20with%20java.md) 上的文章描述了一种暴露并发错误的方法，该方法添加了一个新的断言方法 `assertConcurrent` 。
 
 ---
 
-To use this you pass in a Collection of Runnables that are your arrange\act\assert test on the SUT, they all run at the same time in the `assertConcurrent` method; the chances of triggering a multithreading code error, and thereby failing some assertion are greatly increased:
+To use this you pass in a Collection of `Runnables` that are your `arrange\act\assert` test on the SUT, they all run at the same time in the `assertConcurrent` method; the chances of triggering a multithreading code error, and thereby failing some assertion are greatly increased:
 
 
-要使用它，您需要在 SUT 上传递一个 Runnables 集合，这些集合是您在 SUT 上的排列\行为\断言测试，它们都在 `assertConcurrent` 方法中同时运行；触发多线程代码错误的机会大大增加，从而使某些断言失败：
+要使用它，您需要在 SUT 上传递一个 `Runnables` 集合，这些集合是您在 SUT 上的 `arrange\act\assert` 测试，它们都在 `assertConcurrent` 方法中同时运行；触发多线程代码错误的机会大大增加，从而使某些断言失败：
 
 ---
 
@@ -76,10 +76,10 @@ A JUnit extension that generalizes this pattern into a library is [ConcurrentUni
 
 ---
 
-Another article giving an overview of alternative stragies at [http://tempusfugitlibrary.org/recipes/2012/05/20/testing-concurrent-code/]() might also be useful.
+Another article giving an overview of alternative stragies at [http://tempusfugitlibrary.org/recipes/2012/05/20/testing-concurrent-code/](http://tempusfugitlibrary.org/recipes/2012/05/20/testing-concurrent-code/) might also be useful.
 
 
-另一篇文章 [http:tempusfugitlibrary.orgrecipes20120520testing-concurrent-code]() 概述了替代策略也可能有用。
+另一篇文章 [http:tempusfugitlibrary.orgrecipes20120520testing-concurrent-code](./Testing%20Concurrent%20Code.md) 概述了替代策略也可能有用。
 
 ---
 
