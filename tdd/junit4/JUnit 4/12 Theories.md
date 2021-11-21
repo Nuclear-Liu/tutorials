@@ -6,13 +6,13 @@
 
 More flexible and expressive assertions, combined with the ability to state assumptions clearly, lead to a new kind of statement of intent, which we call a "Theory". 
 A test captures the intended behavior in one particular scenario. 
-A theory captures some aspect of the intended behavior in possibly infinite numbers of potential scenarios. 
+A `theory` captures some aspect of the intended behavior in possibly infinite numbers of potential scenarios. 
 For example:
 
 
 更加灵活和富有表现力的断言，再加上清楚地陈述假设的能力，导致了一种新的意图陈述，我们称之为 "Theory" 。
 测试捕获特定场景中的预期行为。
-一个 theory 在可能无限数量的潜在场景中捕获了预期行为的某些方面。
+一个 `theory` 在可能无限数量的潜在场景中捕获了预期行为的某些方面。
 例如：
 
 ---
@@ -43,12 +43,12 @@ Another test or theory might define what happens when a username does contain a 
 
 ---
 
-UserTest will attempt to run `filenameIncludesUsername` on every compatible DataPoint defined in the class. 
+`UserTest` will attempt to run `filenameIncludesUsername` on every compatible DataPoint defined in the class. 
 If any of the assumptions fail, the data point is silently ignored. 
 If all of the assumptions pass, but an assertion fails, the test fails.
 
 
-UserTest 将尝试在类中定义的每个兼容数据点上运行 `filenameIncludesUsername` 。
+`UserTest` 将尝试在类中定义的每个兼容数据点上运行 `filenameIncludesUsername` 。
 如果任何假设失败，则数据点将被默默忽略。
 如果所有假设都通过，但断言失败，则测试失败。
 
@@ -137,11 +137,11 @@ If the convenient `assertThat` assertion syntax is new, you may want to get up t
 ---
 
 Go ahead and get the test above to pass. 
-I especially suggest that you cheat by always returning 10 from getAmount.
+I especially suggest that you cheat by always returning 10 from `getAmount`.
 
 
 继续并通过上面的测试。
-我特别建议你总是从 getAmount 返回 10 来作弊。
+我特别建议你总是从 `getAmount` 返回 10 来作弊。
 
 ---
 
@@ -171,12 +171,12 @@ public class DollarTest extends TheoryContainer {
 
 You'll have to add a `divideBy` method to `Dollar` in order to get the class to compile. 
 This theory expresses a general truth about currency multiplication and division: one is the inverse of the other. 
-By adding two parameters to the method, and adding the assumption that m is not zero, you've specified that this theory should hold true for any value of amount and all non-zero values of m.
+By adding two parameters to the method, and adding the assumption that `m` is not zero, you've specified that this theory should hold true for any value of amount and all non-zero values of `m`.
 
 
 您必须向 `Dollar` 添加一个 `divideBy` 方法才能编译该类。
 这个理论表达了关于货币乘除法的一个普遍真理：一个是另一个的倒数。
-通过向该方法添加两个参数，并添加 m 不为零的假设，您已指定该理论应适用于任何数量值和所有非零值 m。
+通过向该方法添加两个参数，并添加 `m` 不为零的假设，您已指定该理论应适用于任何数量值和所有非零值 `m`。
 
 ---
 
@@ -201,7 +201,7 @@ It can take a long time between being able to assert a general principle, and ac
 Because of this, Popper expects to only run theories on a set of accepted data points, which allows you to incrementally build up a set of inputs for which you know the theory passes, until you feel confident that the theory is universally true.
 
 
-Popper runner 不会自动为理论提供潜在的价值。
+Popper runner 不会自动为 theory 提供潜在的价值。
 在能够断言一般原则和实际使其与任何可以想象的输入一起工作之间可能需要很长时间。
 因此， Popper 期望只在一组可接受的数据点上运行理论，这允许您逐步建立一组您知道理论通过的输入，直到您确信该理论普遍正确。
 
@@ -266,7 +266,7 @@ You can extend Popper by providing your own parameter supplier.
 For example, here is a supplier for values between two integers, and an annotation that references it:
 
 
-您可以通过提供您自己的参数供应商来扩展 Popper。
+您可以通过提供您自己的参数供应商来扩展 Popper 。
 例如，这里是两个整数之间值的供应商，以及引用它的注释：
 
 ---
