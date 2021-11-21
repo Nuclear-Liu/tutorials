@@ -20,7 +20,7 @@ Examples of fixtures:
 * Copying a specific known set of files creating a test fixture will create a set of objects initialized to certain states.
 
 
-* 准备输入数据和设置创建假或模拟对象
+* 准备输入数据和设置/创建假或模拟对象
 * 使用一组特定的已知数据加载数据库
 * 复制一组特定的已知文件以创建测试装置将创建一组初始化为某些状态的对象。
 
@@ -38,7 +38,7 @@ At the class level, you have `@BeforeClass` and `@AfterClass`, and at the method
 
 
 有四个夹具注解：两个用于类级夹具，两个用于方法级夹具。
-在类级别，你有`@BeforeClass` 和`@AfterClass`，在方法（或测试）级别，你有`@Before` 和`@After`。
+在类级别，你有`@BeforeClass` 和 `@AfterClass` ，在方法（或测试）级别，你有`@Before` 和 `@After` 。
 
 ---
 
