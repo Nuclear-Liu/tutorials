@@ -1,4 +1,4 @@
-## Project Build Plugins
+## Project Build Plugins _项目构建插件_
 
 | GroupId | ArtifactId | Version |
 | ---- | ---- | ---- |
@@ -8,7 +8,7 @@
 | `org.apache.maven.plugins` | [`maven-install-plugin`](http://maven.apache.org/plugins/maven-install-plugin/) | `2.4` |
 | `org.apache.maven.plugins` | [`maven-site-plugin`](https://maven.apache.org/plugins/maven-site-plugin/) | `3.7.1` |
 
-## Project Report Plugins
+## Project Report Plugins _项目报告插件_
 
 | GroupId | ArtifactId | Version |
 | ---- | ---- | ---- |

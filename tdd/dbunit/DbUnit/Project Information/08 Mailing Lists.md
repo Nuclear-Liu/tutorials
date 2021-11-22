@@ -1,7 +1,13 @@
-## Project Mailing Lists
+## Project Mailing Lists _项目邮件列表_
 
 These are the mailing lists that have been established for this project. 
 For each list, there is a subscribe, unsubscribe, and an archive link.
+
+
+这些是为此项目建立的邮件列表。
+对于每个列表，都有一个订阅、取消订阅和存档链接。
+
+---
 
 | Name | Subscribe | Unsubscribe | Post | Archive |
 | ---- | ---- | ---- | ---- | ---- |
