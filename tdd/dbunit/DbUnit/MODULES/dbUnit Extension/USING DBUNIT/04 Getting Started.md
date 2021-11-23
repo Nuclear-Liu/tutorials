@@ -1,41 +1,97 @@
 ## Getting Started _入门_
 
 1. Database setup with a DBTestCase subclass
-2. Database setup with your own TestCase subclass
+2. Database setup with your own `TestCase` subclass
 3. Database setup with no parent class
 4. Database data verification
 5. Data File Loader
 6. DbUnit Ant task and Canoo WebTest
+
+
+1. 使用 DBTestCase 子类设置数据库
+2. 使用您自己的 `TestCase` 子类设置数据库
+3. 没有父类的数据库设置
+4. 数据库数据校验
+5. 数据文件加载器
+6. DbUnit Ant 任务和 Canoo WebTest
+
+---
 
 ## Database setup with a `DBTestCase` subclass _使用 `DBTestCase` 子类设置数据库_
 
 ### Step 1: Create your dataset file _创建数据集文件_
 
 Your test need some data to work with. 
-This means you must create a dataset. In most situations you will work with xml datasets. 
+This means you must create a dataset. 
+In most situations you will work with xml datasets. 
 You can manually create a flat XML dataset from scratch or create one by [exporting]() some data from your database.
+
+
+您的测试需要使用一些数据。
+这意味着您必须创建一个数据集。
+在大多数情况下，您将使用 xml 数据集。
+您可以从头开始手动创建平面 XML 数据集，也可以通过 [exporting]() 数据库中的一些数据来创建一个。
+
+---
 
 ### Step 2: Extend a `DBTestCase` class _扩展 `DBTestCase` 类_
 
 Now you need to create a test class. 
-One way to use Dbunit is to have the test class extend the DBTestCase class. 
-DBTestCase extends the JUnit TestCase class. 
-A template method is required to be implemented: getDataSet() to return the dataset you created in step 1. DBTestCase relies on a IDatabaseTester to do its work, the default configuration uses PropertiesBasedJdbcDatabaseTester, it locates configuration for the DriverManager within the Sytem properties. 
+One way to use Dbunit is to have the test class extend the `DBTestCase` class. 
+`DBTestCase` extends the JUnit `TestCase` class. 
+A template method is required to be implemented: `getDataSet()` to return the dataset you created in step 1. 
+`DBTestCase` relies on a `IDatabaseTester` to do its work, the default configuration uses `PropertiesBasedJdbcDatabaseTester`, it locates configuration for the `DriverManager` within the Sytem properties. 
 The simplest way to configure it would be in the constructor of your test class. 
-You may modify this behavior by overriding getDatabaseTester(), using one of the other 3 provided IDatabaseTester implementations or your own.
+You may modify this behavior by overriding `getDatabaseTester()`, using one of the other 3 provided `IDatabaseTester` implementations or your own.
 
-You may also use a subclass of DBTestCase, such as one of these: 
 
-|  |  |
+现在您需要创建一个测试类。
+使用 Dbunit 的一种方法是让测试类扩展 `DBTestCase` 类。
+`DBTestCase` 继承了 JUnit `TestCase` 类。
+需要实现一个模板方法：`getDataSet()` 以返回您在步骤 1 中创建的数据集。
+`DBTestCase` 依赖于 `IDatabaseTester` 来完成它的工作，默认配置使用 `PropertiesBasedJdbcDatabaseTester`，它在系统属性中定位 `DriverManager` 的配置。
+配置它的最简单方法是在测试类的构造函数中。
+您可以通过覆盖 `getDatabaseTester()`、使用其他 3 个提供的 `IDatabaseTester` 实现之一或您自己的实现来修改此行为。
+
+---
+
+You may also use a subclass of `DBTestCase`, such as one of these: 
+
+
+您还可以使用 `DBTestCase` 的子类，例如以下之一：
+
+---
+
+| Class | Description |
 | ---- | ---- |
-| `JdbcBasedDBTestCase` | uses a DriverManager to create connections (with the aid of a JdbcDatabaseTester). |
-| `DataSourceBasedDBTestCase` | uses a javax.sql.DataSource to create connections (with the aid of a DataSourceDatabaseTester). |
-| `JndiBasedDBTestCase` | uses a javax.sql.DataSource located through JNDI (with the aid of a JndiDatabaseTester). |
-| `DefaultPrepAndExpectedTestCase` | uses a configurable IDatabaseTester (allowing any connection type) providing a turn-key test setup and verification process in one, with clear separation of prep and expected datasets. |
+| `JdbcBasedDBTestCase` | uses a `DriverManager` to create connections (with the aid of a `JdbcDatabaseTester` ). |
+| `DataSourceBasedDBTestCase` | uses a `javax.sql.DataSource` to create connections (with the aid of a `DataSourceDatabaseTester`). |
+| `JndiBasedDBTestCase` | uses a `javax.sql.DataSource` located through `JNDI` (with the aid of a `JndiDatabaseTester`). |
+| `DefaultPrepAndExpectedTestCase` | uses a configurable `IDatabaseTester` (allowing any connection type) providing a turn-key test setup and verification process in one, with clear separation of prep and expected datasets. |
+
+
+| Class | Description |
+| ---- | ---- |
+| `JdbcBasedDBTestCase` | 使用 `DriverManager` 创建连接（借助 `JdbcDatabaseTester` ）。 |
+| `DataSourceBasedDBTestCase` | 使用 `javax.sql.DataSource` 创建连接（借助 `DataSourceDatabaseTester`）。 |
+| `JndiBasedDBTestCase` | 使用通过`JNDI` 定位的`javax.sql.DataSource`（借助`JndiDatabaseTester`）。 |
+| `DefaultPrepAndExpectedTestCase` | 使用可配置的 `IDatabaseTester` （允许任何连接类型），将交钥匙测试设置和验证过程合二为一，明确分离准备和预期数据集。 |
+
+---
 
 Refer to [dbUnit Test Cases]() page for more details.
 
+
+有关更多详细信息，请参阅 [dbUnit 测试用例]() 页面。
+
+---
+
 The following is a sample implementation that returns a connection to a Hypersonic database and a xml dataset: 
+
+
+以下是返回到 Hypersonic 数据库和 xml 数据集的连接的示例实现：
+
+---
 
 ```java
 public class SampleTest extends DBTestCase
@@ -60,9 +116,20 @@ public class SampleTest extends DBTestCase
 ### Step 3: (Optional) Implement `getSetUpOperation()` and `getTearDownOperation()` methods _（可选）实现 `getSetUpOperation()` 和 `getTearDownOperation()` 方法_
 
 By default, Dbunit performs a [CLEAN_INSERT]() operation before executing each test and performs no cleanup operation afterward. 
-You can modify this behavior by overriding getSetUpOperation() and getTearDownOperation().
+You can modify this behavior by overriding `getSetUpOperation()` and `getTearDownOperation()`.
+
+
+默认情况下，Dbunit 在执行每个测试之前执行 [CLEAN_INSERT]() 操作，之后不执行清理操作。
+您可以通过覆盖 `getSetUpOperation()` 和 `getTearDownOperation()` 来修改此行为。
+
+---
 
 The following example demonstrates how you can easily override the operation executed before or after your test. 
+
+
+以下示例演示了如何轻松覆盖在测试之前或之后执行的操作。
+
+---
 
 ```
 public class SampleTest extends DBTestCase
@@ -83,9 +150,19 @@ public class SampleTest extends DBTestCase
 
 ### Step 4: (Optional) Override method `setUpDatabaseConfig(DatabaseConfig config)` _（可选）覆盖方法 `setUpDatabaseConfig(DatabaseConfig config)`_
 
-Use this to change some configuration settings of the dbunit DatabaseConfig.
+Use this to change some configuration settings of the dbunit `DatabaseConfig`.
+
+
+使用它来更改 dbunit `DatabaseConfig` 的一些配置设置。
+
+---
 
 The following example demonstrates how you can easily override this method: 
+
+
+以下示例演示了如何轻松覆盖此方法：
+
+---
 
 ```
 public class SampleTest extends DBTestCase
@@ -107,13 +184,31 @@ public class SampleTest extends DBTestCase
 Implement your test methods as you normally would with JUnit. 
 Your database is now initialized before and cleaned-up after each test methods according to what you did in previous steps.
 
+
+像通常使用 JUnit 一样实现您的测试方法。
+您的数据库现在根据您在前面步骤中所做的操作在每个测试方法之前初始化并在每个测试方法之后进行清理。
+
+---
+
 ## Database setup with your own TestCase subclass _使用您自己的 TestCase 子类设置数据库_
 
-In order to use Dbunit you are not required to extend the DBTestCase class. 
-You can override the standard JUnit setUp() method and execute the desired operation on your database. 
-Do something similar in teardown() if you need to perform clean-up.
+In order to use Dbunit you are not required to extend the `DBTestCase` class. 
+You can override the standard JUnit `setUp()` method and execute the desired operation on your database. 
+Do something similar in `teardown()` if you need to perform clean-up.
+
+
+为了使用 Dbunit，你不需要扩展 `DBTestCase` 类。
+您可以覆盖标准的 JUnit `setUp()` 方法并在您的数据库上执行所需的操作。
+如果您需要执行清理，请在 `teardown()` 中执行类似的操作。
+
+---
 
 For example: 
+
+
+例如：
+
+---
 
 ```java
 public class SampleTest extends TestCase
@@ -148,11 +243,18 @@ public class SampleTest extends TestCase
 }
 ```
 
-Since version 2.2 you may use the new IDatabaseTester to accomplish the same feat. 
-As explained in the previous topic, DBTestCase uses a IDatabaseTester internally to do its work; your test class may also use this feature to manipulate DataSets. 
+Since version 2.2 you may use the new `IDatabaseTester` to accomplish the same feat. 
+As explained in the previous topic, `DBTestCase` uses a `IDatabaseTester` internally to do its work; your test class may also use this feature to manipulate DataSets. 
 Currently there are 4 convenient implementations:
 
-|  |  |
+
+从 2.2 版开始，您可以使用新的“IDatabaseTester”来完成相同的壮举。
+如上一主题所述， `DBTestCase` 在内部使用 `IDatabaseTester` 来完成其工作； 您的测试类也可以使用此功能来操作数据集。
+目前有4种方便的实现：
+
+---
+
+| Class | Description |
 | ---- | ---- |
 | `JdbcDatabaseTester` | uses a DriverManager to create connections. |
 | `PropertiesBasedJdbcDatabaseTester` | also uses DriverManager, but the configuration is taken from system properties. This is the default implementation used by DBTestCase. |
