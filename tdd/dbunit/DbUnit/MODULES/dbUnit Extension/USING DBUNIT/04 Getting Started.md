@@ -1,4 +1,4 @@
-## Getting Started
+## Getting Started _入门_
 
 1. Database setup with a DBTestCase subclass
 2. Database setup with your own TestCase subclass
@@ -7,15 +7,15 @@
 5. Data File Loader
 6. DbUnit Ant task and Canoo WebTest
 
-## Database setup with a DBTestCase subclass
+## Database setup with a `DBTestCase` subclass _使用 `DBTestCase` 子类设置数据库_
 
-### Step 1: Create your dataset file
+### Step 1: Create your dataset file _创建数据集文件_
 
 Your test need some data to work with. 
 This means you must create a dataset. In most situations you will work with xml datasets. 
 You can manually create a flat XML dataset from scratch or create one by [exporting]() some data from your database.
 
-### Step 2: Extend a DBTestCase class
+### Step 2: Extend a `DBTestCase` class _扩展 `DBTestCase` 类_
 
 Now you need to create a test class. 
 One way to use Dbunit is to have the test class extend the DBTestCase class. 
@@ -57,7 +57,7 @@ public class SampleTest extends DBTestCase
 }
 ```
 
-### Step 3: (Optional) Implement getSetUpOperation() and getTearDownOperation() methods
+### Step 3: (Optional) Implement `getSetUpOperation()` and `getTearDownOperation()` methods _（可选）实现 `getSetUpOperation()` 和 `getTearDownOperation()` 方法_
 
 By default, Dbunit performs a [CLEAN_INSERT]() operation before executing each test and performs no cleanup operation afterward. 
 You can modify this behavior by overriding getSetUpOperation() and getTearDownOperation().
@@ -81,7 +81,7 @@ public class SampleTest extends DBTestCase
 }
 ```
 
-### Step 4: (Optional) Override method setUpDatabaseConfig(DatabaseConfig config)
+### Step 4: (Optional) Override method `setUpDatabaseConfig(DatabaseConfig config)` _（可选）覆盖方法 `setUpDatabaseConfig(DatabaseConfig config)`_
 
 Use this to change some configuration settings of the dbunit DatabaseConfig.
 
@@ -102,12 +102,12 @@ public class SampleTest extends DBTestCase
 }
 ```
 
-### Step 5: Implement your testXxx() methods
+### Step 5: Implement your `testXxx()` methods _实现你的 `testXxx()` 方法_
 
 Implement your test methods as you normally would with JUnit. 
 Your database is now initialized before and cleaned-up after each test methods according to what you did in previous steps.
 
-## Database setup with your own TestCase subclass
+## Database setup with your own TestCase subclass _使用您自己的 TestCase 子类设置数据库_
 
 In order to use Dbunit you are not required to extend the DBTestCase class. 
 You can override the standard JUnit setUp() method and execute the desired operation on your database. 
@@ -144,7 +144,7 @@ public class SampleTest extends TestCase
             connection.close();
         }
     }
-    ...
+    // ...
 }
 ```
 
@@ -193,11 +193,11 @@ public class SampleTest extends TestCase
 	// will call default tearDownOperation
         databaseTester.onTearDown();
     }
-    ...
+    // ...
 }
 ```
 
-## Database setup with no parent class
+## Database setup with no parent class _没有父类的数据库设置_
 
 In order to use Dbunit you are not required to extend any classes. 
 Simply configure an instance of a DBTestCase subclass, whether directly instantiated or dependency injected in test classes.
@@ -233,7 +233,7 @@ public class SampleTest
 }
 ```
 
-## Database data verification
+## Database data verification _数据库数据校验_
 
 Dbunit provides support for verifying whether two tables or datasets contain identical data. 
 The Assertion class has many methods for verifying if your database contains the expected data during test cases execution. 
@@ -251,7 +251,7 @@ public class Assertion
 }
 ```
 
-### Sample
+### Sample _案例_
 
 The following sample shows how to compare a database table snapshot against a flat XML table using equality comparison. 
 
@@ -264,12 +264,12 @@ public class SampleTest extends DBTestCase
     }
 
     // Implements required setup methods here
-    ...
+    // ...
 
     public void testMe() throws Exception
     {
         // Execute the tested code that modify the database here
-        ...
+        // ...
 
 
         // Fetch database data after executing your code
@@ -292,14 +292,14 @@ As its name imply, the expected dataset contains the expectation values.
 The expected dataset must be different from the one you have used to setup your database. 
 Therefore you need two datasets to do that; one to setup your database before a test and another to provide the expected data during the test.
 
-### Using a query to take the database snapshot
+### Using a query to take the database snapshot _使用查询获取数据库快照_
 
 You can also verify if the result of a query match an expected set of data. 
 The query can be used to select only a subset of a table or even join multiple tables together.
 
 `ITable actualJoinData = getConnection().createQueryTable("RESULT_NAME", "SELECT * FROM TABLE1, TABLE2 WHERE ..."); `
 
-### Ignoring some columns in comparison
+### Ignoring some columns in comparison _相比之下忽略一些列_
 
 Sometimes this is desirable to ignore some columns to perform the comparison; particularly for primary keys, date or time columns having values generated by the code under test. 
 One way to do this is to omit to declare unwanted columns in your expected table. 
@@ -318,7 +318,7 @@ Extra columns can exist in the actual table but not in the expected one.
 A major limitation of this technique is that you cannot use a DTD with your expected flat XML dataset. 
 With a DTD you need to filter columns from both the expected and the actual table. See the FAQ about [excluding some table columns at runtime](). 
 
-### Row ordering
+### Row ordering _行排序_
 
 By default, database table snapshot taken by DbUnit are sorted by primary keys. 
 If a table does not have a primary key or the primary key is automatically generated by your database, the rows ordering is not predictable and `assertEquals` will fail.
@@ -343,7 +343,7 @@ If you want to use the columns datatype for sorting (to get the columns like 1, 
 _The reason why the parameter is currently not in the constructor is that the number of constructors needed for SortedTable would increase from 4 to 8 which is a lot. 
 Discussion should go on about this feature on how to implement it the best way in the future._ 
 
-### Assert and collect the differences
+### Assert and collect the differences _断言和收集差异_
 
 By default, dbunit immediately fails when the first data difference was found. 
 Starting with dbunit 2.4 it is possible to register a custom `FailureHandler` which lets users specify which kinds of exceptions to be thrown and how to handle the occurrences of data differences. 
@@ -362,7 +362,7 @@ Difference diff = (Difference)diffList.get(0);
 ...
 ```
 
-## Data File Loader
+## Data File Loader _加载数据文件_
 
 Nearly all tests need to load data from one or more files, particularly for prep or expected data. 
 dbUnit has a set of data file loader utility helper classes to load data sets from files on the classpath. 
@@ -378,7 +378,7 @@ Note the constructors for the various DataFileLoaders accept replacement object 
 
 Refer to the DataFileLoader JavaDoc for further details. 
 
-## DbUnit Ant task and Canoo WebTest
+## DbUnit Ant task and Canoo WebTest _DbUnit Ant 任务和 Canoo WebTest_
 
 By Eric Pugh
 
@@ -388,12 +388,12 @@ It allows you to create a series of Ant based tests for your website.
 In fact, this can be used to perform User Acceptance tests for websites built using non Java technologies like ColdFusion or ASP! 
 This document walks you through a suggested format for storing tests.
 
-### Step 1: Create your dataset file
+### Step 1: Create your dataset file _创建数据集文件_
 
 Your first step is to create your dataset file that you want to load into your database before running your WebTest script. 
 Use one of the various methods described above. Put the various datasets you need in a /data directory.
 
-### Step 2: Create your Ant build.xml file
+### Step 2: Create your Ant `build.xml` file _创建您的 Ant `build.xml` 文件_
 
 A suggested setup is to have a single build.xml file that is the entry point for all your tests. 
 This would include a couple targets like:
@@ -402,7 +402,7 @@ This would include a couple targets like:
 2. `test:single`: Runs a single test in a specific testSuite
 3. `test:suite`: Runs all the tests for a specific testSuite 
 
-### Step 3: Create your various Test Suites
+### Step 3: Create your various Test Suites _创建您的各种测试套件_
 
 Once you have your build.xml file set up, you can now call the various TestSuites. 
 Create a separate TestSuiteXXX.xml for the various modules that you would like to test. 
@@ -424,7 +424,7 @@ In your TestSuiteXXX.xml, you should have your default target testSuite call all
 
 This way you can either run all the test's in your Test Suite, or just run a specific one, all from build.xml!
 
-### Step 4: Create your various Tests
+### Step 4: Create your various Tests _创建您的各种测试_
 
 Now you need to write your various testcases. 
 For more information on WebTest, please refer to the WebTest home page. 
@@ -458,7 +458,7 @@ In this example, we are using doing a clean insert into the database, and using 
       </target>
 ```
 
-## Sample Directory Layout
+## Sample Directory Layout _示例目录布局_
 
 When you are done, you will have a series of files that look like this: 
 
