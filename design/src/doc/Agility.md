@@ -33,4 +33,12 @@
 
 ## 原则
 
+面向对象的这些原则有助于开发人员消除设计中的**臭味**，并为当前的特性集构建出最好的设计。
+
+* 单一职责原则(The Single Responsibility Principle, 简称 SRP )
+* 开放 —— 封闭原则(The Open-Close Principle, 简称 OCP )
+* Liskov 替换原则(The Liskov Substitution Principle, 简称 LSP )
+* 依赖倒置原则(The Dependency Inversion Principle, 简称 DIP )
+* 接口隔离原则(The Interface Segregation Interface, 简称 ISP )
+
 
