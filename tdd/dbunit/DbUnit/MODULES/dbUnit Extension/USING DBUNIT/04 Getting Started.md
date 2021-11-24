@@ -256,15 +256,36 @@ Currently there are 4 convenient implementations:
 
 | Class | Description |
 | ---- | ---- |
-| `JdbcDatabaseTester` | uses a DriverManager to create connections. |
-| `PropertiesBasedJdbcDatabaseTester` | also uses DriverManager, but the configuration is taken from system properties. This is the default implementation used by DBTestCase. |
-| `DataSourceDatabaseTester` | uses a javax.sql.DataSource to create connections. |
-| `JndiDatabaseTester` | uses a javax.sql.DataSource located through JNDI. |
+| `JdbcDatabaseTester` | uses a `DriverManager` to create connections. |
+| `PropertiesBasedJdbcDatabaseTester` | also uses `DriverManager`, but the configuration is taken from system properties. This is the default implementation used by `DBTestCase`. |
+| `DataSourceDatabaseTester` | uses a `javax.sql.DataSource` to create connections. |
+| `JndiDatabaseTester` | uses a `javax.sql.DataSource` located through `JNDI`. |
 
-You may also provide your own IDatabaseTester implementation. 
-It is recommended to use AbstractDatabaseTester as a starting point.
+
+| Class | Description |
+| ---- | ---- |
+| `JdbcDatabaseTester` | 使用 `DriverManager` 来创建连接。 |
+| `PropertiesBasedJdbcDatabaseTester` | 也使用`DriverManager`，但配置取自系统属性。这是`DBTestCase` 使用的默认实现。 |
+| `DataSourceDatabaseTester` | 使用 `javax.sql.DataSource` 来创建连接。 |
+| `JndiDatabaseTester` | 使用通过`JNDI` 定位的`javax.sql.DataSource`。 |
+
+---
+
+You may also provide your own `IDatabaseTester` implementation. 
+It is recommended to use `AbstractDatabaseTester` as a starting point.
+
+
+你也可以提供你自己的`IDatabaseTester` 实现。
+建议使用 `AbstractDatabaseTester` 作为起点。
+
+---
 
 Example: 
+
+
+示例：
+
+---
 
 ```java
 public class SampleTest extends TestCase
@@ -302,9 +323,9 @@ public class SampleTest extends TestCase
 ## Database setup with no parent class _没有父类的数据库设置_
 
 In order to use Dbunit you are not required to extend any classes. 
-Simply configure an instance of a DBTestCase subclass, whether directly instantiated or dependency injected in test classes.
+Simply configure an instance of a `DBTestCase` subclass, whether directly instantiated or dependency injected in test classes.
 
-For example, using PrepAndExpectedTestCase: (also see `TestCases` -> `PrepAndExpectedTestCase` and `DefaultPrepAndExpectedTestCase` JavaDoc). 
+For example, using `PrepAndExpectedTestCase`: (also see `TestCases` -> `PrepAndExpectedTestCase` and `DefaultPrepAndExpectedTestCase` JavaDoc). 
 
 ```java
 public class SampleTest
