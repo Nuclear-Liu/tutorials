@@ -675,68 +675,95 @@ Once you have your `build.xml` file set up, you can now call the various TestSui
 Create a separate `TestSuiteXXX.xml` for the various modules that you would like to test. 
 In your `TestSuiteXXX.xml`, you should have your default target testSuite call all the testcases you have definied: 
 
+
+一旦你建立了你的 `build.xml` 文件，你现在可以调用各种 TestSuite。
+为您要测试的各种模块创建一个单独的 `TestSuiteXXX.xml` 。
+在您的 `TestSuiteXXX.xml` 中，您应该让默认目标 testSuite 调用您定义的所有测试用例：
+
+---
+
 ```xml
-      <target name="testSuite">
+<target name="testSuite">
+    
+    <antcall target="unsubscribeEmailAddressWithEmail"/>
+    <antcall target="unsubscribeEmailAddressWithEmailID"/>
+    <antcall target="unsubscribeEmailAddressWithNewEmailAddress"/>
+    
+    <antcall target="subscribeEmailAddressWithOptedOutEmail"/>
+    <antcall target="subscribeEmailAddressWithNewEmailAddress"/>
+    <antcall target="subscribeEmailAddressWithInvalidEmailAddress"/>
 
-        <antcall target="unsubscribeEmailAddressWithEmail"/>
-        <antcall target="unsubscribeEmailAddressWithEmailID"/>
-        <antcall target="unsubscribeEmailAddressWithNewEmailAddress"/>
-
-        <antcall target="subscribeEmailAddressWithOptedOutEmail"/>
-        <antcall target="subscribeEmailAddressWithNewEmailAddress"/>
-        <antcall target="subscribeEmailAddressWithInvalidEmailAddress"/>
-
-      </target>
+</target>
 ```
 
 This way you can either run all the test's in your Test Suite, or just run a specific one, all from `build.xml`!
+
+
+这样你就可以在你的测试套件中运行所有的测试，或者只运行一个特定的测试，全部来自 `build.xml` ！
+
+---
 
 ### Step 4: Create your various Tests _创建您的各种测试_
 
 Now you need to write your various testcases. 
 For more information on WebTest, please refer to the WebTest home page. 
-If you have find you are duplicating pieces of XML, then place them in a /includes directory. 
-If you have a single set of properties, then load them as part of build.xml by specifing them in your build.properties file. 
-If you have multiple databases you need to connect to, then declare your sql connection properties in a TestSuiteXXX.properties file that you load on a per suite basis. 
-In this example, we are using doing a clean insert into the database, and using the MSSQL_CLEAN_INSERT instead of CLEAN_INSERT because of the requirement to do identity column inserts. 
+If you have find you are duplicating pieces of XML, then place them in a `/includes` directory. 
+If you have a single set of properties, then load them as part of `build.xml` by specifing them in your `build.properties` file. 
+If you have multiple databases you need to connect to, then declare your sql connection properties in a `TestSuiteXXX.properties` file that you load on a per suite basis. 
+In this example, we are using doing a clean insert into the database, and using the `MSSQL_CLEAN_INSERT` instead of `CLEAN_INSERT` because of the requirement to do identity column inserts. 
+
+
+现在您需要编写各种测试用例。
+有关 WebTest 的更多信息，请参阅 WebTest 主页。
+如果您发现您正在复制 XML 片段，请将它们放在 `/includes` 目录中。
+如果您只有一组属性，则通过在您的 `build.properties` 文件中指定它们，将它们作为 `build.xml` 的一部分加载。
+如果您有多个需要连接的数据库，请在您在每个套件基础上加载的 `TestSuiteXXX.properties` 文件中声明您的 sql 连接属性。
+在此示例中，我们使用对数据库进行干净插入，并使用 `MSSQL_CLEAN_INSERT` 而不是 `CLEAN_INSERT`，因为需要进行标识列插入。
+
+---
 
 ```xml
-      <target name="subscribeEmailAddressWithOptedOutEmail">
-        <dbunit
-            driver="${sql.jdbcdriver}"
-            url="${sql.url}"
-            userid="${sql.username}"
-            password="${sql.password}">
-                <operation type="MSSQL_CLEAN_INSERT"
-                      src="data/subscribeEmailAddressWithOptedOutEmail.xml"
-                format="flat"/>
-        </dbunit>
-        <testSpec name="subscribeEmailAddressWithOptedOutEmail">
-          &amp;sharedConfiguration;
-          <steps>
-            <invoke stepid="main page"
-              url="/edm/subscribe.asp?e=subscribeEmailAddressWithOptedOutEmail@test.com"
-              save="subscribeEmailAddressWithNewEmailAddress"/>
-            <verifytext stepid="Make sure we received the success message"
-              text="You have been subscribed to the mailing list"/>
-
-          </steps>
-        </testSpec>
-      </target>
+<target name="subscribeEmailAddressWithOptedOutEmail">
+    <dbunit
+        driver="${sql.jdbcdriver}"
+        url="${sql.url}"
+        userid="${sql.username}"
+        password="${sql.password}">
+            <operation type="MSSQL_CLEAN_INSERT"
+                  src="data/subscribeEmailAddressWithOptedOutEmail.xml"
+            format="flat"/>
+    </dbunit>
+    <testSpec name="subscribeEmailAddressWithOptedOutEmail">
+      &amp;sharedConfiguration;
+      <steps>
+        <invoke stepid="main page"
+          url="/edm/subscribe.asp?e=subscribeEmailAddressWithOptedOutEmail@test.com"
+          save="subscribeEmailAddressWithNewEmailAddress"/>
+        <verifytext stepid="Make sure we received the success message"
+          text="You have been subscribed to the mailing list"/>
+    
+      </steps>
+    </testSpec>
+</target>
 ```
 
 ## Sample Directory Layout _示例目录布局_
 
 When you are done, you will have a series of files that look like this: 
 
+
+完成后，您将拥有一系列文件，如下所示：
+
+---
+
 ```text
-      \root\
-        build.xml
-        build.properties
-        TestSuiteEDM.xml
-        TestSuiteEDM.properties
-      \root\data\
-        subscribeEmailAddressWithOptedOutEmail.xml
-      \root\includes\
-        sharedConfiguration.xml
+  \root\
+    build.xml
+    build.properties
+    TestSuiteEDM.xml
+    TestSuiteEDM.properties
+  \root\data\
+    subscribeEmailAddressWithOptedOutEmail.xml
+  \root\includes\
+    sharedConfiguration.xml
 ```
