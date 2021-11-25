@@ -560,6 +560,13 @@ By default, dbunit immediately fails when the first data difference was found.
 Starting with dbunit 2.4 it is possible to register a custom `FailureHandler` which lets users specify which kinds of exceptions to be thrown and how to handle the occurrences of data differences. 
 Using the `DiffCollectingFailureHandler` you can avoid an exception to be thrown on a data mismatch so that you can evaluate all results of the data comparison afterwards. 
 
+
+默认情况下，dbunit 在发现第一个数据差异时立即失败。
+从 dbunit 2.4 开始，可以注册一个自定义的 `FailureHandler` ，它允许用户指定要抛出的异常类型以及如何处理出现的数据差异。
+使用 `DiffCollectingFailureHandler` 可以避免在数据不匹配时抛出异常，以便您可以在之后评估数据比较的所有结果。
+
+---
+
 ```
 IDataSet dataSet = getDataSet();
 DiffCollectingFailureHandler myHandler = new DiffCollectingFailureHandler();
@@ -577,7 +584,16 @@ Difference diff = (Difference)diffList.get(0);
 
 Nearly all tests need to load data from one or more files, particularly for prep or expected data. 
 dbUnit has a set of data file loader utility helper classes to load data sets from files on the classpath. 
-The available loaders are in package org.dbunit.util.fileloader. A simple usage example: 
+The available loaders are in package `org.dbunit.util.fileloader`. 
+A simple usage example:
+
+
+几乎所有测试都需要从一个或多个文件加载数据，尤其是准备或预期数据。
+dbUnit 有一组数据文件加载器实用程序助手类，用于从类路径上的文件加载数据集。
+可用的加载器位于 `org.dbunit.util.fileloader` 包中。
+一个简单的使用示例：
+
+---
 
 ```
 DataFileLoader loader = new FlatXmlDataFileLoader();
@@ -585,9 +601,19 @@ IDataSet ds = loader.load("/the/package/prepData.xml");
       
 ```
 
-Note the constructors for the various DataFileLoaders accept replacement object and replacement substring maps as used with ReplacementDataSet.
+Note the constructors for the various `DataFileLoaders` accept replacement object and replacement substring maps as used with `ReplacementDataSet`.
 
-Refer to the DataFileLoader JavaDoc for further details. 
+
+请注意，各种 `DataFileLoaders` 的构造函数接受与 `ReplacementDataSet` 一起使用的替换对象和替换子字符串映射。
+
+---
+
+Refer to the `DataFileLoader` JavaDoc for further details. 
+
+
+有关更多详细信息，请参阅 `DataFileLoader` JavaDoc。
+
+---
 
 ## DbUnit Ant task and Canoo WebTest _DbUnit Ant 任务和 Canoo WebTest_
 
@@ -599,25 +625,55 @@ It allows you to create a series of Ant based tests for your website.
 In fact, this can be used to perform User Acceptance tests for websites built using non Java technologies like ColdFusion or ASP! 
 This document walks you through a suggested format for storing tests.
 
+
+借助 Dbunit Ant 任务，Dbunit 可以更轻松地为以数据库为中心的应用程序运行 Canoo WebTest 脚本。
+WebTest 是一种模拟用户浏览器点击网站页面的工具。
+它允许您为您的网站创建一系列基于 Ant 的测试。
+事实上，这可用于对使用非 Java 技术（如 ColdFusion 或 ASP）构建的网站执行用户验收测试！
+本文档将引导您了解用于存储测试的建议格式。
+
+---
+
 ### Step 1: Create your dataset file _创建数据集文件_
 
 Your first step is to create your dataset file that you want to load into your database before running your WebTest script. 
-Use one of the various methods described above. Put the various datasets you need in a /data directory.
+Use one of the various methods described above. 
+Put the various datasets you need in a `/data` directory.
+
+
+第一步是在运行 WebTest 脚本之前创建要加载到数据库中的数据集文件。
+使用上述各种方法之一。
+将您需要的各种数据集放在一个 `/data` 目录中。
+
+---
 
 ### Step 2: Create your Ant `build.xml` file _创建您的 Ant `build.xml` 文件_
 
-A suggested setup is to have a single build.xml file that is the entry point for all your tests. 
+A suggested setup is to have a single `build.xml` file that is the entry point for all your tests. 
 This would include a couple targets like:
+
+
+建议的设置是有一个单一的 `build.xml` 文件，它是所有测试的入口点。
+这将包括几个目标，例如：
+
+---
 
 1. `test`: Runs all the testSuites that you have created
 2. `test:single`: Runs a single test in a specific testSuite
 3. `test:suite`: Runs all the tests for a specific testSuite 
 
+
+1. `test`: 运行您创建的所有 testSuite
+2. `test:single`: 在特定的 testSuite 中运行单个测试
+3. `test:suite`: 运行特定 testSuite 的所有测试
+
+---
+
 ### Step 3: Create your various Test Suites _创建您的各种测试套件_
 
-Once you have your build.xml file set up, you can now call the various TestSuites. 
-Create a separate TestSuiteXXX.xml for the various modules that you would like to test. 
-In your TestSuiteXXX.xml, you should have your default target testSuite call all the testcases you have definied: 
+Once you have your `build.xml` file set up, you can now call the various TestSuites. 
+Create a separate `TestSuiteXXX.xml` for the various modules that you would like to test. 
+In your `TestSuiteXXX.xml`, you should have your default target testSuite call all the testcases you have definied: 
 
 ```xml
       <target name="testSuite">
@@ -633,7 +689,7 @@ In your TestSuiteXXX.xml, you should have your default target testSuite call all
       </target>
 ```
 
-This way you can either run all the test's in your Test Suite, or just run a specific one, all from build.xml!
+This way you can either run all the test's in your Test Suite, or just run a specific one, all from `build.xml`!
 
 ### Step 4: Create your various Tests _创建您的各种测试_
 
