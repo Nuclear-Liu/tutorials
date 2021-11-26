@@ -1,7 +1,8 @@
-Developers Guide
+## Developers Guide
 
 Here you find all information needed to contribute good code. These are naming conventions, heading comments, javadoc and unit tests.
-Java File Headers
+
+## Java File Headers
 
 For new class files this header is recommended.
 
