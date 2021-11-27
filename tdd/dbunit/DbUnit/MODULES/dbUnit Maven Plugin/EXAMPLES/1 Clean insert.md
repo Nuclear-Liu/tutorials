@@ -1,4 +1,4 @@
-Clean-Insert Example
+## Clean-Insert Example
 
 The following example cleans and populates database with an external DbUnit dataset
 
