@@ -11,27 +11,27 @@ import static org.junit.Assert.*;
  */
 public class DefaultControllerTest {
     private DefaultController controller;
+    private Request request;
+    private RequestHandler handler;
 
     @Before
-    public void instantiate() throws Exception {
+    public void initialize() {
         controller = new DefaultController();
+        request = new SampleRequest();
+        handler = new SampleHandler();
     }
     @Test
     public void testAddHandler() {
-        Request request = new SampleRequest();
-        RequestHandler handler = new SampleHandler();
         controller.addHandler(request, handler);
         RequestHandler handler2 = controller.getHandler(request);
         assertSame("Handler we set in controller should be the same handler we get", handler2, handler);
     }
     @Test
     public void testProcessRequest() {
-        Request request = new SampleRequest();
-        RequestHandler handler = new SampleHandler();
         controller.addHandler(request, handler);
         Response response = controller.processRequest(request);
         assertNotNull("Must not return a null response", response);
-        assertEquals("Response should be of type SampleResponse", SampleResponse.class, response.getClass());
+        assertEquals("Response should be of type SampleResponse", new SampleResponse(), response);
     }
     @Test
     public void testMethod() {
@@ -46,6 +46,24 @@ public class DefaultControllerTest {
     }
 
     private class SampleResponse implements Response {
+        private static final String NAME = "Test";
+        public String getName() {
+            return NAME;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            boolean result = false;
+            if (obj instanceof SampleResponse) {
+                result = ((SampleResponse) obj).getName().equals(getName());
+            }
+            return result;
+        }
+
+        @Override
+        public int hashCode() {
+            return NAME.hashCode();
+        }
     }
 
     private class SampleHandler implements RequestHandler{
