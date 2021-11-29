@@ -1,6 +1,9 @@
-## Clean-Insert Example
+## Clean-Insert Example _清洁插入示例_
 
 The following example cleans and populates database with an external DbUnit dataset
+
+
+以下示例使用外部 DbUnit 数据集清理和填充数据库
 
 ```text
 <project>

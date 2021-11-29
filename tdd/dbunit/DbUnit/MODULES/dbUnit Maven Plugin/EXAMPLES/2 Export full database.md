@@ -1,6 +1,11 @@
-## Clean-Insert Example
+## Export full database Example _导出完整数据库示例_
 
 The following example exports all tables to a dataset file after test phase.
+
+
+以下示例在测试阶段后将所有表导出到数据集文件。
+
+---
 
 ```text
 <project>
