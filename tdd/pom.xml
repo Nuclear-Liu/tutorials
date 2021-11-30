@@ -18,6 +18,7 @@
         <module>hamcrest</module>
         <module>dbunit</module>
         <module>jmock</module>
+        <module>easymock</module>
     </modules>
 
     <properties>
