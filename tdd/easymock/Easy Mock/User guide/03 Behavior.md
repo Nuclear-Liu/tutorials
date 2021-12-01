@@ -108,36 +108,87 @@ EasyMock provides a property mechanisim allowing to alter its behavior.
 It mainly aims at allowing to use a legacy behavior on a new version. 
 Currently supported properties are:
 
-`easymock.notThreadSafeByDefault`
-If true, a mock won't be thread-safe by default. Possible values are "true" or "false". 
-Default is false
 
-`easymock.enableThreadSafetyCheckByDefault`
-If true, thread-safety check feature will be on by default. 
-Possible values are "true" or "false". 
-Default is false
+EasyMock 提供了一个允许改变其行为的属性机制。
+它主要旨在允许在新版本上使用遗留行为。
+目前支持的属性有：
 
-`easymock.disableClassMocking`
-Do not allow class mocking (only allow interface mocking). 
-Possible values are "true" or "false". 
-Default is false.
+---
+
+* `easymock.notThreadSafeByDefault`
+    If `true`, a mock won't be thread-safe by default. 
+    Possible values are `true` or `false`. 
+    Default is `false`
+
+* `easymock.enableThreadSafetyCheckByDefault`
+    If `true`, thread-safety check feature will be on by default. 
+    Possible values are `true` or `false`. 
+    Default is `false`
+
+* `easymock.disableClassMocking`
+    Do not allow class mocking (only allow interface mocking). 
+    Possible values are `true` or `false`. 
+    Default is `false`.
+
+
+* `easymock.notThreadSafeByDefault`
+  如果为 `true` ，默认情况下模拟将不是线程安全的。
+  可能的值为 `true` 或 `false` 。
+  默认为 `false`
+
+* `easymock.enableThreadSafetyCheckByDefault`
+  如果为 `true` ，则默认情况下将启用线程安全检查功能。
+  可能的值为 `true` 或 `false` 。
+  默认为 `false`
+
+* `easymock.disableClassMocking`
+  不允许类模拟（只允许接口模拟）。
+  可能的值为 `true` 或 `false` 。
+  默认为 `false` 。
+
+---
 
 Properties can be set in two ways.
+
+
+可以通过两种方式设置属性。
+
+---
 
 * In an `easymock.properties` file set in the classpath default package
 * By calling `EasyMock.setEasyMockProperty`. 
     Constants are available in the `EasyMock` class. 
     Setting properties in the code obviously override any property set in `easymock.properties`
 
+
+* 在类路径默认包中设置的 `easymock.properties` 文件中
+* 通过调用 `EasyMock.setEasyMockProperty` 。
+  常量在 `EasyMock` 类中可用。
+  在代码中设置属性显然会覆盖在 `easymock.properties` 中设置的任何属性
+
+---
+
 ## Object Methods _对象方法_
 
 The behavior for the four Object methods `equals()`, `hashCode()`, `toString()` and `finalize()` cannot be changed for Mock Objects created with EasyMock, even if they are part of the interface for which the Mock Object is created.
+
+
+对于使用 EasyMock 创建的 Mock 对象，四个对象方法 `equals()` 、 `hashCode()` 、 `toString()` 和 `finalize()` 的行为不能更改，即使它们是其接口的一部分模拟对象被创建。
+
+---
 
 ## Using Stub Behavior for Methods _对方法使用 Stub 行为_
 
 Sometimes, we would like our Mock Object to respond to some method calls, but we do not want to check how often they are called, when they are called, or even if they are called at all. 
 This stub behavoir may be defined by using the methods `andStubReturn(Object value)`, `andStubThrow(Throwable throwable)`, `andStubAnswer(IAnswer<T> answer)` and `asStub()`. 
 The following code configures the MockObject to answer 42 to `voteForRemoval("Document")` once and -1 for all other arguments:
+
+
+有时，我们希望我们的 Mock 对象响应某些方法调用，但我们不想检查它们的调用频率、调用时间，甚至根本不检查它们是否被调用。
+这个 stub 行为可以通过使用 `andStubReturn(Object value)` 、 `andStubThrow(Throwable throwable)` 、 `andStubAnswer(IAnswer<T> answer)` 和 `asStub()` 来定义。
+以下代码将 MockObject 配置为对 `voteForRemoval("Document")` 一次回答 42，对所有其他参数回答 -1：
+
+---
 
 ```text
 expect(mock.voteForRemoval("Document")).andReturn(42);
@@ -148,4 +199,14 @@ expect(mock.voteForRemoval(not(eq("Document")))).andStubReturn(-1);
 
 Mock Objects may be reset by `reset(mock)`.
 
+
+模拟对象可以通过 `reset(mock)` 重置。
+
+---
+
 If needed, a mock can also be converted from one type to another by calling `resetToNice(mock)`, `resetToDefault(mock)` or `resetToStrict(mock)`.
+
+
+如果需要，还可以通过调用 `resetToNice(mock)` 、 `resetToDefault(mock)` 或 `resetToStrict(mock)` 将模拟从一种类型转换为另一种类型。
+
+---
