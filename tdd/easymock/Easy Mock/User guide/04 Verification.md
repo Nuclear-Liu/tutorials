@@ -540,62 +540,114 @@ There are a couple of predefined argument matchers available.
   Matches if the actual value is equal to the given value according to `Arrays.equals()`. 
   Available for primitive and object arrays.
 
+  > 根据 `Arrays.equals()` 匹配实际值是否等于给定值。
+  > 可用于原始数组和对象数组。
+
 * `isNull()`, `isNull(Class clazz)`
   Matches if the actual value is null. 
   Available for objects.
+
+  > 如果实际值为空则匹配。
+  > 可用于对象。
 
 * `notNull()`, `notNull(Class clazz)`
   Matches if the actual value is not null. 
   Available for objects.
 
+  > 如果实际值不为空则匹配。
+  > 可用于对象。
+
 * `same(X value)`
   Matches if the actual value is the same as the given value. 
   Available for objects.
 
+  > 如果实际值与给定值相同，则匹配。
+  > 可用于对象。
+
 * `isA(Class clazz)`
   Matches if the actual value is an instance of the given class, or if it is in instance of a class that extends or implements the given class. 
-  Null always return false. Available for objects.
+  Null always return false. 
+  Available for objects.
+
+  > 如果实际值是给定类的实例，或者它是扩展或实现给定类的类的实例，则匹配。
+  > Null 总是返回 false。
+  > 可用于对象。
 
 * `lt(X value)`, `leq(X value)`, `geq(X value)`, `gt(X value)`
   Matches if the actual value is less/less or equal/greater or equal/greater than the given value. 
   Available for all numeric primitive types and Comparable.
 
+  > 如果实际值小于或等于大于或等于给定值，则匹配。
+  > 适用于所有数字基元类型和 Comparable。
+
 * `startsWith(String prefix)`, `contains(String substring)`, `endsWith(String suffix)`
   Matches if the actual value starts with/contains/ends with the given value. 
   Available for Strings.
+
+  > 如果实际值以包含给定值开头，则匹配。
+  > 可用于字符串。
 
 * `matches(String regex)`, `find(String regex)`
   Matches if the actual value/a substring of the actual value matches the given regular expression. 
   Available for Strings.
 
+  > 如果实际值的实际值子字符串与给定的正则表达式匹配，则匹配。
+  > 可用于字符串。
+
 * `and(X first, X second)`
   Matches if the matchers used in first and second both match. 
   Available for all primitive types and for objects.
+
+  > 如果第一次和第二次使用的匹配器都匹配，则匹配。
+  > 适用于所有原始类型和对象。
 
 * `or(X first, X second)`
   Matches if one of the matchers used in first and second match. 
   Available for all primitive types and for objects.
 
+  > 如果在第一场和第二场比赛中使用了一个匹配器，则匹配。
+  > 适用于所有原始类型和对象。
+
 * `not(X value)`
   Matches if the matcher used in value does not match.
+
+  > 如果 value 中使用的匹配器不匹配，则匹配。
 
 * `cmpEq(X value)`
   Matches if the actual value is equals according to `Comparable.compareTo(X o)`. 
   Available for all numeric primitive types and `Comparable`.
 
+  > 如果实际值根据 `Comparable.compareTo(X o)` 相等，则匹配。
+  > 适用于所有数字原始类型和 `Comparable` 。
+
 * `cmp(X value, Comparator<X> comparator, LogicalOperator operator)`
-  Matches if `comparator.compare(actual, value) operator 0` where the operator is <,<=,>,>= or ==. Available for objects.
+  Matches if `comparator.compare(actual, value) operator 0` where the operator is `<`,`<=`,`>`,`>=` or `==`. 
+  Available for objects.
+
+  > 匹配 if `comarator.compare(actual, value) operator 0` ，其中操作符为 `<` 、 `<=` 、 `>` 、 `>=` 或 `==` 。
+  > 可用于对象。
 
 * `capture(Capture<T> capture)`, `captureXXX(Capture<T> capture)`
   Matches any value but captures it in the `Capture` parameter for later access. 
   You can do `and(someMatcher(...), capture(c))` to capture a parameter from a specific call to the method. 
   You can also specify a `CaptureType` telling that a given `Capture` should keep the first, the last, all or no captured values.
 
+  > 匹配任何值，但在 `Capture` 参数中捕获它以供以后访问。
+  > 您可以执行 `and(someMatcher(...), capture(c))` 来从对方法的特定调用中捕获参数。
+  > 您还可以指定一个 `CaptureType` 告诉给定的 `Capture` 应该保留第一个、最后一个、全部或没有捕获的值。
+
 ## Defining your own Argument Matchers _定义你自己的参数匹配器_
 
 Sometimes it is desirable to define own argument matchers. 
 Let's say that an argument matcher is needed that matches an exception if the given exception has the same type and an equal message. 
 It should be used this way:
+
+
+有时需要定义自己的参数匹配器。
+假设如果给定的异常具有相同的类型和相同的消息，则需要一个参数匹配器来匹配异常。
+应该这样使用：
+
+---
 
 ```text
 IllegalStateException e = new IllegalStateException("Operation not allowed.")
@@ -605,10 +657,24 @@ expect(mock.logThrowable(eqException(e))).andReturn(true);
 Two steps are necessary to achieve this: 
 The new argument matcher has to be defined, and the static method `eqException` has to be declared.
 
+
+实现这一点需要两个步骤：
+必须定义新的参数匹配器，并且必须声明静态方法 `eqException` 。
+
+---
+
 To define the new argument matcher, we implement the interface `org.easymock.IArgumentMatcher`. 
 This interface contains two methods: 
 `matches(Object actual)` checks whether the actual argument matches the given argument, and `appendTo(StringBuffer buffer)` appends a string representation of the argument matcher to the given string buffer. 
 The implementation is straightforward:
+
+
+为了定义新的参数匹配器，我们实现了接口 `org.easymock.IArgumentMatcher` 。
+该接口包含两个方法：
+`matches(Object actual)` 检查实际参数是否与给定的参数匹配，并且 `appendTo(StringBuffer buffer)` 将参数匹配器的字符串表示形式附加到给定的字符串缓冲区。
+实现很简单：
+
+---
 
 ```java
 import org.easymock.IArgumentMatcher;
@@ -640,8 +706,14 @@ public class ThrowableEquals implements IArgumentMatcher {
 }
 ```
 
-The method `eqException` must create the argument matcher with the given Throwable, report it to EasyMock via the static method `reportMatcher(IArgumentMatcher matcher)`, and return a value so that it may be used inside the call (typically 0, null or false). 
+The method `eqException` must create the argument matcher with the given Throwable, report it to EasyMock via the static method `reportMatcher(IArgumentMatcher matcher)`, and return a value so that it may be used inside the call (typically `0`, `null` or `false`). 
 A first attempt may look like:
+
+
+方法 `eqException` 必须使用给定的 Throwable 创建参数匹配器，通过静态方法 `reportMatcher(IArgumentMatcher matcher)` 将其报告给 EasyMock，并返回一个值以便它可以在调用中使用（通常为 `0` 、 `null` 或 `false` ）。
+第一次尝试可能如下所示：
+
+---
 
 ```text
 public static Throwable eqException(Throwable in) {
@@ -650,15 +722,28 @@ public static Throwable eqException(Throwable in) {
 }
 ```
 
-However, this only works if the method `logThrowable` in the example usage accepts `Throwables`, and does not require something more specific like a `RuntimeException`. 
+However, this only works if the method `logThrowable` in the example usage accepts `Throwable`s, and does not require something more specific like a `RuntimeException`. 
 In the latter case, our code sample would not compile:
+
+
+但是，这仅在示例用法中的 `logThrowable` 方法接受 `Throwable` 时才有效，并且不需要像 `RuntimeException` 这样的更具体的东西。
+在后一种情况下，我们的代码示例将无法编译：
+
+---
 
 ```text
 IllegalStateException e = new IllegalStateException("Operation not allowed.")
 expect(mock.logThrowable(eqException(e))).andReturn(true);
 ```
 
-Java 5.0 to the rescue: Instead of defining `eqException` with a `Throwable` as parameter and return value, we use a generic type that extends `Throwable`:
+Java 5.0 to the rescue: 
+Instead of defining `eqException` with a `Throwable` as parameter and return value, we use a generic type that extends `Throwable`:
+
+
+Java 5.0 来拯救：
+我们没有使用 `Throwable` 作为参数和返回值定义 `eqException`，而是使用扩展 `Throwable` 的泛型类型：
+
+---
 
 ```text
 public static&lt;T extends Throwable&gt;T eqException(T in) {
