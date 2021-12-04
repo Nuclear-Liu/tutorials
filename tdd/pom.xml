@@ -20,6 +20,7 @@
         <module>jmock</module>
         <module>easymock</module>
         <module>mockito</module>
+        <module>action</module>
     </modules>
 
     <properties>
