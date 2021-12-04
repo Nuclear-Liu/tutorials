@@ -1,6 +1,5 @@
 package org.hui.tdd.junit4.jetty;
 
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
