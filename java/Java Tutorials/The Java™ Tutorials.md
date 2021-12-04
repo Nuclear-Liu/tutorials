@@ -13,7 +13,7 @@
 > 
 > 有关 Java SE 9 和后续版本中更新的语言功能的摘要，请参阅 Java 语言更改。
 > 
-> 有关所有 JDK 版本的新功能、增强功能以​​及已删除或不推荐使用的选项的信息，请参阅 JDK 发行说明。
+> 有关所有 JDK 版本的新功能、增强功能以及已删除或不推荐使用的选项的信息，请参阅 JDK 发行说明。
 
 
 The Java Tutorials are practical guides for programmers who want to use the Java programming language to create applications. 
