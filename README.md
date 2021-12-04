@@ -17,3 +17,11 @@ My Tutorials
 * String Manipulation
 * Translation
 * UnitVisualizer
+
+IDEA Keymap
+
+| HotKey | - |
+| --- | --- |
+| `ctrl` + `ctrl` | Run Anything |
+| `ctrl` + <code>`</code> | VCS Operations |
+| `ctrl` + `shift` + `F10` | Run context configuration from editor |
