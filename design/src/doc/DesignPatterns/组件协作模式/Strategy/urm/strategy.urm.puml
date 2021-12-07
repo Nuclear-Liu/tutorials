@@ -1,0 +1,53 @@
+@startuml
+package com.iluwatar.strategy {
+  interface DragonSlayingStrategy {
+    + execute() {abstract}
+  }
+  class DragonSlayer {
+    - strategy : DragonSlayingStrategy
+    + DragonSlayer(strategy : DragonSlayingStrategy)
+    + changeStrategy(strategy : DragonSlayingStrategy)
+    + goToBattle()
+  }
+  class LambdaStrategy {
+    - LOGGER : Logger {static}
+    + LambdaStrategy()
+  }
+  enum Strategy {
+    + MeleeStrategy {static}
+    + ProjectileStrategy {static}
+    + SpellStrategy {static}
+    - dragonSlayingStrategy : DragonSlayingStrategy
+    + execute()
+    + valueOf(name : String) : Strategy {static}
+    + values() : Strategy[] {static}
+  }
+  class MeleeStrategy {
+    - LOGGER : Logger {static}
+    + MeleeStrategy()
+    + execute()
+  }
+  class ProjectileStrategy {
+    - LOGGER : Logger {static}
+    + ProjectileStrategy()
+    + execute()
+  }
+  class SpellStrategy {
+    - LOGGER : Logger {static}
+    + SpellStrategy()
+    + execute()
+  }
+  class App {
+    - LOGGER : Logger {static}
+    + App()
+    + main(args : String[]) {static}
+  }
+}
+Strategy ..+ LambdaStrategy
+Strategy -->  "-dragonSlayingStrategy" DragonSlayingStrategy
+DragonSlayer -->  "-strategy" DragonSlayingStrategy
+Strategy ..|> DragonSlayingStrategy 
+MeleeStrategy ..|> DragonSlayingStrategy 
+ProjectileStrategy ..|> DragonSlayingStrategy 
+SpellStrategy ..|> DragonSlayingStrategy 
+@enduml

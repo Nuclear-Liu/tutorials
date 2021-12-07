@@ -43,6 +43,8 @@
 
 ![UML](UML.png)
 
+![template-method](./urm/template-method.urm.png)
+
 ## 要点总结
 
 * Template Method 模式是一种非常**基础性**的设计模式，在面向对象系统中有着大量的应用。
