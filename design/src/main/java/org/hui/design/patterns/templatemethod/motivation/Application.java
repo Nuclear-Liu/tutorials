@@ -1,4 +1,4 @@
-package org.hui.design.patterns.template_method.motivation;
+package org.hui.design.patterns.templatemethod.motivation;
 
 import java.util.logging.Logger;
 
