@@ -20,8 +20,9 @@ My Tutorials
 
 IDEA Keymap
 
-| HotKey | - |
-| --- | --- |
-| `ctrl` + `ctrl` | Run Anything |
-| `ctrl` + <code>`</code> | VCS Operations |
+| HotKey                   | -                                     |
+|--------------------------|---------------------------------------|
+| `ctrl` + `ctrl`          | Run Anything                          |
+| `ctrl` + <code>`</code>  | VCS Operations                        |
 | `ctrl` + `shift` + `F10` | Run context configuration from editor |
+| `ctrl` + `shift` + `r`   | Run Maven Goal                        |
