@@ -26,23 +26,23 @@ The Lombok javadoc is available, but we advise these pages.
 
   > 自动资源管理：安全地调用你的 `close()` 方法，没有麻烦。
 
-* [`@Getter` / `@Setter`](https://projectlombok.org/features/GetterSetter) [`@Getter` / `@Setter`](./features/04%20Cleanup.md)
+* [`@Getter` / `@Setter`](https://projectlombok.org/features/GetterSetter) [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
 
   > Never write `public int getFoo() {return foo;}` again.
 
   > 永远不要再写 `public int getFoo() {return foo;}` 。
 
-* [`@ToString`]()
+* [`@ToString`](https://projectlombok.org/features/ToString) [`@ToString`](./features/06%20ToString.md)
 
   > No need to start a debugger to see your fields: Just let lombok generate a `toString` for you!
 
   > 无需启动调试器即可查看您的字段：只需让 lombok 为您生成一个 `toString` ！
 
-* [`@EqualsAndHashCode`]()
+* [`@EqualsAndHashCode`](https://projectlombok.org/features/EqualsAndHashCode) [`@EqualsAndHashCode`](./features/07%20EqualsAndHashCode.md)
 
-  > Equality made easy: Generates hashCode and equals implementations from the fields of your object.
+  > Equality made easy: Generates `hashCode` and `equals` implementations from the fields of your object.
 
-  > 平等变得容易：从对象的字段生成 hashCode 和 equals 实现。
+  > 相等变得容易：从对象的字段生成 `hashCode` 和 `equals` 实现。
 
 * [`@NoArgsConstructor` / `@RequireArgsConstructor` / `@AllArgsConstructor`]()
 
