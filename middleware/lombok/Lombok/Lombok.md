@@ -1,4 +1,6 @@
-# Lombok features _Lombok 特性_
+# Lombok
+
+## Lombok features _Lombok 特性_
 
 The Lombok javadoc is available, but we advise these pages.
 
@@ -103,3 +105,30 @@ The Lombok javadoc is available, but we advise these pages.
   > Head to the lab: The new stuff we're working on.
 
   > 前往实验室：我们正在研究的新事物。
+
+
+## Configuration system
+
+
+Lombok, made to order: [Configure lombok features](https://projectlombok.org/features/configuration) in one place for your entire project or even your workspace.
+
+
+Lombok，定制：[配置 lombok 功能](./configuration.md) 在一个地方为您的整个项目甚至您的工作区。
+
+
+## Running delombok
+
+
+Delombok copies your source files to another directory, replacing all lombok annotations with their desugared form. 
+So, it'll turn `@Getter` back into the actual `getter`. 
+It then removes the annotation. 
+This is useful for all sorts of reasons; you can check out what's happening under the hood, if the unthinkable happens and you want to stop using lombok, you can easily remove all traces of it in your source, and you can use delombok to preprocess your source files for source-level tools such as javadoc and GWT. 
+More information about how to run delombok, including instructions for build tools can be found at the [delombok page](https://projectlombok.org/features/delombok).
+
+
+Delombok 将您的源文件复制到另一个目录，用它们的脱糖形式替换所有 lombok 注解。
+因此，它会将 `@Getter` 转回实际的 `getter` 。
+然后删除注解。
+出于各种原因，这很有用；您可以查看幕后发生的事情，如果发生了不可思议的事情并且您想停止使用 lombok，您可以轻松删除源代码中的所有痕迹，并且您可以使用 delombok 为源代码级工具预处理源文件，例如作为 javadoc 和 GWT。
+有关如何运行 delombok 的更多信息，包括构建工具的说明，请访问 [delombok 页面]() 。
+
