@@ -26,8 +26,8 @@ public class PersonTest {
         assertEquals(p5, p6);
         System.out.println(p5);
         System.out.println(p6);
-        Person p7 = new Person.PersonBuilder().id(3L).build();
-        Person p8 = new Person.PersonBuilder().id(4L).build();
+        Person p7 = new Person.PersonBuilder().id(3L).name("Hui").build();
+        Person p8 = new Person.PersonBuilder().id(4L).name("Hui2").build();
         assertNotEquals(p7, p8);
         System.out.println(p7);
         System.out.println(p8);
