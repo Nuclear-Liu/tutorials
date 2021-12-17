@@ -93,114 +93,226 @@ A sample of available configuration options (see the feature pages of the lombok
 * `lombok.(featureName).flagUsage`
 
   Allows you to forcibly stop or discourage use of a lombok feature. 
-  Legal values for this key are warning or error. 
-  Some examples of values for (`featureName`) are: "experimental" (flags use of any of the experimental features), "`builder`", "`sneakyThrows`", or "`extensionMethod`".
+  Legal values for this key are `warning` or `error`. 
+  Some examples of values for (`featureName`) are: "`experimental`" (flags use of any of the experimental features), "`builder`", "`sneakyThrows`", or "`extensionMethod`".
 
   允许您强行停止或阻止使用 lombok 功能。
-  此键的合法值为警告或错误。
-  (`featureName`) 值的一些示例是：“`experimental`”（标记使用任何实验性功能）、“`builder`”、“`sneakyThrows`”或“`extensionMethod`”。
+  此键的合法值为 `warning` 或 `error` 。
+  (`featureName`) 值的一些示例是： "`experimental`" （标记使用任何实验性功能）、 "`builder`"、 "`sneakyThrows`" 或 "`extensionMethod`" 。
+
 
 Configuration files are hierarchical: 
 Any configuration setting applies to all source files in that directory, and all source files in subdirectories, but configuration settings closer to the source file take precedence. 
 For example, if you have in `/Users/me/projects/lombok.config` the following:
 
+
+配置文件是分层的：
+任何配置设置都适用于该目录中的所有源文件以及子目录中的所有源文件，但**更接近源文件的配置设置优先**。
+例如，如果您在 `/Users/me/projects/lombok.config` 中有以下内容：
+
+
 ```lombok.config
 lombok.log.fieldName = foobar
 ```
 
+
 and in `/Users/me/projects/MyProject/lombok.config` you have:
+
+
+在 `/Users/me/projects/MyProject/lombok.config` 中，您有：
+
 
 ```lombok.config
 lombok.log.fieldName = xyzzy
 ```
 
+
 Then the various `@Log` annotations will use `foobar` instead of the default `log` as a field name to generate in all your projects, except for your project in `/Users/me/projects/MyProject`, where `xyzzy` is used instead.
+
+
+然后各种 `@Log` 注释将使用 `foobar` 而不是默认的 `log` 作为字段名称在你的所有项目中生成，除了你在 `/Users/me/projects/MyProject` 中的项目，其中使用`xyzzy`。
+
 
 To restore a configuration key set by a parent config file back to the default, the `clear` option can be used. 
 For example, if a parent configuration file has configured all use of `val` to emit a warning, you can turn off the warnings for a subdirectory by including in it a `lombok.config` file with:
 
+
+要将父配置文件设置的配置键恢复为默认值，可以使用 `clear` 选项。
+例如，如果父配置文件配置了所有对 `val` 的使用以发出警告，您可以通过在其中包含一个 `lombok.config` 文件来关闭子目录的警告：
+
+
 ```lombok.config
 clear lombok.val.flagUsage
 ```
+
 
 Some configuration keys take lists. 
 For lists, use `+=` to add an entry. 
 You can remove a single item from the list (useful to undo a parent configuration file's setting) with `-=`. 
 For example:
 
+
+一些配置键需要列表。
+对于列表，使用 `+=` 添加条目。
+您可以使用 `-=` 从列表中删除单个项目（用于撤消父配置文件的设置）。
+例如：
+
+
 ```lombok.config
 lombok.accessors.prefix += m_
 ```
 
+
 Comments can be included in `lombok.config` files; any line that starts with `#` is considered a comment.
 
-## Global config keys
+
+注释可以包含在 `lombok.config` 文件中；任何以 `#` 开头的行都被视为注释。
+
+
+## Global config keys _全局配置 key_
+
 
 These configuration keys have an effect on many or all lombok features, or on the configuration system itself.
 
+
+这些配置 key 对许多或所有 lombok 功能或配置系统本身都有影响。
+
+
 To stop lombok from looking at parent directories for more configuration files, the special key:
+
+
+要阻止 lombok 查看父目录以获取更多配置文件，请使用特殊 key ：
+
 
 ```lombok.config
 config.stopBubbling = true
 ```
 
-can be included. We suggest you put this in the root of your workspace directory.
 
-Lombok can add nullity annotations (usually called `@NonNull` and `@Nullable`) whenever it makes sense to do so; think of generated `toString` and [`withX` methods (these never return null), or the parameter of a generated `equals`]() method, which is allowed to be null, and requires such an annotation if you've set up your IDE for strict null checks as well as 'parameters are non-null by default'. 
-There are many such libraries; you must tell lombok which one to use. By default, no such annotations are added. Enable this feature with:
+can be included. 
+We suggest you put this in the root of your workspace directory.
+
+
+可以包括在内。
+我们建议您将其放在**工作区目录的根目录**中。
+
+
+Lombok can add nullity annotations (usually called `@NonNull` and `@Nullable`) whenever it makes sense to do so; think of generated `toString` and [`withX` methods (these never return null), or the parameter of a generated `equals`]() method, which is allowed to be `null`, and requires such an annotation if you've set up your IDE for strict `null` checks as well as 'parameters are non-`null` by default'. 
+There are many such libraries; you must tell lombok which one to use. 
+By default, no such annotations are added. 
+Enable this feature with:
+
+
+Lombok 可以添加无效注解（通常称为 `@NonNull` 和 `@Nullable` ）；想想生成的 `toString` 和 [`withX` 方法（这些方法从不返回 null），或者生成的 `equals` ]() 方法的参数，它被允许为 `null`，如果你需要这样的注释，已将您的 IDE 设置为严格的 `null` 检查以及“参数默认为非 `null` ”。
+有很多这样的库；你必须告诉 lombok 使用哪个。
+默认情况下，不会添加此类注释。
+启用此功能：
+
 
 ```lombok.config
 lombok.addNullAnnotations = <flavor>
 ```
 
+
 Many flavors are available: `javax` (=JSR305; not recommended), `eclipse`, `jetbrains`, `netbeans`, `androidx`, `android.support` (deprecated within android), `checkerframework` (recommended), `findbugs`, `spring`, `jml`, or define your own via `CUSTOM:fully.qualified.NonNullAnnotation:fully.qualified.NullableAnnotation`; if your nullity annotation is solely of the type use style (it annotates types, such as eclipse's and checkerframework's offerings, versus annotating methods and parameters), the format is `CUSTOM:TYPE_USE:nonnullanno:nullableanno`.
 
-This feature was added in lombok v1.18.12.
+
+有多种类型可用： `javax` (=JSR305; 不推荐)、 `eclipse` 、 `jetbrains` 、 `netbeans` 、 `androidx` 、 `android.support` （在android 中已弃用）、 `checkerframework` （推荐）、 `findbugs`、`spring`、`jml`，或者通过`CUSTOM:fully.qualified.NonNullAnnotation:fully.qualified.NullableAnnotation` 定义你自己的；如果您的 null 注释仅属于类型使用样式（它注释类型，例如 eclipse 和 checkerframework 的产品，而不是注释方法和参数），则格式为 `CUSTOM:TYPE_USE:nonnullanno:nullableanno`。
+
+
+This feature was added in lombok `v1.18.12`.
+
+
+此功能是在 lombok `v1.18.12` 中添加的。
+
 
 Lombok can be configured to add `@lombok.Generated` annotations to all generated nodes where possible; useful for JaCoCo (which has built in support), or other style checkers and code coverage tools:
+
+
+Lombok 可以配置为在可能的情况下向所有生成的节点添加 `@lombok.Generated` 注释；对 JaCoCo（具有内置支持）或其他样式检查器和代码覆盖率工具很有用：
+
 
 ```lombok.config
 lombok.addLombokGeneratedAnnotation = true
 ```
 
-Lombok can add the `@SuppressFBWarnings` annotation which is useful if you want to run `FindBugs` on your class files. 
+
+Lombok can add the `@SuppressFBWarnings` annotation which is useful if you want to run [`FindBugs`](http://findbugs.sourceforge.net/) on your class files. 
 To enable this feature, make sure findbugs is on the classpath when you compile, and add the following config key:
+
+
+Lombok 可以添加 `@SuppressFBWarnings` 注释，如果你想在你的类文件上运行 `FindBugs`，这很有用。
+要启用此功能，请确保在编译时 findbugs 位于类路径中，并添加以下配置键：
+
 
 ```lombok.config
 lombok.extern.findbugs.addSuppressFBWarnings = true
 ```
 
+
 Lombok adds the `@SuppressWarnings("all")` annotation to all generated nodes by default. 
-This can be turned off which is useful if you want to use static code analyzers like [Checker Framework]().
+This can be turned off which is useful if you want to use static code analyzers like [Checker Framework](https://checkerframework.org/).
+
+
+Lombok 默认为所有生成的节点添加了 `@SuppressWarnings("all")` 注释。
+如果你想使用像 [Checker Framework]() 这样的静态代码分析器，这可以被关闭。
+
 
 ```lombok.config
 lombok.addSuppressWarnings = false
 ```
 
-## Config keys that can affect any source file
+
+## Config keys that can affect any source file _可以影响任何源文件的配置键_
+
 
 These config keys can make lombok affect source files even if they have 0 lombok annotations in them.
+
+
+这些配置键可以使 lombok 影响源文件，即使它们中有 0 个 lombok 注释。
+
 
 ```lombok.config
 lombok.fieldDefaults.defaultPrivate = true
 lombok.fieldDefaults.defaultFinal = true
 ```
 
-Turning either of these options on means lombok will make every field in every source file final and/or private unless it has an explicit access modifier or annotation to suppress this. 
-[See the `@FieldDefaults` documentation for more]().
 
-## Importing the configuration from a different file
+Turning either of these options on means lombok will make every field in every source file `final` and/or `private` unless it has an explicit access modifier or annotation to suppress this. 
+[See the `@FieldDefaults` documentation for more](https://projectlombok.org/features/experimental/FieldDefaults).
+
+
+打开这两个选项中的任何一个意味着 lombok 将使每个源文件中的每个字段都成为 `final` 和/或 `private` ，除非它具有显式访问修饰符或注释来抑制这种情况。
+[See the `@FieldDefaults` documentation for more](./features/).
+
+
+## Importing the configuration from a different file _从不同的文件导入配置_
+
 
 At the top of a configuration file it is possible to import other configuration files. 
 Imported files don't have to be called `lombok.config` and can have any file extension (or even none).
+
+
+在配置文件的顶部，可以导入其他配置文件。
+导入的文件不必称为“lombok.config”，可以有任何文件扩展名（甚至没有）。
+
 
 ```text
 import ../configuration/model.config
 ```
 
+
 The location of an imported file is resolved relative to the file that imports it.
 
+
+导入文件的位置是相对于导入它的文件解析的。
+
+
 For shared projects, it makes sense to always use relative paths. For individuals, it is also possible to use absolute paths.
+
+
+对于共享项目，始终使用相对路径是有意义的。对于个人，也可以使用绝对路径。
+
 
 ```text
 # Linux
@@ -209,14 +321,30 @@ import /etc/lombok/model.config
 import d:/lombok/model.config
 ```
 
+
 Configuration files can import multiple configuration files as long as they are specified before any configuration key. 
 The system behaves as if the contents of the imported file are at the location of the `import` declaration.
+
+
+配置文件可以导入多个配置文件，只要在任何配置键之前指定即可。
+系统的行为就好像导入文件的内容位于 `import` 声明的位置。
+
 
 The way the configuration system works is that duplicate entries are effectively ignored. 
 It is a last-wins. Lombok will only process a configuration file once when resolving a specific value. 
 This allows you to import the same files from different configuration files, and even create loops without any problems.
 
+
+配置系统的工作方式是有效地忽略重复条目。
+这是最后的胜利。 Lombok 在解析特定值时只会处理一次配置文件。
+这允许您从不同的配置文件导入相同的文件，甚至可以毫无问题地创建循环。
+
+
 It is also possible to import files from `.jar` and `.zip` files.
+
+
+也可以从`.jar` 和`.zip` 文件中导入文件。
+
 
 ```text
 # Use 'lombok.config' from the root of the archive.
@@ -225,9 +353,18 @@ import ../deps/lombok-config.jar
 import ../deps/lombok-config.zip!base/model.config
 ```
 
+
 Configuration files inside archives can import other configuration files, provided that they are in the same archive.
 
+
+存档中的配置文件可以导入其他配置文件，前提是它们在同一个存档中。
+
+
 When importing files, it is possible to use environment variables.
+
+
+导入文件时，可以使用环境变量。
+
 
 ```text
 # Environment variables are names surrounded by angle brackets (<, >).
@@ -237,7 +374,15 @@ import <JAVA_PROJECTS>/shared.config
 import ~/my.config
 ```
 
+
 As with absolute paths, this is more useful for individuals than for shared projects.
 
-This feature was added in lombok v1.18.12.
+
+与绝对路径一样，这对个人比对共享项目更有用。
+
+
+This feature was added in `lombok v1.18.12`.
+
+
+此功能是在 `lombok v1.18.12` 中添加的。
 

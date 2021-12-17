@@ -1,5 +1,7 @@
 package org.hui.middleware.lombok.features;
 
+import lombok.extern.java.Log;
+
 /**
  * @author Hui.Liu
  * @since 2021-12-14 12:45
