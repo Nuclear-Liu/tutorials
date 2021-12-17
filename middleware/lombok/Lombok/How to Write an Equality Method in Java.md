@@ -1,52 +1,111 @@
-# [How to Write an Equality Method in Java](https://www.artima.com/articles/how-to-write-an-equality-method-in-java)
+# [How to Write an Equality Method in Java](https://www.artima.com/articles/how-to-write-an-equality-method-in-java) _如何用 Java 编写相等方法_
+
 
 > by Martin Odersky, Lex Spoon, and Bill Venners
 > 
 > June 1, 2009
 
 
-**Summary** 
-    
-This article describes a technique for overriding the equals method that preserves the contract of equals even when subclassses of concrete classes add new fields.
+> 作者：Martin Odersky、Lex Spoon 和 Bill Venners
+> 
+> 2009 年 6 月 1 日
 
 
-In Item 8 of Effective Java1, Josh Bloch describes the difficulty of preserving the equals contract when subclassing as a “fundamental problem of equivalence relations in object-oriented languages.” Bloch writes:
+> **Summary** _概括_
+>
+>
+> This article describes a technique for overriding the `equals` method that preserves the contract of `equals` even when subclassses of concrete classes add new fields.
+> 
+> 
+> 本文描述了一种覆盖 `equals` 方法的技术，该方法即使在具体类的子类添加新字段时也能保留 `equals` 的约定。
 
-There is no way to extend an instantiable class and add a value component while preserving the equals contract, unless you are willing to forgo the benefits of object-oriented abstraction.
 
-Chapter 28 of Programming in Scala shows an approach that allows subclasses to extend an instantiable class, add a value component, and nevertheless preserve the equals contract. 
+In Item 8 of [Effective Java](), Josh Bloch describes the difficulty of preserving the `equals` contract when subclassing as a “fundamental problem of equivalence relations in object-oriented languages.” Bloch writes:
+
+
+在 [Effective Java]() 的第 8 条中，Josh Bloch 将子类化时保持 `equals` 契约的困难描述为“面向对象语言中等价关系的基本问题”。布洛赫写道：
+
+
+_There is no way to extend an instantiable class and add a value component while preserving the `equals` contract, unless you are willing to forgo the benefits of object-oriented abstraction._
+
+
+_除非您愿意放弃面向对象抽象的好处，否则无法在保留 `equals` 约定的同时扩展可实例化类并添加值组件。_
+
+
+Chapter 28 of [Programming in Scala]() shows an approach that allows subclasses to extend an instantiable class, add a value component, and nevertheless preserve the `equals` contract. 
 Although in the technique is described in the book in the context of defining Scala classes, it is also applicable to classes defined in Java. 
 In this article, we present the technique using text adapted from the relevant section of Programming in Scala, but with the code examples translated from Scala into Java.
 
-## Commmon equality pitfalls
 
-Class `java.lang.Object` defines an equals method, which subclasses may override. 
+[Programming in Scala]() 的第 28 章展示了一种方法，它允许子类扩展一个可实例化的类，添加一个值组件，但仍然保留 `equals` 约定。
+尽管该技术在本书中是在定义 Scala 类的上下文中描述的，但它也适用于在 Java 中定义的类。
+在本文中，我们使用改编自 Scala 编程相关部分的文本来介绍该技术，但将代码示例从 Scala 翻译成 Java。
+
+
+## Commmon equality pitfalls _常见的相等陷阱_
+
+
+Class `java.lang.Object` defines an `equals` method, which subclasses may override. 
 Unfortunately, it turns out that writing a correct equality method is surprisingly difficult in object-oriented languages. 
-In fact, after studying a large body of Java code, the authors of a 2007 paper concluded that almost all implementations of equals methods are faulty.2
+In fact, after studying a large body of Java code, the authors of a 2007 paper concluded that almost all implementations of `equals` methods are faulty.
 
-This is problematic, because equality is at the basis of many other things. 
-For one, a faulty equality method for a type C might mean that you cannot reliably put an object of type C in a collection. 
-You might have two elements elem1, elem2 of type C that are equal, i.e., “ `elem1.equals(elem2)`” yields true. 
-Nevertheless, with commonly occurring faulty implementations of the equals method, you could still see behavior like the following:
+
+类 `java.lang.Object` 定义了一个 `equals` 方法，子类可以覆盖该方法。
+不幸的是，事实证明在面向对象的语言中编写正确的相等方法是非常困难的。
+事实上，在研究了大量 Java 代码后，2007 年一篇论文的作者得出结论，几乎所有 `equals` 方法的实现都是错误的。
+
+
+This is problematic, because **equality** is at the basis of many other things. 
+For one, a faulty equality method for a type `C` might mean that you cannot reliably put an object of type `C` in a collection. 
+You might have two elements `elem1`, `elem2` of type `C` that are equal, i.e., `elem1.equals(elem2)` yields `true`. 
+Nevertheless, with commonly occurring faulty implementations of the `equals` method, you could still see behavior like the following:
+
+
+这是有问题的，因为**相等**是许多其他事物的基础。
+首先，类型 `C` 的错误相等方法可能意味着您不能可靠地将 `C` 类型的对象放入集合中。
+你可能有两个类型为 `C` 的元素 `elem1` 和 `elem2` ，它们是相等的，即， `elem1.equals(elem2)` 产生 `true`。
+尽管如此，对于 `equals` 方法的常见错误实现，您仍然可以看到如下行为：
+
 
 ```text
 Set<C> hashSet = new java.util.HashSet<C>();
 hashSet.add(elem1);
-hashSet.contains(elem2);    // returns false!
+hashSet.contains(elem2);    // returns false!(but I get true)
 ```
 
-Here are four common pitfalls3 that can cause inconsistent behavior when overriding equals:
 
-1. Defining equals with the wrong signature.
-2. Changing equals without also changing hashCode.
-3. Defining equals in terms of mutable fields.
-4. Failing to define equals as an equivalence relation.
+Here are four common pitfalls3 that can cause inconsistent behavior when overriding `equals`:
+
+
+以下是在覆盖 `equals` 时可能导致不一致行为的四个常见陷阱：
+
+
+1. Defining `equals` with the wrong signature.
+2. Changing `equals` without also changing `hashCode`.
+3. Defining `equals` in terms of mutable fields.
+4. Failing to define `equals` as an equivalence relation.
+
+
+1. 用错误的签名定义 `equals` 。
+2. 更改 `equals` 而不更改 `hashCode` 。
+3. 根据可变字段定义`equals`。
+4. 未能将 `equals` 定义为等价关系。
+
 
 These four pitfalls are discussed in the remainder of this section.
 
-## Pitfall #1: Defining equals with the wrong signature.
 
-Consider adding an equality method to the following class of simple points:
+这四个陷阱将在本节的其余部分讨论。
+
+
+## Pitfall #1: Defining `equals` with the wrong signature. _陷阱 1：用错误的签名定义 `equals` 。_
+
+
+Consider adding an equality method to the following class of simple `point`s:
+
+
+考虑向以下类简单 `point` 添加一个相等方法：
+
 
 ```java
 public class Point {
@@ -71,7 +130,12 @@ public class Point {
 }
 ```
 
+
 A seemingly obvious, but wrong way would be to define it like this:
+
+
+一个看似显而易见但错误的方法是这样定义它：
+
 
 ```text
 // An utterly wrong definition of equals
@@ -80,7 +144,14 @@ public boolean equals(Point other) {
 }
 ```
 
-What's wrong with this method? At first glance, it seems to work OK:
+
+What's wrong with this method? 
+At first glance, it seems to work OK:
+
+
+这种方法有什么问题？
+乍一看，它似乎工作正常：
+
 
 ```text
 Point p1 = new Point(1, 2);
@@ -93,7 +164,12 @@ System.out.println(p1.equals(p2)); // prints true
 System.out.println(p1.equals(q)); // prints false
 ```
 
-However, trouble starts once you start putting points into a collection:
+
+However, trouble starts once you start putting `point`s into a collection:
+
+
+但是，一旦您开始将 `point` 放入集合中，麻烦就来了：
+
 
 ```text
 import java.util.HashSet;
@@ -104,39 +180,75 @@ coll.add(p1);
 System.out.println(coll.contains(p2)); // prints false
 ```
 
-How can it be that coll does not contain p2, even though p1 was added to it, and p1 and p2 are equal objects? 
-The reason becomes clear in the following interaction, where the precise type of one of the compared points is masked. 
-Define p2a as an alias of p2, but with type Object instead of Point:
+
+How can it be that `coll` does not contain `p2`, even though `p1` was added to it, and `p1` and `p2` are equal objects? 
+The reason becomes clear in the following interaction, where the precise type of one of the compared `point`s is masked. 
+Define `p2a` as an alias of `p2`, but with type `Object` instead of `Point`:
+
+
+怎么可能 `coll` 不包含 `p2` ，即使添加了 `p1` ，并且 `p1` 和 `p2` 是相等的对象？
+原因在以下交互中变得清晰，其中一个被比较的 `point` 的精确类型被屏蔽了。
+将 `p2a` 定义为 `p2` 的别名，但使用类型 `Object` 而不是 `Point` ：
+
 
 ```text
 Object p2a = p2;
 ```
 
-Now, were you to repeat the first comparison, but with the alias p2a instead of p2, you would get:
+
+Now, were you to repeat the first comparison, but with the alias `p2a` instead of `p2`, you would get:
+
+
+现在，如果您重复第一次比较，但使用别名 `p2a` 而不是 `p2` ，你会得到：
+
 
 ```text
 System.out.println(p1.equals(p2a)); // prints false
 ```
 
+
 What went wrong? 
-In fact, the version of equals given previously does not override the standard method equals, because its type is different. 
-Here is the type of the equals method as it is defined in the root class Object:
+In fact, the version of `equals` given previously does not `override` the standard method `equals`, because its type is different. 
+Here is the type of the `equals` method as it is defined in the root class `Object`:
+
+
+什么地方出了错？
+事实上，之前给出的 `equals` 版本并没有 `override` 标准方法 `equals` ，因为它的类型不同。
+这里是根类 `Object` 中定义的 `equals` 方法的类型：
+
 
 ```text
 public boolean equals(Object other)
 ```
 
-Because the `equals` method in Point takes a Point instead of an Object as an argument, it does not override `equals` in Object. 
-Instead, it is just an overloaded alternative. 
+
+Because the `equals` method in `Point` takes a `Point` instead of an `Object` as an argument, it does not override `equals` in `Object`. 
+Instead, it is just an **overloaded** alternative. 
 Overloading in Java is resolved by the static type of the argument, not the run-time type. 
-So as long as the static type of the argument is `Point`, the equals method in `Point` is called. 
-However, once the static argument is of type Object, the `equals` method in Object is called instead. 
+So as long as the static type of the argument is `Point`, the `equals` method in `Point` is called. 
+However, once the static argument is of type `Object`, the `equals` method in `Object` is called instead. 
 This method has not been overridden, so it is still implemented by comparing object identity. 
-That's why the comparison “`p1.equals(p2a)`” yields false even though points `p1` and `p2a` have the same x and y values. 
-That's also why the contains method in HashSet returned false. 
-Since that method operates on generic sets, it calls the generic equals method in Object instead of the overloaded variant in Point.
+That's why the comparison `p1.equals(p2a)` yields `false` even though `point`s `p1` and `p2a` have the same `x` and `y` values. 
+That's also why the `contains` method in `HashSet` returned `false`. 
+Since that method operates on generic sets, it calls the generic `equals` method in `Object` instead of the overloaded variant in `Point`.
+
+
+因为 `Point` 中的 `equals` 方法以`Point` 而不是`Object` 作为参数，所以它不会覆盖`Object` 中的`equals`。
+相反，它只是一个**重载**的替代方案。
+Java 中的重载由参数的静态类型决定，而不是运行时类型。
+所以只要参数的静态类型是 `Point` ，就会调用 `Point` 中的 `equals` 方法。
+但是，一旦静态参数的类型为 `Object` ，则会调用 `Object` 中的 `equals` 方法。
+这个方法没有被覆盖，所以还是通过比较对象标识来实现的。
+这就是为什么比较 `p1.equals(p2a)` 会产生 `false` ，即使 `point` 的 `p1` 和 `p2a` 具有相同的 `x` 和 `y` 值。
+这也是 `HashSet` 中的 `contains` 方法返回 `false` 的原因。
+由于该方法对泛型集进行操作，因此它调用 `Object` 中的泛型 `equals` 方法，而不是 `Point`中的重载变体。
+
 
 A better `equals` method is the following:
+
+
+更好的 `equals` 方法如下：
+
 
 ```text
 // A better definition, but still not perfect
@@ -150,17 +262,33 @@ A better `equals` method is the following:
 }
 ```
 
+
 Now `equals` has the correct type. 
-It takes a value of type Object as parameter and it yields a `boolean` result. 
+It takes a value of type `Object` as parameter and it yields a `boolean` result. 
 The implementation of this method uses `instanceof` and a cast. 
-It first tests whether the other object is also of type Point. 
-If it is, it compares the coordinates of the two points and returns the result. 
+It first tests whether the other object is also of type `Point`. 
+If it is, it compares the coordinates of the two `point`s and returns the result. 
 Otherwise the result is `false`.
 
-## Pitfall #2: Changing equals without also changing hashCode
 
-If you repeat the comparison of p1 and p2a with the latest definition of Point defined previously, you will get true, as expected. 
-However, if you repeat the `HashSet.contains test`, you will probably still get false:
+现在 `equals` 有正确的类型。
+它采用 `Object` 类型的值作为参数，并产生 `boolean` 结果。
+这个方法的实现使用了 `instanceof` 和一个强制转换。
+它首先测试另一个对象是否也是 `Point` 类型。
+如果是，则比较两个 `point` 的坐标并返回结果。
+否则结果为 `false` 。
+
+
+## Pitfall #2: Changing `equals` without also changing `hashCode` _陷阱 2：更改 `equals` 而不更改 `hashCode`_
+
+
+If you repeat the comparison of `p1` and `p2a` with the latest definition of `Point` defined previously, you will get `true`, as expected. 
+However, if you repeat the `HashSet.contains` test, you will probably still get `false`:
+
+
+如果你重复比较 `p1` 和 `p2a` 与之前定义的 `Point` 的最新定义，你会得到 `true`，正如预期的那样。
+然而，如果你重复 `HashSet.contains` 测试，你可能仍然会得到 `false` ：
+
 
 ```text
 Point p1 = new Point(1, 2);
@@ -172,29 +300,66 @@ coll.add(p1);
 System.out.println(coll.contains(p2)); // prints false (probably)
 ```
 
-In fact, this outcome is not 100% certain. You might also get true from the experiment. 
-If you do, you can try with some other points with coordinates 1 and 2. 
+
+In fact, this outcome is not 100% certain. 
+You might also get `true` from the experiment. 
+If you do, you can try with some other `point`s with coordinates 1 and 2. 
 Eventually, you'll get one which is not contained in the set. 
-What goes wrong here is that Point redefined equals without also redefining `hashCode`.
+What goes wrong here is that `Point` redefined equals without also redefining `hashCode`.
+
+
+事实上，这个结果并不是 100% 确定的。
+你也可能从实验中得到 `true` 。
+如果这样做，您可以尝试使用其他坐标为 1 和 2 的 `point` 。
+最终，你会得到一个不包含在集合中的。
+这里的错误在于，重新定义的 `Point` 等于没有重新定义 `hashCode` 。
+
 
 Note that the collection in the example above is a `HashSet`. 
 This means elements of the collection are put in “hash buckets” determined by their hash code. 
 The contains test first determines a hash bucket to look in and then compares the given elements with all elements in that bucket. 
-Now, the last version of class Point did redefine equals, but it did not at the same time redefine hashCode. 
-So hashCode is still what it was in its version in class Object: some transformation of the address of the allocated object. 
-The hash codes of p1 and p2 are almost certainly different, even though the fields of both points are the same. 
+Now, the last version of class `Point` did redefine `equals`, but it did not at the same time redefine `hashCode`. 
+So `hashCode` is still what it was in its version in class `Object`: some transformation of the address of the allocated object. 
+The hash codes of `p1` and `p2` are almost certainly different, even though the fields of both `point`s are the same. 
 Different hash codes mean with high probability different hash buckets in the set. 
-The contains test will look for a matching element in the bucket which corresponds to p2's hash code. 
-In most cases, point p1 will be in another bucket, so it will never be found. p1 and p2 might also end up by chance in the same hash bucket. 
-In that case the test would return true.
+The `contains` test will look for a matching element in the bucket which corresponds to `p2`'s hash code. 
+In most cases, `point` `p1` will be in another bucket, so it will never be found. 
+`p1` and `p2` might also end up by chance in the same hash bucket. 
+In that case the test would return `true`.
+
+
+请注意，上面示例中的集合是一个 `HashSet` 。
+这意味着集合的元素被放在由它们的哈希码确定的“哈希桶”中。
+contains 测试首先确定要查找的哈希桶，然后将给定元素与该桶中的所有元素进行比较。
+现在，类 `Point` 的最后一个版本确实重新定义了 `equals` ，但它没有同时重新定义 `hashCode` 。
+所以 `hashCode` 仍然是它在类 `Object` 中的版本：分配对象的地址的一些转换。
+`p1` 和 `p2` 的哈希码几乎肯定是不同的，即使这两个 `point` 的字段是相同的。
+不同的哈希码意味着集合中很有可能有不同的哈希桶。
+`contains` 测试将在桶中寻找与 `p2` 的哈希码对应的匹配元素。
+在大多数情况下， `point` `p1` 将在另一个桶中，因此永远不会被找到。
+`p1` 和 `p2` 也可能偶然出现在同一个哈希桶中。
+在这种情况下，测试将返回 `true` 。
+
+
+> `p1` 与 `p2` 出现 Hash 碰撞的时候，进入同一个哈希桶中。
+
 
 The problem was that the last implementation of `Point` violated the contract on `hashCode` as defined for class `Object`:
 
+
+问题是 `Point` 的最后一个实现违反了为 `Object` 类定义的 `hashCode` 契约：
+
+
 _If two objects are equal according to the `equals(Object)` method, then calling the `hashCode` method on each of the two objects must produce the same integer result._
 
-In fact, it's well known in Java that hashCode and equals should always be redefined together. 
-Furthermore, hashCode may only depend on fields that equals depends on. 
-For the `Point` class, the following would be a suitable definition of hashCode:
+
+_如果两个对象根据 `equals(Object)` 方法相等，则对这两个对象中的每一个调用 `hashCode` 方法必须产生相同的整数结果。_
+
+
+In fact, it's well known in Java that `hashCode` and equals should always be redefined together. 
+Furthermore, `hashCode` may only depend on fields that `equals` depends on. 
+For the `Point` class, the following would be a suitable definition of `hashCode`:
+
 
 ```java
 public class Point {
