@@ -72,9 +72,11 @@ public class EqualsTest {
 
         ColoredPoint cp = new ColoredPoint(1, 2, Color.RED);
 
-        assertTrue(p.equals(cp)); // the result true
+        // assertTrue(p.equals(cp)); // the result true
+        assertFalse(p.equals(cp)); // the result true
 
-        assertTrue(cp.equals(p)); // the result false
+        // assertTrue(cp.equals(p)); // the result false
+        assertFalse(cp.equals(p)); // the result false
     }
 
     @Test
@@ -85,11 +87,13 @@ public class EqualsTest {
 
         Set<Point> hashSet1 = new HashSet<>();
         hashSet1.add(p);
-        assertTrue(hashSet1.contains(cp)); // assert result false; subclass equals superclass
+        // assertTrue(hashSet1.contains(cp)); // assert result false; subclass equals superclass
+        assertFalse(hashSet1.contains(cp)); // 严格模式
 
         Set<Point> hashSet2 = new HashSet<>();
         hashSet2.add(cp);
-        assertTrue(hashSet2.contains(p)); // assert result true; superclass equals subclass
+        // assertTrue(hashSet2.contains(p)); // assert result true; superclass equals subclass
+        assertFalse(hashSet2.contains(p)); // 严格模式
     }
 
     @Test
@@ -116,5 +120,25 @@ public class EqualsTest {
         Set<Person> pSet = new HashSet<>();
         pSet.add(p1);
         assertTrue(pSet.contains(p2));
+    }
+
+    @Test
+    public void testAnonymousSubClass() {
+        Point p = new Point(1, 2);
+        ColoredPoint cp = new ColoredPoint(1, 2, Color.INDIGO);
+        Point pAnon = new Point(1, 1) {
+            @Override
+            public int getY() {
+                return 2;
+            }
+        };
+        assertTrue(p.equals(pAnon));
+
+        Set<Point> coll = new HashSet<>();
+        coll.add(p);
+
+        assertTrue(coll.contains(p));
+        assertFalse(coll.contains(cp));
+        assertTrue(coll.contains(pAnon));
     }
 }

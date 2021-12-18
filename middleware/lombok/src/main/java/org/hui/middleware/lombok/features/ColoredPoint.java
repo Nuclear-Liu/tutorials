@@ -13,7 +13,7 @@ public class ColoredPoint extends Point { // Problem: equals not symmetric
         this.color = color;
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object other) {
         boolean result = false;
         if (other instanceof ColoredPoint) {
@@ -24,5 +24,25 @@ public class ColoredPoint extends Point { // Problem: equals not symmetric
             result = that.equals(this);
         }
         return result;
+    }*/
+
+    @Override
+    public boolean equals(Object other) {
+        boolean result = false;
+        if (other instanceof ColoredPoint) {
+            ColoredPoint that = (ColoredPoint) other;
+            result = (that.canEqual(this) && this.color.equals(that.color) && super.equals(that));
+        }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return (41 * super.hashCode() + color.hashCode());
+    }
+
+    @Override
+    public boolean canEqual(Object other) {
+        return (other instanceof ColoredPoint);
     }
 }

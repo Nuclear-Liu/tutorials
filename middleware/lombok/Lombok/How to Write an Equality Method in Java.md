@@ -743,7 +743,7 @@ public class ColoredPoint extends Point { // Problem: equals not transitive
 
 The new definition of `equals` in `ColoredPoint` checks one more case than the old one: 
 If the other object is a `Point` but not a `ColoredPoint`, the method forwards to the `equals` method of `Point`. 
-This has the desired effect of making equals symmetric. 
+This has the desired effect of making `equals` symmetric. 
 Now, both “`cp.equals(p)`” and “`p.equals(cp)`” result in `true`. 
 However, the contract for `equals` is still broken. 
 Now the problem is that the new relation is no longer transitive! 
@@ -751,14 +751,14 @@ Here's a sequence of statements that demonstrates this.
 Define a `point` and two colored `point`s of different colors, all at the same position:
 
 
-The new definition of `equals` in `ColoredPoint` checks one more case than the old one: 
-If the other object is a `Point` but not a `ColoredPoint`, the method forwards to the `equals` method of `Point`. 
-This has the desired effect of making equals symmetric. 
-Now, both “`cp.equals(p)`” and “`p.equals(cp)`” result in `true`. 
-However, the contract for `equals` is still broken. 
-Now the problem is that the new relation is no longer transitive! 
-Here's a sequence of statements that demonstrates this. 
-Define a `point` and two colored `point`s of different colors, all at the same position:
+`ColoredPoint` 中 `equals` 的新定义比旧的多检查一种情况：
+如果另一个对象是 `Point` 而不是 `ColoredPoint` ，则该方法转发到 `Point` 的 `equals` 方法。
+这具有使 `equals` 对称的预期效果。
+现在，“`cp.equals(p)`”和“`p.equals(cp)`”的结果都是“true”。
+然而， `equals` 的约定仍然被破坏。
+现在的问题是新关系不再是可传递的！
+下面是一系列陈述来证明这一点。
+定义一个 `point` 和两个不同颜色的有颜色的 `point` ，它们都在同一个位置：
 
 
 ```text
@@ -767,10 +767,10 @@ ColoredPoint blueP = new ColoredPoint(1, 2, Color.BLUE);
 ```
 
 
-Taken individually, redp is equal to `p` and `p` is `equal` to bluep:
+Taken individually, `redp` is equal to `p` and `p` is `equal` to `bluep`:
 
 
-Taken individually, redp is equal to `p` and `p` is `equal` to bluep:
+单独来看， `redp` 等于 `p` ， `p` 等于 `bluep` ：
 
 
 ```text
@@ -783,7 +783,7 @@ System.out.println(p.equals(blueP)); // prints true
 However, comparing `redP` and `blueP` yields `false`:
 
 
-However, comparing `redP` and `blueP` yields `false`:
+然而，比较 `redP` 和 `blueP` 会产生 `false` ：
 
 
 ```text
@@ -794,21 +794,21 @@ System.out.println(redP.equals(blueP)); // prints false
 Hence, the transitivity clause of `equals`'s contract is violated.
 
 
-Hence, the transitivity clause of `equals`'s contract is violated.
+因此，违反了 `equals` 契约的传递性条款。
 
 
 Making the `equals` relation more general seems to lead to a dead end. 
 We'll try to make it stricter instead. 
-One way to make `equals` stricter is to always treat objects of different classes as different. 
+One way to make `equals` stricter is to **always treat objects of different classes as different**. 
 That could be achieved by modifying the `equals` methods in classes `Point` and `ColoredPoint`. 
 In class `Point`, you could add an extra comparison that checks whether the run-time class of the other `Point` is exactly the same as this `Point`'s class, as follows:
 
 
-Making the `equals` relation more general seems to lead to a dead end. 
-We'll try to make it stricter instead. 
-One way to make `equals` stricter is to always treat objects of different classes as different. 
-That could be achieved by modifying the `equals` methods in classes `Point` and `ColoredPoint`. 
-In class `Point`, you could add an extra comparison that checks whether the run-time class of the other `Point` is exactly the same as this `Point`'s class, as follows:
+使 `equals` 关系更普遍似乎会导致死胡同。
+相反，我们将尝试使其更严格。
+使 `equals` 更严格的一种方法是**始终将不同类的对象视为不同的**。
+这可以通过修改类 `Point` 和 `ColoredPoint` 中的 `equals` 方法来实现。
+在类 `Point` 中，你可以添加一个额外的比较，检查另一个 `Point` 的运行时类是否与这个 `Point` 的类完全相同，如下所示：
 
 
 ```java
@@ -851,7 +851,7 @@ public class Point {
 You can then revert class `ColoredPoint`'s implementation back to the version that previously had violated the symmetry requirement:
 
 
-You can then revert class `ColoredPoint`'s implementation back to the version that previously had violated the symmetry requirement:
+然后，您可以将类 `ColoredPoint` 的实现恢复到以前违反对称要求的版本：
 
 
 ```java
@@ -878,11 +878,20 @@ public class ColoredPoint extends Point { // No longer violates symmetry require
 
 Here, an instance of class `Point` is considered to be equal to some other instance of the same class only if the objects have the same coordinates and they have the same run-time class, meaning `.getClass()` on either object returns the same value. 
 The new definitions satisfy symmetry and transitivity because now every comparison between objects of different classes yields `false`. 
-So a colored point can never be equal to a point. 
+So a colored `point` can never be equal to a `point`. 
 This convention looks reasonable, but one could argue that the new definition is too strict.
 
 
-Consider the following slightly roundabout way to define a point at coordinates (1, 2):
+在这里，只有当对象具有相同的坐标并且它们具有相同的运行时类时，才认为类 `Point` 的实例等于同一类的其他实例，这意味着任一对象上的 `.getClass()` 返回相同的值。
+新定义满足对称性和传递性，因为现在不同类别的对象之间的每次比较都会产生 `false` 。
+所以一个有颜色的 `point` 永远不可能等于一个 `point` 。
+这一约定看起来合理，但有人可能会争辩说新定义过于严格。
+
+
+Consider the following slightly roundabout way to define a point at coordinates `(1, 2)`:
+
+
+考虑以下稍微迂回的方式来定义坐标 `(1, 2)` 处的点：
 
 
 ```text
@@ -894,26 +903,53 @@ Point pAnon = new Point(1, 1) {
 ```
 
 
-Is `pAnon` equal to `p`? The answer is no because the `java.lang.Class` objects associated with `p` and `pAnon` are different. 
+Is `pAnon` equal to `p`? 
+The answer is no because the `java.lang.Class` objects associated with `p` and `pAnon` are different. 
 For `p` it is `Point`, whereas for `pAnon` it is an anonymous subclass of `Point`. 
-But clearly, `pAnon` is just another point at coordinates (1, 2). It does not seem reasonable to treat it as being different from p.
+But clearly, `pAnon` is just another point at coordinates `(1, 2)`. 
+It does not seem reasonable to treat it as being different from `p`.
+
+
+`pAnon` 等于 `p` 吗？
+答案是否定的，因为与 `p` 和 `pAnon` 关联的 `java.lang.Class` 对象是不同的。
+对于 `p` ，它是 `Point` ，而对于 `pAnon` ，它是 `Point` 的匿名子类。
+但很明显， `pAnon` 只是坐标 `(1, 2)` 上的另一个点。
+将其视为与 `p` 不同似乎是不合理的。
 
 
 ## The `canEqual` method
 
+
 So it seems we are stuck. 
 Is there a sane way to redefine equality on several levels of the class hierarchy while keeping its contract? 
-In fact, there is such a way, but it requires one more method to redefine together with equals and hashCode. 
-The idea is that as soon as a class redefines equals (and hashCode), it should also explicitly state that objects of this class are never equal to objects of some superclass that implement a different equality method. 
-This is achieved by adding a method canEqual to every class that redefines equals. Here's the method's signature:
+In fact, there is such a way, but it requires one more method to redefine together with `equals` and `hashCode`. 
+The idea is that as soon as a class redefines `equals` (and `hashCode`), it should also explicitly state that objects of this class are never equal to objects of some superclass that implement a different equality method. 
+This is achieved by adding a method `canEqual` to every class that redefines equals. 
+Here's the method's signature:
+
+
+所以看起来我们被卡住了。
+有没有一种理智的方法可以在保持其契约的同时重新定义类层次结构的几个级别上的平等？
+其实是有这样的方法的，只是需要多一个方法与 `equals` 和 `hashCode` 一起重新定义。
+这个想法是，一旦一个类重新定义了 `equals` （和 `hashCode` ），它还应该明确声明这个类的对象永远不会与实现不同相等方法的某个超类的对象相等。
+这是通过向每个重新定义 `equals` 的类添加一个方法 `canEqual` 来实现的。
+这是方法的签名：
+
 
 ```text
 public boolean canEqual(Object other)
 ```
 
+
 The method should return `true` if the `other` object is an instance of the class in which `canEqual` is (re)defined, `false` otherwise. 
 It is called from `equals` to make sure that the objects are comparable both ways. 
-Here is a new (and final) implementation of class `Point` along these lines:
+Here is a new (and `final`) implementation of class `Point` along these lines:
+
+
+如果 `other` 对象是（重新）定义了 `canEqual` 的类的实例，则该方法应返回 `true` ，否则返回 `false` 。
+从 `equals` 调用它以确保对象在两种方式下都具有可比性。
+这是类 `Point` 的一个新的（和 `final` ）实现，如下所示：
+
 
 ```java
 public class Point {
@@ -953,10 +989,20 @@ public class Point {
 }
 ```
 
+
 The `equals` method in this version of class `Point` contains the additional requirement that the other object can equal this one, as determined by the `canEqual` method. 
 The implementation of `canEqual` in `Point` states that all instances of `Point` can be equal.
 
+
+这个版本的 `Point` 类中的 `equals` 方法包含一个额外的要求，即另一个对象可以等于这个对象，这由 `canEqual` 方法确定。
+`Point` 中 `canEqual` 的实现表明 `Point` 的所有实例都可以相等。
+
+
 Here's the corresponding implementation of `ColoredPoint`:
+
+
+下面是 `ColoredPoint` 的相应实现：
+
 
 ```java
 public class ColoredPoint extends Point { // No longer violates symmetry requirement
@@ -987,15 +1033,30 @@ public class ColoredPoint extends Point { // No longer violates symmetry require
 }
 ```
 
-It can be shown that the new definition of Point and `ColoredPoint` keeps the contract of equals. 
+
+It can be shown that the new definition of `Point` and `ColoredPoint` keeps the contract of `equals`. 
 Equality is symmetric and transitive. 
 Comparing a `Point` to a `ColoredPoint` always yields `false`. 
-Indeed, for any point p and colored point cp, “p.equals(cp)” will return false because “cp.canEqual(p)” will return false. 
-The reverse comparison, “`cp.equals(p)`”, will also return false, because p is not a `ColoredPoint`, so the first instanceof check in the body of equals in `ColoredPoint` will fail.
+Indeed, for any `point` `p` and colored `point` `cp`, “`p.equals(cp)`” will return `false` because “`cp.canEqual(p)`” will return `false`. 
+The reverse comparison, “`cp.equals(p)`”, will also return `false`, because `p` is not a `ColoredPoint`, so the first `instanceof` check in the body of `equals` in `ColoredPoint` will fail.
+
+
+可以看出，`Point` 和 `ColoredPoint` 的新定义保持了 `equals` 的约定。
+相等是对称的和可传递的。
+将 `Point` 与 `ColoredPoint` 进行比较总是会产生 `false` 。
+实际上，对于任何 `point` `p` 和有颜色的 `point` `cp` ，“`p.equals(cp)`”将返回 `false` ，因为“`cp.canEqual(p)`”将返回 `false` 。
+反向比较“`cp.equals(p)`”也会返回`false`，因为 `p` 不是 `ColoredPoint` ，所以在 `ColoredPoint` 中 `equals` 的主体中的第一个 `instanceof` 检查将失败。
+
 
 On the other hand, instances of different subclasses of `Point` can be equal, as long as none of the classes redefines the equality method. 
-For instance, with the new class definitions, the comparison of p and `pAnon` would yield `true`. 
+For instance, with the new class definitions, the comparison of `p` and `pAnon` would yield `true`. 
 Here are some examples:
+
+
+另一方面， `Point` 的不同子类的实例可以相等，只要没有一个类重新定义了相等方法。
+例如，使用新的类定义， `p` 和 `pAnon` 的比较将产生 `true` 。
+这里有些例子：
+
 
 ```text
 Point p = new Point(1, 2);
@@ -1018,23 +1079,47 @@ System.out.println(coll.contains(cp)); // prints false
 System.out.println(coll.contains(pAnon)); // prints true
 ```
 
-These examples demonstrate that if a superclass equals implementation defines and calls canEqual, then programmers who implement subclasses can decide whether or not their subclasses may be equal to instances of the superclass. 
-Because ColoredPoint overrides canEqual, for example, a colored point may never be equal to a plain-old point. 
+
+These examples demonstrate that if a superclass `equals` implementation defines and calls `canEqual`, then programmers who implement subclasses can decide whether or not their subclasses may be equal to instances of the superclass. 
+Because `ColoredPoint` overrides `canEqual`, for example, a colored `point` may never be equal to a plain-old `point`. 
 But because the anonymous subclass referenced from `pAnon` does not override `canEqual`, its instance can be `equal` to a `Point` instance.
 
+
+这些示例表明，如果超类 `equals` 实现定义并调用 `canEqual` ，那么实现子类的程序员可以决定他们的子类是否可以等于超类的实例。
+例如，因为 `ColoredPoint` 覆盖了 `canEqual`，一个有颜色的 `point` 可能永远不会等于一个普通的 `point` 。
+但是因为从 `pAnon` 引用的匿名子类没有覆盖 `canEqual` ，它的实例可以 `equal` 到 `Point` 实例。
+
+
 One potential criticism of the `canEqual` approach is that it violates the Liskov Substitution Principle (LSP). 
-For example, the technique of implementing equals by comparing run-time classes, which led to the inability to define a subclass whose instances can equal instances of the superclass, has been described as a violation of the LSP.5 
+For example, the technique of implementing `equals` by comparing run-time classes, which led to the inability to define a subclass whose instances can equal instances of the superclass, has been described as a violation of the LSP.5 
 The reasoning is that the LSP states you should be able to use (substitute) a subclass instance where a superclass instance is required. 
-In the previous example, however, “coll.contains(cp)” returned false even though cp's x and y values matched those of the point in the collection. 
-Thus it may seem like a violation of the LSP, because you can't use a ColoredPoint here where a Point is expected. 
-We believe this is the wrong interpretation, though, because the LSP doesn't require that a subclass behaves identically to its superclass, just that it behaves in a way that fulfills the contract of its superclass.
+In the previous example, however, “`coll.contains(cp)`” returned false even though `cp`'s `x` and `y` values matched those of the `point` in the collection. 
+Thus it may seem like a violation of the LSP, because you can't use a `ColoredPoint` here where a `Point` is expected. 
+We believe this is the wrong interpretation, though, **because the LSP doesn't require that a subclass behaves identically to its superclass, just that it behaves in a way that fulfills the contract of its superclass**.
+
+
+对 `canEqual` 方法的一个潜在批评是它违反了里氏替换原则（LSP）。
+例如，通过比较运行时类来实现 `equals` 的技术导致无法定义其实例可以等于超类实例的子类，已被描述为违反 LSP。
+原因是 LSP 声明您应该能够使用（替换）需要超类实例的子类实例。
+然而，在前面的示例中，即使 `cp` 的 `x` 和 `y` 值与集合中的 `point` 值匹配，“`coll.contains(cp)`” 返回 false。
+因此，这似乎违反了 LSP，因为您不能在需要 `Point` 的地方使用 `ColoredPoint` 。
+但是，我们认为这是错误的解释，**因为 LSP 不要求子类的行为与其超类相同，只是要求它的行为方式满足其超类的约定**。
+
 
 The problem with writing an `equals` method that compares run-time classes is not that it violates the LSP, but that it doesn't give you a way to create a subclass whose instances can equal superclass instances. 
-For example, had we used the run-time class technique in the previous example, “coll.contains(pAnon)” would have returned false, and that's not what we wanted. 
-By contrast, we really did want “coll.contains(cp)” to return false, because by overriding equals in `ColoredPoint`, we were basically saying that an indigo-colored point at coordinates (1, 2) is not the same thing as an uncolored point at (1, 2). 
-Thus, in the previous example we were able to pass two different `Point` subclass instances to the collection's contains method, and we got back two different answers, both correct.
+For example, had we used the run-time class technique in the previous example, “`coll.contains(pAnon)`” would have returned `false`, and that's not what we wanted. 
+By contrast, we really did want “`coll.contains(cp)`” to return `false`, because by overriding `equals` in `ColoredPoint`, we were basically saying that an indigo-colored point at coordinates `(1, 2)` is not the same thing as an uncolored point at `(1, 2)`. 
+Thus, in the previous example we were able to pass two different `Point` subclass instances to the collection's `contains` method, and we got back two different answers, both correct.
 
-## End Notes
+
+编写比较运行时类的 `equals` 方法的问题不在于它违反了 LSP，而是它没有提供一种方法来创建其实例可以等于超类实例的子类。
+例如，如果我们在前面的示例中使用运行时类技术，“`coll.contains(pAnon)`” 将返回 `false` ，这不是我们想要的。
+相比之下，我们确实希望“`coll.contains(cp)`”返回 `false` ，因为通过覆盖 `ColoredPoint` 中的 `equals` ，我们基本上是说坐标 `(1, 2)` 处的一个靛蓝色点是与 `(1, 2)` 处的无色点不同。
+因此，在前面的示例中，我们能够将两个不同的 `Point` 子类实例传递给集合的 `contains` 方法，并且我们得到了两个不同的答案，两者都是正确的。
+
+
+## End Notes _尾注_
+
 
 1. Bloch, Joshua. Effective Java Second Edition. Addison-Wesley, 2008.
 
@@ -1047,18 +1132,36 @@ Thus, in the previous example we were able to pass two different `Point` subclas
 
 5. Bloch, Joshua. Effective Java Second Edition. Addison-Wesley, 2008. page 39.
 
-## Resources
+
+## Resources _资源_
+
 
 ![programming_in_scala](./Scala.png)
+
 
 This article is adapted from a section of chapter 28 of the book Programming in Scala:
 [http://www.artima.com/shop/programming_in_scala](http://www.artima.com/shop/programming_in_scala)
 
-### Talk back!
 
-Have an opinion? Readers have already posted [47 comments]() about this article. Why not [add yours]()?
+本文改编自《Scala 编程》一书第 28 章的一段：
+[http://www.artima.com/shop/programming_in_scala](http://www.artima.com/shop/programming_in_scala)
 
-### About the authors
+
+### Talk back! _顶嘴！_
+
+
+Have an opinion? 
+Readers have already posted [47 comments](https://www.artima.com/articles/how-to-write-an-equality-method-in-java/flat-comments) about this article. 
+Why not [add yours](https://www.artima.com/articles/how-to-write-an-equality-method-in-java/flat-comments)?
+
+
+有意见？
+读者已经针对本文发表了 [47 条评论]() 。
+为什么不 [添加你的]() ？
+
+
+### About the authors _关于作者_
+
 
 **Bill Venners** is president of Artima, Inc., publisher of the Artima Developer website (www.artima.com). 
 He is author of the book, Inside the Java Virtual Machine, a programmer-oriented survey of the Java platform's architecture and internals. 
@@ -1066,14 +1169,17 @@ His popular columns in JavaWorld magazine covered Java internals, object-oriente
 Active in the Jini Community since its inception, Bill led the Jini Community's ServiceUI project, whose ServiceUI API became the de facto standard way to associate user interfaces to Jini services. 
 Bill is also the lead developer and designer of ScalaTest, an open source testing tool for Scala and Java developers.
 
+
 **Lex Spoon** is a software engineer at Google, Inc. 
 He worked on Scala for two years as a post-doc at EPFL. 
 He has a Ph.D. in computer science from Georgia Tech, where he worked on static analysis of dynamic languages. 
 In addition to Scala, he has worked on a wide variety of programming languages, ranging from the dynamic language Smalltalk to the scientific language X10. 
 He and his wife currently live in Atlanta with two cats, a chihuahua, and a turtle.
 
+
 Martin Odersky is the creator of the Scala language. 
 As a professor at EPFL in Lausanne, Switzerland he is working on programming languages, more specifically languages for object-oriented and functional programming. 
 His research thesis is that the two paradigms are two sides of the same coin, to be identified as much as possible. 
-To prove this, he has experimented with a number of language designs, from Pizza to GJ to Functional Nets. He has also influenced the development of Java as a co-designer of Java generics and as the original author of the current javac reference compiler. 
+To prove this, he has experimented with a number of language designs, from Pizza to GJ to Functional Nets. 
+He has also influenced the development of Java as a co-designer of Java generics and as the original author of the current javac reference compiler. 
 Since 2001 he has concentrated on designing, implementing, and refining the Scala programming language.
