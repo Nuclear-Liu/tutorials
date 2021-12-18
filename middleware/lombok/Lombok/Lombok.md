@@ -107,7 +107,7 @@ The Lombok javadoc is available, but we advise these pages.
   > 前往实验室：我们正在研究的新事物。
 
 
-## Configuration system
+## Configuration system _配置系统_
 
 
 Lombok, made to order: [Configure lombok features](https://projectlombok.org/features/configuration) in one place for your entire project or even your workspace.
@@ -116,7 +116,7 @@ Lombok, made to order: [Configure lombok features](https://projectlombok.org/fea
 Lombok，定制：[配置 lombok 功能](./configuration.md) 在一个地方为您的整个项目甚至您的工作区。
 
 
-## Running delombok
+## Running delombok _运行 delombok_
 
 
 Delombok copies your source files to another directory, replacing all lombok annotations with their desugared form. 
