@@ -356,9 +356,14 @@ _If two objects are equal according to the `equals(Object)` method, then calling
 _如果两个对象根据 `equals(Object)` 方法相等，则对这两个对象中的每一个调用 `hashCode` 方法必须产生相同的整数结果。_
 
 
-In fact, it's well known in Java that `hashCode` and equals should always be redefined together. 
+In fact, it's well known in Java that `hashCode` and `equals` should always be redefined together. 
 Furthermore, `hashCode` may only depend on fields that `equals` depends on. 
 For the `Point` class, the following would be a suitable definition of `hashCode`:
+
+
+事实上，在 Java 中众所周知， `hashCode` 和 `equals` 应该总是一起重新定义。
+此外， `hashCode` 可能只依赖于 `equals` 所依赖的字段。
+对于 `Point` 类，以下是 `hashCode` 的合适定义：
 
 
 ```java
@@ -395,15 +400,31 @@ public class Point {
 }
 ```
 
-This is just one of many possible implementations of `hashCode`. 
-Adding the constant 41 to one integer field x, multiplying the result with the prime number 41, and adding to that result the other integer field y gives a reasonable distribution of hash codes at a low cost in running time and code size.
 
-Adding hashCode fixes the problems of equality when defining classes like `Point`. 
+This is just one of many possible implementations of `hashCode`. 
+Adding the constant `41` to one integer field `x`, multiplying the result with the prime number 41, and adding to that result the other integer field `y` gives a reasonable distribution of hash codes at a low cost in running time and code size.
+
+
+这只是 `hashCode` 的众多可能实现之一。
+将常数 `41` 添加到一个整数字段 `x`，将结果与素数 41 相乘，然后将另一个整数字段 `y` 添加到该结果中，以较低的运行时间和代码大小提供合理的哈希码分布.
+
+
+Adding `hashCode` fixes the problems of equality when defining classes like `Point`. 
 However, there are still other trouble spots to watch out for.
 
-## Pitfall #3: Defining equals in terms of mutable fields
+
+添加 `hashCode` 解决了在定义像 `Point` 这样的类时相等的问题。
+但是，还有其他问题需要注意。
+
+
+## Pitfall #3: Defining equals in terms of mutable fields _陷阱 3：根据可变字段定义 equals_
+
 
 Consider the following slight variation of class `Point`:
+
+
+考虑类 `Point` 的以下轻微变化：
+
 
 ```java
 public class Point { 
