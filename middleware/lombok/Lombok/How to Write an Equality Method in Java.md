@@ -468,9 +468,16 @@ public class Point {
 }
 ```
 
-The only difference is that the fields x and y are no longer final, and two set methods have been added that allow clients to change the `x` and `y` values. 
-The equals and `hashCode` methods are now defined in terms of these mutable fields, so their results change when the fields change. 
-This can have strange effects once you put points in collections:
+
+The only difference is that the fields `x` and `y` are no longer `final`, and two `set` methods have been added that allow clients to change the `x` and `y` values. 
+The `equals` and `hashCode` methods are now defined in terms of these mutable fields, so their results change when the fields change. 
+This can have strange effects once you put `point`s in collections:
+
+
+唯一的区别是字段`x` 和`y` 不再是`final`，并且添加了两个`set` 方法，允许客户端更改`x` 和`y` 值。
+`equals` 和 `hashCode` 方法现在是根据这些可变字段定义的，因此它们的结果会随着字段的变化而变化。
+一旦将 `point` 放入集合中，这可能会产生奇怪的效果：
+
 
 ```text
 Point p = new Point(1, 2);
@@ -481,8 +488,14 @@ coll.add(p);
 System.out.println(coll.contains(p)); // prints true
 ```
 
-Now, if you change a field in point p, does the collection still contain the point? 
+
+Now, if you change a field in `point` `p`, does the collection still contain the `point`? 
 We'll try it:
+
+
+现在，如果您更改 `point` `p` 中的一个字段，该集合是否仍然包含该 `point` ？
+我们来试试：
+
 
 ```text
 p.setX(p.getX() + 1);
@@ -490,8 +503,16 @@ p.setX(p.getX() + 1);
 System.out.println(coll.contains(p)); // prints false (probably)
 ```
 
-This looks strange. Where did `p` go? 
+
+This looks strange. 
+Where did `p` go? 
 More strangeness results if you check whether the iterator of the set contains `p`:
+
+
+这看起来很奇怪。
+`p` 去哪儿了？
+如果检查集合的迭代器是否包含 `p`，则会产生更多奇怪的结果：
+
 
 ```text
 Iterator<Point> it = coll.iterator();
@@ -507,32 +528,69 @@ while (it.hasNext()) {
 System.out.println(containedP); // prints true
 ```
 
-So here's a set that does not contain p, yet p is among the elements of the set! 
-What happened, of course, is that after the change to the x field, the point p ended up in the wrong hash bucket of the set coll. 
+
+So here's a set that does not contain `p`, yet `p` is among the elements of the set! 
+What happened, of course, is that after the change to the `x` field, the point `p` ended up in the wrong hash bucket of the set `coll`. 
 That is, its original hash bucket no longer corresponded to the new value of its hash code. 
-In a manner of speaking, the point p “dropped out of sight” in the set coll even though it still belonged to its elements.
+In a manner of speaking, the `point` `p` “dropped out of sight” in the set `coll` even though it still belonged to its elements.
 
-The lesson to be drawn from this example is that when equals and hashCode depend on mutable state, it may cause problems for users. 
+
+所以这里有一个不包含 `p` 的集合，但是 `p` 是集合的元素之一！
+当然，发生的事情是在更改了 `x` 字段之后，点 `p` 最终出现在集合 `coll` 的错误哈希桶中。
+也就是说，它的原始哈希桶不再对应于它的哈希码的新值。
+从某种意义上说， `point` `p` 在集合 `coll` 中“消失了”，即使它仍然属于它的元素。
+
+
+The lesson to be drawn from this example is that when `equals` and `hashCode` depend on mutable state, it may cause problems for users. 
 If they put such objects into collections, they have to be careful never to modify the depended-on state, and this is tricky. 
-If you need a comparison that takes the current state of an object into account, you should usually name it something else, not equals. 
-Considering the last definition of Point, it would have been preferable to omit a redefinition of hashCode and to name the comparison method equalContents, or some other name different from equals. 
-Point would then have inherited the default implementation of equals and hashCode. 
-So p would have stayed locatable in coll even after the modification to its x field.
+If you need a comparison that takes the current state of an object into account, you should usually name it something else, not `equals`. 
+Considering the last definition of `Point`, it would have been preferable to omit a redefinition of `hashCode` and to name the comparison method `equalContents`, or some other name different from `equals`. 
+`Point` would then have inherited the default implementation of `equals` and `hashCode`. 
+So `p` would have stayed locatable in `coll` even after the modification to its `x` field.
 
-## Pitfall #4: Failing to define equals as an equivalence relation
 
-The contract of the equals method in Object specifies that equals must implement an equivalence relation on non-null objects:
+从这个例子中得到的教训是，当 `equals` 和 `hashCode` 依赖于可变状态时，可能会给用户带来问题。
+如果他们将这些对象放入集合中，他们必须小心永远不要修改依赖状态，这很棘手。
+如果您需要一个考虑对象当前状态的比较，您通常应该**将其命名为其他名称**，而不是 `equals` 。
+考虑到 `Point` 的最后定义，最好省略对 `hashCode` 的重新定义，并将比较方法命名为 `equalContents` ，或与 `equals` 不同的其他名称。
+`Point` 将继承 `equals` 和 `hashCode` 的默认实现。
+所以即使在修改了它的 `x` 字段之后， `p` 也会在 `coll` 中保持可定位。
 
-* It is reflexive: for any non-null value x, the expression x.equals(x) should return true.
-* It is symmetric: for any non-null values x and y, x.equals(y) should return true if and only if y.equals(x) returns true.
-* It is transitive: for any non-null values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, then x.equals(z) should return true.
-* It is consistent: for any non-null values x and y, multiple invocations of x.equals(y) should consistently return true or consistently return false, provided no information used in equals comparisons on the objects is modified.
-* For any non-null value x, x.equals(null) should return false.
 
-The definition of equals developed so far for class Point satisfies the contract for equals. 
-However, things become more complicated once subclasses are considered. 
-Say there is a subclass ColoredPoint of Point that adds a field color of type Color. 
-Assume Color is defined as an enum:
+## Pitfall #4: Failing to define `equals` as an equivalence relation _陷阱 4：未能将 `equals` 定义为等价关系_
+
+
+The contract of the `equals` method in `Object` specifies that `equals` must implement an equivalence relation on non-null objects:
+
+
+`Object` 中 `equals` 方法的契约规定 `equals` 必须在非空对象上实现等价关系：
+
+
+* It is reflexive: for any non-null value `x`, the expression `x.equals(x)` should return `true`.
+* It is symmetric: for any non-null values `x` and `y`, `x.equals(y)` should return `true` if and only if `y.equals(x)` returns `true`.
+* It is transitive: for any non-null values `x`, `y`, and `z`, if `x.equals(y)` returns `true` and `y.equals(z)` returns `true`, then `x.equals(z)` should return `true`.
+* It is consistent: for any non-null values `x` and `y`, multiple invocations of `x.equals(y)` should consistently return `true` or consistently return `false`, provided no information used in `equals` comparisons on the objects is modified.
+* For any non-null value `x`, `x.equals(null)` should return `false`.
+
+
+* 它是自反的：对于任何非空值 `x` ，表达式 `x.equals(x)` 应该返回 `true` 。
+* 它是对称的：对于任何非空值 `x` 和 `y` ，当且仅当 `y.equals(x)` 返回 `true` 时， `x.equals(y)` 应该返回 `true` 。
+* 它是可传递的：对于任何非空值 `x` 、`y` 和 `z` ，如果 `x.equals(y)` 返回 `true` 并且 `y.equals(z)` 返回 `true`，那么 `x.equals(z)` 应该返回 `true` 。
+* 它是一致的：对于任何非空值 `x` 和 `y` ， `x.equals(y)` 的多次调用应该一致地返回 `true` 或一致地返回 `false` ，前提是 `equals` 中没有使用任何信息对象上的比较被修改。
+* 对于任何非空值 `x` ， `x.equals(null)` 应该返回 `false` 。
+
+
+The definition of `equals` developed so far for class `Point` satisfies the contract for `equals`. 
+However, things become more complicated once **subclasses** are considered. 
+Say there is a subclass `ColoredPoint` of `Point` that adds a field `color` of type `Color`. 
+Assume `Color` is defined as an `enum`:
+
+
+迄今为止为类 `Point` 开发的 `equals` 的定义满足 `equals` 的约定。
+然而，一旦考虑**子类**，事情就会变得更加复杂。
+假设有一个 `Point` 的子类 `ColoredPoint` ，它添加了一个 `Color` 类型的字段 `color` 。
+假设 `Color` 被定义为 `enum` ：
+
 
 ```java
 public enum Color {
@@ -540,7 +598,12 @@ public enum Color {
 }
 ```
 
+
 `ColoredPoint` overrides `equals` to take the new `color` field into account:
+
+
+`ColoredPoint` 覆盖 `equals` 以考虑新的 `color` 字段：
+
 
 ```java
 public class ColoredPoint extends Point { // Problem: equals not symmetric
@@ -563,13 +626,28 @@ public class ColoredPoint extends Point { // Problem: equals not symmetric
 }
 ```
 
-This is what many programmers would likely write. Note that in this case, class `ColoredPoint` need not override `hashCode`. 
-Because the new definition of equals on `ColoredPoint` is stricter than the overridden definition in Point (meaning it equates fewer pairs of objects), the contract for `hashCode` stays valid. 
+
+This is what many programmers would likely write. 
+Note that in this case, class `ColoredPoint` need not override `hashCode`. 
+Because the new definition of `equals` on `ColoredPoint` is stricter than the overridden definition in `Point` (meaning it equates fewer pairs of objects), the contract for `hashCode` stays valid. 
 If two colored points are equal, they must have the same coordinates, so their hash codes are guaranteed to be equal as well.
 
-Taking the class ColoredPoint by itself, its definition of equals looks OK. 
-However, the contract for equals is broken once points and colored points are mixed. 
+
+这是许多程序员可能会写的内容。
+请注意，在这种情况下，类 `ColoredPoint` 不需要覆盖 `hashCode` 。
+因为 `ColoredPoint` 上 `equals` 的新定义比 `Point` 中覆盖的定义更严格（意味着它等同于更少的对象对）， `hashCode` 的契约保持有效。
+如果两个颜色点相等，则它们必须具有相同的坐标，因此它们的哈希码也保证相等。
+
+
+Taking the class `ColoredPoint` by itself, its definition of `equals` looks OK. 
+However, the contract for `equals` is broken once `point`s and colored `point`s are mixed. 
 Consider:
+
+
+单独使用类 `ColoredPoint` ，它对 `equals` 的定义看起来没问题。
+但是，一旦 `point` 和彩色 `point` 混合在一起， `equals` 的合同就会被破坏。
+考虑：
+
 
 ```text
 Point p = new Point(1, 2);
@@ -581,15 +659,30 @@ System.out.println(p.equals(cp)); // prints true
 System.out.println(cp.equals(p)); // prints false
 ```
 
-The comparison “p equals cp” invokes p's equals method, which is defined in class Point. 
-This method only takes into account the coordinates of the two points. 
-Consequently, the comparison yields true. 
-On the other hand, the comparison “cp equals p” invokes cp's equals method, which is defined in class ColoredPoint. 
-This method returns false, because p is not a ColoredPoint. 
-So the relation defined by equals is not symmetric.
+
+The comparison “`p` equals `cp`” invokes `p`'s `equals` method, which is defined in class `Point`. 
+This method only takes into account the coordinates of the two `point`s. 
+Consequently, the comparison yields `true`. 
+On the other hand, the comparison “`cp` equals `p`” invokes `cp`'s `equals` method, which is defined in class `ColoredPoint`. 
+This method returns `false`, because `p` is not a `ColoredPoint`. 
+So the relation defined by `equals` is not symmetric.
+
+
+比较“ `p` 等于 `cp` ”调用 `p` 的 `equals` 方法，该方法在 `Point` 类中定义。
+这个方法只考虑了两个 `point` 的坐标。
+因此，比较产生 `true` 。
+另一方面，比较“ `cp` 等于 `p` ”调用 `cp` 的 `equals` 方法，该方法定义在 `ColoredPoint` 类中。
+此方法返回 `false` ，因为 `p` 不是 `ColoredPoint`。
+所以 `equals` 定义的关系不是对称的。
+
 
 The loss in symmetry can have unexpected consequences for collections. 
 Here's an example:
+
+
+对称性的丧失会对集合产生意想不到的后果。
+下面是一个例子：
+
 
 ```text
 Set<Point> hashSet1 = new java.util.HashSet<Point>();
@@ -601,13 +694,26 @@ hashSet2.add(cp);
 System.out.println(hashSet2.contains(p));    // prints true
 ```
 
+
 So even though `p` and `cp` are equal, one contains test succeeds whereas the other one fails.
 
-How can you change the definition of equals so that it becomes symmetric? 
+
+因此，即使 `p` 和 `cp` 相等，一个包含测试成功而另一个失败。
+
+
+How can you change the definition of `equals` so that it becomes symmetric? 
 Essentially there are two ways. 
-You can either make the relation more general or more strict. 
-Making it more general means that a pair of two objects, a and b, is taken to be equal if either comparing a with b or comparing b with a yields true. 
+You can either make the relation **more general** or **more strict**. 
+Making it more general means that a pair of two objects, `a` and `b`, is taken to be `equal` if either comparing `a` with `b` or comparing `b` with `a` yields `true`. 
 Here's code that does this:
+
+
+你怎么能改变 `equals` 的定义，使它变得对称？
+本质上有两种方式。
+您可以使关系**更一般**或**更严格**。
+使其更通用意味着如果将 `a` 与 `b` 进行比较或将 `b` 与 `a` 进行比较产生 `true` ，则将 `a` 和 `b` 这对两个对象视为 `equal` .
+这是执行此操作的代码：
+
 
 ```java
 public class ColoredPoint extends Point { // Problem: equals not transitive
@@ -634,19 +740,38 @@ public class ColoredPoint extends Point { // Problem: equals not transitive
 }
 ```
 
-The new definition of equals in ColoredPoint checks one more case than the old one: 
-If the other object is a Point but not a ColoredPoint, the method forwards to the equals method of Point. This has the desired effect of making equals symmetric. 
-Now, both “cp.equals(p)” and “p.equals(cp)” result in true. 
-However, the contract for equals is still broken. 
-Now the problem is that the new relation is no longer transitive! Here's a sequence of statements that demonstrates this. 
-Define a point and two colored points of different colors, all at the same position:
+
+The new definition of `equals` in `ColoredPoint` checks one more case than the old one: 
+If the other object is a `Point` but not a `ColoredPoint`, the method forwards to the `equals` method of `Point`. 
+This has the desired effect of making equals symmetric. 
+Now, both “`cp.equals(p)`” and “`p.equals(cp)`” result in `true`. 
+However, the contract for `equals` is still broken. 
+Now the problem is that the new relation is no longer transitive! 
+Here's a sequence of statements that demonstrates this. 
+Define a `point` and two colored `point`s of different colors, all at the same position:
+
+
+The new definition of `equals` in `ColoredPoint` checks one more case than the old one: 
+If the other object is a `Point` but not a `ColoredPoint`, the method forwards to the `equals` method of `Point`. 
+This has the desired effect of making equals symmetric. 
+Now, both “`cp.equals(p)`” and “`p.equals(cp)`” result in `true`. 
+However, the contract for `equals` is still broken. 
+Now the problem is that the new relation is no longer transitive! 
+Here's a sequence of statements that demonstrates this. 
+Define a `point` and two colored `point`s of different colors, all at the same position:
+
 
 ```text
 ColoredPoint redP = new ColoredPoint(1, 2, Color.RED);
 ColoredPoint blueP = new ColoredPoint(1, 2, Color.BLUE);
 ```
 
-Taken individually, redp is equal to p and p is equal to bluep:
+
+Taken individually, redp is equal to `p` and `p` is `equal` to bluep:
+
+
+Taken individually, redp is equal to `p` and `p` is `equal` to bluep:
+
 
 ```text
 System.out.println(redP.equals(p)); // prints true
@@ -654,18 +779,37 @@ System.out.println(redP.equals(p)); // prints true
 System.out.println(p.equals(blueP)); // prints true
 ```
 
+
 However, comparing `redP` and `blueP` yields `false`:
+
+
+However, comparing `redP` and `blueP` yields `false`:
+
 
 ```text
 System.out.println(redP.equals(blueP)); // prints false
 ```
 
-Hence, the transitivity clause of equals's contract is violated.
 
-Making the equals relation more general seems to lead to a dead end. 
-We'll try to make it stricter instead. One way to make equals stricter is to always treat objects of different classes as different. 
-That could be achieved by modifying the equals methods in classes Point and ColoredPoint. 
-In class Point, you could add an extra comparison that checks whether the run-time class of the other Point is exactly the same as this Point's class, as follows:
+Hence, the transitivity clause of `equals`'s contract is violated.
+
+
+Hence, the transitivity clause of `equals`'s contract is violated.
+
+
+Making the `equals` relation more general seems to lead to a dead end. 
+We'll try to make it stricter instead. 
+One way to make `equals` stricter is to always treat objects of different classes as different. 
+That could be achieved by modifying the `equals` methods in classes `Point` and `ColoredPoint`. 
+In class `Point`, you could add an extra comparison that checks whether the run-time class of the other `Point` is exactly the same as this `Point`'s class, as follows:
+
+
+Making the `equals` relation more general seems to lead to a dead end. 
+We'll try to make it stricter instead. 
+One way to make `equals` stricter is to always treat objects of different classes as different. 
+That could be achieved by modifying the `equals` methods in classes `Point` and `ColoredPoint`. 
+In class `Point`, you could add an extra comparison that checks whether the run-time class of the other `Point` is exactly the same as this `Point`'s class, as follows:
+
 
 ```java
 // A technically valid, but unsatisfying, equals method
@@ -703,7 +847,12 @@ public class Point {
 }
 ```
 
-You can then revert class `ColoredPoint`'s implementation back to the version that previously had violated the symmetry requirement:4
+
+You can then revert class `ColoredPoint`'s implementation back to the version that previously had violated the symmetry requirement:
+
+
+You can then revert class `ColoredPoint`'s implementation back to the version that previously had violated the symmetry requirement:
+
 
 ```java
 public class ColoredPoint extends Point { // No longer violates symmetry requirement
@@ -726,12 +875,15 @@ public class ColoredPoint extends Point { // No longer violates symmetry require
 }
 ```
 
+
 Here, an instance of class `Point` is considered to be equal to some other instance of the same class only if the objects have the same coordinates and they have the same run-time class, meaning `.getClass()` on either object returns the same value. 
 The new definitions satisfy symmetry and transitivity because now every comparison between objects of different classes yields `false`. 
 So a colored point can never be equal to a point. 
 This convention looks reasonable, but one could argue that the new definition is too strict.
 
+
 Consider the following slightly roundabout way to define a point at coordinates (1, 2):
+
 
 ```text
 Point pAnon = new Point(1, 1) {
@@ -741,11 +893,13 @@ Point pAnon = new Point(1, 1) {
 };
 ```
 
+
 Is `pAnon` equal to `p`? The answer is no because the `java.lang.Class` objects associated with `p` and `pAnon` are different. 
 For `p` it is `Point`, whereas for `pAnon` it is an anonymous subclass of `Point`. 
 But clearly, `pAnon` is just another point at coordinates (1, 2). It does not seem reasonable to treat it as being different from p.
 
-## The canEqual method
+
+## The `canEqual` method
 
 So it seems we are stuck. 
 Is there a sane way to redefine equality on several levels of the class hierarchy while keeping its contract? 
