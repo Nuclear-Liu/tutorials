@@ -4,12 +4,12 @@ My Tutorials
 
 ## Framework
 
-* [Lombok](./middleware/lombok/Lombok/Overview.md)
+* [Lombok](./tdd/lombok/Lombok/Overview.md)
 * The Checker Framework
 
 # Excellent Literature
 
-* [How to Write an Equality Method in Java](./middleware/lombok/Lombok/How%20to%20Write%20an%20Equality%20Method%20in%20Java.md)
+* [How to Write an Equality Method in Java](./tdd/lombok/Lombok/How%20to%20Write%20an%20Equality%20Method%20in%20Java.md)
 
 ## My IDEA Plugins
 

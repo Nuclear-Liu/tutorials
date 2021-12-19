@@ -1136,7 +1136,7 @@ Thus, in the previous example we were able to pass two different `Point` subclas
 ## Resources _资源_
 
 
-![programming_in_scala](./Scala.png)
+![programming_in_scala](Scala.png)
 
 
 This article is adapted from a section of chapter 28 of the book Programming in Scala:

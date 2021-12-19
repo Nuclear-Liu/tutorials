@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>middleware</artifactId>
-        <groupId>org.hui.middleware</groupId>
+        <artifactId>tdd</artifactId>
+        <groupId>org.hui.tdd</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.middleware.lombok</groupId>
+    <groupId>org.hui.tdd.lombok</groupId>
     <artifactId>lombok</artifactId>
 
     <properties>

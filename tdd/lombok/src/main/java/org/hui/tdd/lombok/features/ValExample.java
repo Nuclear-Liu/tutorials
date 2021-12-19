@@ -1,4 +1,4 @@
-package org.hui.middleware.lombok.features;
+package org.hui.tdd.lombok.features;
 
 import lombok.val;
 
