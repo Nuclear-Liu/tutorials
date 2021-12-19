@@ -2,7 +2,12 @@
 
 ## Lombok features _Lombok 特性_
 
+
 The Lombok javadoc is available, but we advise these pages.
+
+
+Lombok javadoc 可用，但我们建议这些页面。
+
 
 * [`val`](https://projectlombok.org/features/val) [`val`](features/01%20val.md)
 
