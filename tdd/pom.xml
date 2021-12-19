@@ -22,6 +22,7 @@
         <module>mockito</module>
         <module>action</module>
         <module>lombok</module>
+        <module>checkerframework</module>
     </modules>
 
     <properties>
