@@ -1,4 +1,4 @@
-# Record Classes _记录类_
+# [Record Classes](https://docs.oracle.com/en/java/javase/17/language/records.html) _记录类_
 
 
 Record classes, which are a special kind of class, help to model plain data aggregates with less ceremony than normal classes.
