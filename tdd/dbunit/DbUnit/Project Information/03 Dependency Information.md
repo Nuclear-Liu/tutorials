@@ -1,4 +1,4 @@
-## Dependency Information
+## Dependency Information *依赖信息*
 
 ### Apache Maven
 

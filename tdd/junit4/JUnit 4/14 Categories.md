@@ -6,10 +6,10 @@
 
 From a given set of test classes, the `Categories` runner runs only the classes and methods that are annotated with either the category given with the `@IncludeCategory` annotation, or a subtype of that category. 
 Either classes or interfaces can be used as categories. 
-Subtyping works, so if you say `@IncludeCategory(SuperClass.class)`, a test marked `@Category({SubClass.class})` will be run.
+Subtyping works, so if you say `@IncludeCategory(SuperClass.class)` , a test marked `@Category({SubClass.class})` will be run.
 
 
-从一组给定的测试类中， `Categories` 运行程序仅运行使用 `@IncludeCategory` 批注给出的类别或该类别的子类型进行批注的类和方法。
+从一组给定的测试类中， `Categories` 运行程序仅运行使用 `@IncludeCategory` 注解给出的类别或该类别的子类型进行批注的类和方法。
 类或接口都可以用作类别。
 子类型有效，所以如果你说 `@IncludeCategory(SuperClass.class)` ，一个标记为 `@Category({SubClass.class})` 的测试将会运行。
 
@@ -171,6 +171,6 @@ This is also used to add project specific metadata like which feature of a proje
 [See usages of Junit Categories on github hosted projects](https://github.com/search?o=asc&p=11&q=%22import+org.junit.experimental.categories.Category%22+%22%40Category%22&ref=searchresults&s=indexed&type=Code&utf8=%E2%9C%93) 
 
 
-[See usages of Junit Categories on github hosted projects](https://github.com/search?o=asc&p=11&q=%22import+org.junit.experimental.categories.Category%22+%22%40Category%22&ref=searchresults&s=indexed&type=Code&utf8=%E2%9C%93) 
+[查看 github 托管项目上 Junit Categories 的用法](https://github.com/search?o=asc&p=11&q=%22import+org.junit.experimental.categories.Category%22+%22%40Category%22&ref=searchresults&s=indexed&type=Code&utf8=%E2%9C%93) 
 
 ---

@@ -1,0 +1,36 @@
+@startuml
+package org.hui.design.templatemethod {
+  abstract class AbstractClass {
+    + AbstractClass() #red
+    # primitiveOperation1() {abstract}
+    # primitiveOperation2() {abstract}
+    # primitiveOperationN() {abstract}
+    + templateMethod()
+  }
+  class Application {
+    - method : AbstractClass
+    + Application(method : AbstractClass)
+    + changeMethod(method : AbstractClass)
+    + templateMethod()
+  }
+  class ConcreteClass1 #AAFFDD {
+    + ConcreteClass1()
+    # primitiveOperation1()
+    # primitiveOperation2()
+    # primitiveOperationN()
+  }
+  class ConcreteClassN #AAFFDD {
+    + ConcreteClassN()
+    # primitiveOperation1()
+    # primitiveOperation2()
+    # primitiveOperationN()
+  }
+}
+Application -->  "-method" AbstractClass
+ConcreteClass1 --|> AbstractClass
+ConcreteClassN --|> AbstractClass
+
+note right of Application::templateMethod
+  call method.templateMethod()
+end note
+@enduml

@@ -51,7 +51,7 @@ this syntax allows you to think in terms of subject, verb, object (assert "x is 
 Combinations: any matcher statement s can be negated (`not(s)`), combined (`either(s).or(t)`), mapped to a collection (`each(s)`), or used in custom combinations (`afterFiveSeconds(s)`)
 
 
-组合：任何匹配器语句都可以否定（ `not(s)` ）、组合（ `either(s).or(t)` ）、映射到集合（ `each(s)` ），或用于自定义组合（ `afterFiveSeconds（s）` ）
+组合：任何匹配器语句都可以否定（ `not(s)` ）、组合（ `either(s).or(t)` ）、映射到集合（ `each(s)` ），或用于自定义组合（ `afterFiveSeconds(s)` ）
 
 ---
 

@@ -10,7 +10,7 @@
 <dependency>
   <groupId>junit</groupId>
   <artifactId>junit</artifactId>
-  <version>4.12</version>
+  <version>4.13.2</version>
   <scope>test</scope>
 </dependency> 
 
@@ -88,7 +88,7 @@ In your `pom.xml`, declare dependency used as `junit-dep`, and also override tra
 The following one-liner described [here](http://stackoverflow.com/questions/5094410/how-to-list-the-slowest-junit-tests-in-a-multi-module-maven-build).
 
 
-以下单行描述 [here](http://stackoverflow.com/questions/5094410/how-to-list-the-slowest-junit-tests-in-a-multi-module-maven-build)。
+[此处](http://stackoverflow.com/questions/5094410/how-to-list-the-slowest-junit-tests-in-a-multi-module-maven-build) 描述的以下单行。
 
 ---
 

@@ -13,16 +13,16 @@ Examples of these are:
 
 ---
 
-* equals method: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object)](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object))
-* hashcode method: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode()](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode())
-* Comparable interface: [http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html](http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)
-* Serializable interface: [http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html)
+* `equals` method: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object)](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object))
+* `hashcode` method: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode()](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode())
+* `Comparable` interface: [http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html](http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)
+* `Serializable` interface: [http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html)
 
 
-* equals 方法: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object)](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object))
-* hashcode 方法: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode()](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode())
-* Comparable 接口: [http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html](http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)
-* Serializable 接口: [http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html)
+* `equals` 方法: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object)](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals(java.lang.Object))
+* `hashcode` 方法: [http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode()](http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode())
+* `Comparable` 接口: [http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html](http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)
+* `Serializable` 接口: [http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html)
 
 ---
 
@@ -42,7 +42,7 @@ Although these test helper classes work without issue, they are designed for pre
 
 ---
 
-The project [Equals Verifier]() provides support for testing `equals` and `hashCode`.
+The project [Equals Verifier](https://github.com/jqno/equalsverifier) provides support for testing `equals` and `hashCode`.
 
 
 项目 [Equals Verifier](https://github.com/jqno/equalsverifier) 为测试 `equals` 和 `hashCode` 提供支持。

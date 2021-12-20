@@ -12,7 +12,7 @@ For example, if a test fails when run in a different locale than the developer i
 
 
 理想情况下，编写测试的开发人员可以控制可能导致测试失败的所有因素。
-如果这不是立即可能的，那么使依赖关系显式通常可以改进设计。
+如果这不是立即可能的，明确的依赖关系通常可以改进设计。
 例如，如果测试在与开发人员预期不同的语言环境中运行时失败，则可以通过将语言环境显式传递给域代码来修复。
 
 ---
@@ -47,7 +47,7 @@ Custom runners may behave differently.
 
 
 默认的 JUnit 运行器将假设失败的测试视为忽略。
-自定义跑步者的行为可能有所不同。
+自定义运行器的行为可能有所不同。
 
 ---
 

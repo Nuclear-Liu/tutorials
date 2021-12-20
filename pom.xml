@@ -12,8 +12,8 @@
         <module>java</module>
         <module>design</module>
         <module>dsaa</module>
-        <module>action</module>
         <module>tdd</module>
+        <module>middleware</module>
     </modules>
 
     <properties>
