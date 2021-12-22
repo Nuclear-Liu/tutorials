@@ -1,6 +1,12 @@
 # Cleanup
 
 
+Automatic resource management: Call your `close()` methods safely with no hassle.
+
+
+自动资源管理：安全地调用你的 `close()` 方法，没有麻烦。
+
+
 ## Overview
 
 
