@@ -6,7 +6,11 @@
 ### Annotation
 
 * [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
-* [``]()
+    * Scope
+      * `ElementType.FIELD`(Only on no-static fields)
+      * `ElementType.TYPE`
+      
+* [`@ToString`](./features/06%20ToString.md)
 * [``]()
 
 ### Configuration keys
