@@ -6,9 +6,16 @@
 ### Annotation
 
 * [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
-    * Scope
+    * Target
       * `ElementType.FIELD`(Only on no-static fields)
       * `ElementType.TYPE`
+    * `value`: `AccessLevel`
+      * `AccessLevel.PUBLIC`
+      * `AccessLevel.MODULE`
+      * `AccessLevel.PROTECTED`
+      * `AccessLevel.PACKAGE`
+      * `AccessLevel.PRIVATE`
+      * `AccessLevel.NONE` Represents not generating anything or the complete lack of a method.
       
 * [`@ToString`](./features/06%20ToString.md)
 * [``]()
