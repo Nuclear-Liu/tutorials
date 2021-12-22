@@ -64,10 +64,10 @@ If a null-check is already present at the top, no additional null-check will be 
 ## Supported configuration keys: _支持的配置键：_
 
 
-`lombok.nonNull.exceptionType` = [`NullPointerException` | `IllegalArgumentException` | `JDK` | `Guava` | `Assertion`] (default: `NullPointerException`).
+`lombok.nonNull.exceptionType =` [`NullPointerException` | `IllegalArgumentException` | `JDK` | `Guava` | `Assertion`] (default: `NullPointerException`).
 
 
-`lombok.nonNull.exceptionType` = [`NullPointerException` | `IllegalArgumentException` | `JDK` | `Guava` | `Assertion`] (默认: `NullPointerException`).
+`lombok.nonNull.exceptionType =` [`NullPointerException` | `IllegalArgumentException` | `JDK` | `Guava` | `Assertion`] (默认: `NullPointerException`).
 
 
 When lombok generates a null-check `if` statement, by default, a `java.lang.NullPointerException` will be thrown with 'field name is marked non-null but is null' as the exception message. 
@@ -84,10 +84,10 @@ The keys `JDK` or `Guava` result in an invocation to the standard nullcheck meth
 分别 `java.util.Objects.requireNonNull([field name here], "[field name here] is marked non-null but is null");` or `com.google.common.base.Preconditions.checkNotNull([field name here], "[field name here] is marked non-null but is null");` 。
 
 
-`lombok.nonNull.flagUsage` = [`warning` | `error`] (default: not set)
+`lombok.nonNull.flagUsage =` [`warning` | `error`] (default: not set)
 
 
-`lombok.nonNull.flagUsage` = [`warning` | `error`] (默认值：未设置)
+`lombok.nonNull.flagUsage =` [`warning` | `error`] (默认值：未设置)
 
 
 Lombok will flag any usage of `@NonNull` as a warning or error if configured.

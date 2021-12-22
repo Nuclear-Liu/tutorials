@@ -44,10 +44,10 @@ A cleanup method that takes 1 or more arguments cannot be called via `@Cleanup`.
 ## Supported configuration keys:
 
 
-`lombok.cleanup.flagUsage` = [`warning` | `error`] (default: not set)
+`lombok.cleanup.flagUsage =` [`warning` | `error`] (default: not set)
 
 
-`lombok.cleanup.flagUsage` = [`warning` | `error`] (默认值：未设置)
+`lombok.cleanup.flagUsage =` [`warning` | `error`] (默认值：未设置)
 
 
 Lombok will flag any usage of `@Cleanup` as a warning or error if configured.

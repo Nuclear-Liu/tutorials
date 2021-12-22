@@ -36,10 +36,10 @@ _警告：此功能当前在 NetBeans 中不起作用。_
 ## Supported configuration keys:
 
 
-`lombok.val.flagUsage` = [`warning` | `error`] (default: not set)
+`lombok.val.flagUsage =` [`warning` | `error`] (default: not set)
 
 
-`lombok.val.flagUsage` = [`warning` | `error`] (默认值：未设置)
+`lombok.val.flagUsage =` [`warning` | `error`] (默认值：未设置)
 
 
 Lombok will flag any usage of `val` as a warning or error if configured.

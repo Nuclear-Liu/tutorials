@@ -51,6 +51,7 @@ public class TestCleanup {
         }
     }
     @Test
+    @Ignore("CleanupFeatures.getInputStream() read local file")
     public void testCleanupFunction() throws IOException {
         String outputPath = "./target/TestCleanup.java2";
         @Cleanup

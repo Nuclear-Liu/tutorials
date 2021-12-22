@@ -25,10 +25,10 @@ If the type of `x` was inferred to be `java.lang.Object` this code would have co
 ## Supported configuration keys:
 
 
-`lombok.var.flagUsage` = [`warning` | `error`] (default: not set)
+`lombok.var.flagUsage =` [`warning` | `error`] (default: not set)
 
 
-`lombok.var.flagUsage` = [`warning` | `error`] (默认：未设置)
+`lombok.var.flagUsage =` [`warning` | `error`] (默认：未设置)
 
 
 Lombok will flag any usage of `var` as a warning or error if configured.
