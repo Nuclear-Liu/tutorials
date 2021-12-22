@@ -4,7 +4,6 @@ import lombok.Cleanup;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +48,20 @@ public class TestCleanup {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    @Test
+    public void testCleanupFunction() throws IOException {
+        String outputPath = "./target/TestCleanup.java2";
+        @Cleanup
+        InputStream in = CleanupFeatures.getInputStream();
+        @Cleanup
+        FileOutputStream out = new FileOutputStream(outputPath);
+        byte[] b = new byte[4096];
+        while (true) {
+            int r = in.read(b);
+            if (r == -1) break;
+            out.write(b, 0, r);
         }
     }
     @Test
