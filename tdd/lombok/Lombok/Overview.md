@@ -3,5 +3,18 @@
 # Best Practices _最佳实践_
 
 
-* [`@Cleanup`](./features/04%20Cleanup.md)
+### Annotation
+
 * [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
+* [``]()
+* [``]()
+
+### Configuration keys
+
+
+```lombok.config
+lombok.val.flagUsage = ERROR
+lombok.var.flagUsage = ERROR
+lombok.nonNull.flagUsage = ERROR
+lombok.cleanup.flagUsage = ERROR # try-with-rsource
+```

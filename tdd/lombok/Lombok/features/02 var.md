@@ -21,3 +21,17 @@ If the type of `x` was inferred to be `java.lang.Object` this code would have co
 例如， `var x = "Hello"; x = Color.RED;` 不起作用； `x` 的类型将被推断为`java.lang.String`，因此`x = Color.RED` 赋值将失败。
 如果 `x` 的类型被推断为 `java.lang.Object` ，这段代码就会被编译，但这不是 `var` 的工作方式。
 
+
+## Supported configuration keys:
+
+
+`lombok.var.flagUsage` = [`warning` | `error`] (default: not set)
+
+
+`lombok.var.flagUsage` = [`warning` | `error`] (默认：未设置)
+
+
+Lombok will flag any usage of `var` as a warning or error if configured.
+
+
+如果已配置，Lombok 会将任何对 `var` 的使用标记为警告或错误。
