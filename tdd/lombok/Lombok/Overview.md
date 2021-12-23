@@ -5,7 +5,7 @@
 
 ### Annotation
 
-* [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
+### [`@Getter` / `@Setter`](./features/05%20GetterSetter.md)
     * Target
       * `ElementType.FIELD`(Only on no-static fields)
       * `ElementType.TYPE`
@@ -17,10 +17,10 @@
       * `AccessLevel.PRIVATE`
       * `AccessLevel.NONE` Represents not generating anything or the complete lack of a method.
       
-* [`@ToString`](./features/06%20ToString.md)
+### [`@ToString`](./features/06%20ToString.md)
   * `@Target(ElementType.TYPE)`
 
-* [``]()
+### [``]()
 
 ### Configuration keys
 
