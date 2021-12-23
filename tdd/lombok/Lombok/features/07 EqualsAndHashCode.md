@@ -1,5 +1,12 @@
 # `@EqualsAndHashCode`
 
+
+Equality made easy: Generates `hashCode` and `equals` implementations from the fields of your object.
+
+
+相等变得容易：从对象的字段生成`hashCode` 和`equals` 实现。
+
+
 ## Overview
 
 
@@ -52,7 +59,7 @@ If you need to write your own `equals` methods, you should always override `canE
 
 
 Lombok 0.10 中的新内容：除非您的类是 `final` 并扩展了 `java.lang.Object`，lombok 会生成一个 `canEqual` 方法，这意味着 JPA 代理仍然可以等于它们的基类，但添加新状态的子类不会打破平等契约。
-本文解释了为什么需要这种方法的复杂原因： [How to Write an Equality Method in Java]() 。
+本文解释了为什么需要这种方法的复杂原因： [How to Write an Equality Method in Java](./../How%20to%20Write%20an%20Equality%20Method%20in%20Java.md) 。
 如果层次结构中的所有类都是 scala 案例类和具有 lombok 生成的 `equals` 方法的类的混合，则所有相等都将“正常工作”。
 如果您需要编写自己的 `equals` 方法，并且更改 `equals` 和 `hashCode`，则应始终覆盖 `canEqual`。
 
