@@ -11,6 +11,10 @@ My Tutorials
 * [The Checker Framework](./tdd/checkerframework/Checker%20Framework/Overview.md)
 
 
+---
+
+[Objenesis](http://objenesis.org/)
+
 # Excellent Literature
 
 
@@ -48,3 +52,6 @@ IDEA Keymap
 | `ctrl` + <code>`</code>  | VCS Operations                        |
 | `ctrl` + `shift` + `F10` | Run context configuration from editor |
 | `ctrl` + `shift` + `r`   | Run Maven Goal                        |
+| `ctrl` + `F12`           | Inherited members                     |
+| `ctrl` + `I`             | Anonymous Classes                     |
+| `ctrl` + `shift` + `F12` | Hide All Windows                      |

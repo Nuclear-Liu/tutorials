@@ -1,6 +1,8 @@
 # Mocking
 
-## The first Mock Object _第一个 Mock 对象_
+
+## The first Mock Object _第一个 Mock Object_
+
 
 We will now build a test case and toy around with it to understand the functionalities of EasyMock. 
 You can also have a look at the [samples]() and the [Getting Started]().

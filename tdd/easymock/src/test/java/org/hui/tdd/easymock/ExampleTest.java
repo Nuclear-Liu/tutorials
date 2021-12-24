@@ -12,6 +12,7 @@ import org.junit.Test;
  * @since 2021-11-30 12:48
  */
 public class ExampleTest extends EasyMockSupport {
+
     @Rule
     public EasyMockRule rule = new EasyMockRule(this);
 
@@ -28,4 +29,5 @@ public class ExampleTest extends EasyMockSupport {
         classUnderTest.addDocument("New Document", "content"); // 5
         verifyAll(); // 6
     }
+
 }
