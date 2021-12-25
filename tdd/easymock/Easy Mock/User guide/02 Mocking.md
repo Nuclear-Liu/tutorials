@@ -5,22 +5,20 @@
 
 
 We will now build a test case and toy around with it to understand the functionalities of EasyMock. 
-You can also have a look at the [samples]() and the [Getting Started]().
+You can also have a look at the [samples](https://github.com/easymock/easymock/tree/easymock-4.3/core/src/samples/java/org/easymock/samples) and the [Getting Started](https://easymock.org/getting-started.html).
 
 
 我们现在将构建一个测试用例并使用它来理解 EasyMock 的功能。
-您还可以查看 [samples]() 和 [Getting Started]()。
+您还可以查看 [samples](https://github.com/easymock/easymock/tree/easymock-4.3/core/src/samples/java/org/easymock/samples) 和 [Getting Started](./../Getting%20Started.md)。
 
----
 
 Our first test should check whether the removal of a non-existing document does **not** lead to a notification of the collaborator. 
 Here is the test without the definition of the Mock Object:
 
 
-我们的第一个测试应该检查删除不存在的文档是否不会导致协作者的通知。
-这是没有 Mock 对象定义的测试：
+我们的第一个测试应该检查删除不存在的文档是否**不会**导致协合作者的通知。
+这是没有 Mock Object 定义的测试：
 
----
 
 ```java
 import org.junit.*;
@@ -51,7 +49,6 @@ For many tests using EasyMock, we only need a static import of methods of `org.e
 
 对于许多使用 EasyMock 的测试，我们只需要静态导入 `org.easymock.EasyMock` 的方法。
 
----
 
 ```java
 import static org.easymock.EasyMock.*;
@@ -66,27 +63,24 @@ public class ExampleTest {
 To get a Mock Object, we need to
 
 
-要获得一个 Mock 对象，我们需要
+要获得一个 Mock Object ，我们需要
 
----
 
 1. create a Mock Object for the interface we would like to simulate
 2. record the expected behavior
 3. switch the Mock Object to replay state
 
 
-1. 为我们想要模拟的界面创建一个 Mock 对象
+1. 为我们想要模拟的接口创建一个 Mock Object
 2. 记录预期行为
-3. 将 Mock 对象切换到重放状态
+3. 将 Mock Object 切换到重放状态
 
----
 
 Here is a first example:
 
 
 这是第一个例子：
 
----
 
 ```text
 @Before
@@ -108,10 +102,9 @@ After activation in step 3, `mock` is a Mock Object for the `Collaborator` inter
 This means that if we change our `ClassUnderTest` to call any of the interface's methods, the Mock Object will throw an `AssertionError`:
 
 
-在第 3 步激活后，`mock` 是一个不需要调用的 `Collaborator` 接口的 Mock 对象。
-这意味着如果我们改变我们的 `ClassUnderTest` 来调用接口的任何方法，Mock 对象将抛出一个 `AssertionError` ：
+在第 3 步激活后， `mock` 是一个不需要调用的 `Collaborator` 接口的 Mock Object 。
+这意味着如果我们改变我们的 `ClassUnderTest` 来调用接口的任何方法， Mock Object 对象将抛出一个 `AssertionError` ：
 
----
 
 ```log
 java.lang.AssertionError:
@@ -125,7 +118,9 @@ java.lang.AssertionError:
       ...
 ```
 
+
 ## Using annotations `Since 3.2` _使用注解_
+
 
 There is a nice and shorter way to create your mocks and inject them to the tested class. 
 Here is the example above, now using annotations:
@@ -133,7 +128,7 @@ Here is the example above, now using annotations:
 
 有一种很好且更短的方法来创建模拟并将它们注入到测试类中。
 这是上面的示例，现在使用注解：
----
+
 
 ```java
 import static org.easymock.EasyMock.*;
@@ -160,16 +155,16 @@ public class ExampleTest {
 }
 ```
 
+
 The `mock` is instantiated by the runner at step 1. 
 It is then set by the runner, to the `listener` field on step 2. 
 The `setUp` method can be removed since all the initialization was done by the runner.
 
 
 `mock` 由运行程序在第 1 步实例化。
-然后由跑步者将其设置为第 2 步中的 `listener` 字段。
+然后由 runner 者将其设置为第 2 步中的 `listener` 字段。
 `setUp` 方法可以被移除，因为所有的初始化都是由 runner 完成的。
 
----
 
 On top of that, since `EasyMock 3.3`, if you need to use another runner on you tests, a JUnit rule is also available to you. 
 Both have the exact same behavior. 
@@ -180,7 +175,6 @@ Choosing one of the other is a matter of taste.
 两者都有完全相同的行为。
 选择其中之一是一个品味问题。
 
----
 
 ```java
 import static org.easymock.EasyMock.*;
@@ -209,12 +203,12 @@ public class ExampleTest {
 }
 ```
 
+
 Finally, since EasyMock 4.1, JUnit 5 extensions are supported.
 
 
 最后，从 EasyMock 4.1 开始，支持 JUnit 5 扩展。
 
----
 
 ```java
 import static org.easymock.EasyMock.*;
@@ -241,22 +235,22 @@ public class ExampleTest {
 }
 ```
 
-The annotation has an optional element, 'type', to refine the mock as a 'nice' mock or a 'strict' mock. 
-Another optional annotation, '`name`', allows setting of a name for the mock that will be used in the `mock()` call, which will appear in expectation failure messages for example. 
-Finally, an optional element, "`fieldName`", allows specifying the target field name where the mock should be injected. 
+
+The annotation has an optional element, `type`, to refine the `mock` as a `nice` mock or a `strict` mock. 
+Another optional annotation, `name`, allows setting of a name for the mock that will be used in the `mock()` call, which will appear in expectation failure messages for example. 
+Finally, an optional element, `fieldName`, allows specifying the target field name where the mock should be injected. 
 Mocks are injected to any field in any `@TestSubject` that is of compatible type. 
 If more than one mock can be assigned to the same field then this is considered an error. 
 The `fieldName` qualifier can be used in this scenario to disambiguate the assignments.
 
 
-注解有一个可选元素“type”，用于将模拟优化为“nice”模拟或“strict”模拟。
-另一个可选的注解，'`name`'，允许为将在 `mock()` 调用中使用的模拟设置一个名称，例如，它将出现在预期失败消息中。
-最后，可选元素“`fieldName`”允许指定应注入模拟的目标字段名称。
+注解有一个可选元素 `type` ，用于将 `mock` 优化为 `nice` 模拟或 `strict` 模拟。
+另一个可选的注解， `name` ，允许为将在 `mock()` 调用中使用的模拟设置一个名称，例如，它将出现在预期失败消息中。
+最后，可选元素 `fieldName` 允许指定应注入模拟的目标字段名称。
 模拟被注入到任何兼容类型的 `@TestSubject` 中的任何字段。
 如果可以将多个模拟分配给同一字段，则这将被视为错误。
 在这种情况下可以使用 `fieldName` 限定符来消除分配的歧义。
 
----
 
 ```text
 @Mock(type = MockType.NICE, name = "mock", fieldName = "someField")
@@ -265,6 +259,7 @@ private Collaborator mock;
 @Mock(type = MockType.STRICT, name = "anotherMock", fieldName = "someOtherField")
 private Collaborator anotherMock;
 ```
+
 
 ## EasyMockSupport _简单的模拟支持_
 

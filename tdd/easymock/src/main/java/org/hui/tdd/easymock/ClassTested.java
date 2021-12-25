@@ -14,4 +14,9 @@ public class ClassTested {
     public void addDocument(String title, String document) {
         listener.documentAdded(title);
     }
+
+    public boolean removeDocument(String title) {
+        listener.documentRemoved(title);
+        return true;
+    }
 }
