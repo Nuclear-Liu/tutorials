@@ -68,7 +68,6 @@ EasyMock 可以在 Android VM (Dalvik) 上使用。
 由于使用的是 Dexmaker，因此排除 Cglib 是个好主意。
 如果您使用 Maven，最终所需的依赖项将如下所示：
 
----
 
 ```text
 <dependency>
