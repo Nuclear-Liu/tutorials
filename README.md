@@ -27,6 +27,12 @@ My Tutorials
 * [The Tripartite Identity Pattern](http://habitatchronicles.com/2008/10/the-tripartite-identity-pattern/)
 
 
+## 疑问点
+
+
+* 对于生命周期的概念，是否对应映射到容器，使得对象数据与生命周期隔离会不会更合适；
+
+
 ## My IDEA Plugins
 
 

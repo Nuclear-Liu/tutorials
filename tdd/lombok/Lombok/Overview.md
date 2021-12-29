@@ -168,17 +168,7 @@ public enum AccessLevel {
 }
 ```
 
-    * Target
-      * `ElementType.FIELD`(Only on no-static fields)
-      * `ElementType.TYPE`
-    * `value`: `AccessLevel`
-      * `AccessLevel.PUBLIC` _default_
-      * `AccessLevel.MODULE`
-      * `AccessLevel.PROTECTED`
-      * `AccessLevel.PACKAGE`
-      * `AccessLevel.PRIVATE`
-      * `AccessLevel.NONE` Represents not generating anything or the complete lack of a method.
-      
+
 ### [`@ToString`](./features/06%20ToString.md)
 
 
@@ -284,8 +274,6 @@ public @interface ToString {
 }
 
 ```
-
-  * `@Target(ElementType.TYPE)`
 
 
 ### [`@EqualsAndHashCode`](./features/07%20EqualsAndHashCode.md)
