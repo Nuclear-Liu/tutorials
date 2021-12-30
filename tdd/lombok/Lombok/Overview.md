@@ -421,6 +421,9 @@ public @interface EqualsAndHashCode {
 ### [`@NoArgsConstructor`, `@RequiredArgsConstructor`, `@AllArgsConstructor`](./features/08%20Constructor.md)
 
 
+### [`@Data`](./features/09%20Data.md)
+
+
 ### [`@Builder`](./features/11%20Builder.md)
 
 
