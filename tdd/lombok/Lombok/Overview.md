@@ -424,6 +424,9 @@ public @interface EqualsAndHashCode {
 ### [`@Data`](./features/09%20Data.md)
 
 
+### [`@Value`](./features/10%20Value.md)
+
+
 ### [`@Builder`](./features/11%20Builder.md)
 
 
