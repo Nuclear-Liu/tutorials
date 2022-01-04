@@ -1,5 +1,12 @@
 # `@Synchronized`
 
+
+`synchronized` done right: Don't expose your locks.
+
+
+`synchronized` 做得对：不要暴露你的锁。
+
+
 ## Overview _概述_
 
 
