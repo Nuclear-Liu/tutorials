@@ -162,16 +162,16 @@ For example, you can specify a method to be invoked: `@Builder.ObtainVia(method 
 
 
 如果使用 `@Builder` 生成构建器来生成您自己的类的实例（除非将 `@Builder` 添加到不返回您自己的类型的方法中，情况总是如此），您可以使用 `@Builder(toBuilder = true)` 也在你的类中生成一个名为 `toBuilder()` 的实例方法；它创建一个新的构建器，该构建器以该实例的所有值开始。
-您可以将 `@Builder.ObtainVia` 注释放在参数（在构造函数或方法的情况下）或字段（在类型上的 `@Builder` 的情况下）上，以指示获取该字段参数值的替代方法从这个例子。
+您可以将 `@Builder.ObtainVia` 注解放在参数（在构造函数或方法的情况下）或字段（在类型上的 `@Builder` 的情况下）上，以指示获取该字段参数值的替代方法从这个例子。
 例如，您可以指定要调用的方法：`@Builder.ObtainVia(method = "calculateFoo")`。
 
 
-The name of the builder class is `FoobarBuilder`, where Foobar is the simplified, title-cased form of the return type of the target - that is, the name of your type for `@Builder` on constructors and types, and the name of the return type for `@Builder` on methods. 
+The name of the builder class is `FoobarBuilder`, where `Foobar` is the simplified, title-cased form of the return type of the target - that is, the name of your type for `@Builder` on constructors and types, and the name of the return type for `@Builder` on methods. 
 For example, if `@Builder` is applied to a class named `com.yoyodyne.FancyList<T>`, then the builder name will be `FancyListBuilder<T>`. 
 If `@Builder` is applied to a method that returns `void`, the builder will be named `VoidBuilder`.
 
 
-构建器类的名称是 `FoobarBuilder` ，其中 Foobar 是目标返回类型的简化的标题大小写形式 - 即构造函数和类型上 `@Builder` 的类型名称，以及名称方法上 `@Builder` 的返回类型。
+构建器类的名称是 `FoobarBuilder` ，其中 `Foobar` 是目标返回类型的简化的标题大小写形式 - 即构造函数和类型上 `@Builder` 的类型名称，以及名称方法上 `@Builder` 的返回类型。
 例如，如果将 `@Builder` 应用于名为 `com.yoyodyne.FancyList<T>` 的类，则构建器名称将为 `FancyListBuilder<T>` 。
 如果将 `@Builder` 应用于返回 `void` 的方法，则构建器将被命名为 `VoidBuilder`。
 
@@ -182,20 +182,20 @@ The configurable aspects of `builder` are:
 `builder` 的可配置方面是：
 
 
-* The `builder`'s class name (default: return type + 'Builder')
-* The `build()` method's name (default: "`build`")
-* The `builder()` method's name (default: "`builder`")
+* The `builder`'s class name (default: return type + `Builder`)
+* The `build()` method's name (default: `build`)
+* The `builder()` method's name (default: `builder`)
 * If you want `toBuilder()` (default: no)
 * The access level of all generated elements (default: `public`).
-* (discouraged) If you want your `builder`'s 'set' methods to have a prefix, i.e. `Person.builder().setName("Jane").build()` instead of `Person.builder().name("Jane").build()` and what it should be.
+* (discouraged) If you want your `builder`'s '`set`' methods to have a prefix, i.e. `Person.builder().setName("Jane").build()` instead of `Person.builder().name("Jane").build()` and what it should be.
 
 
-* `builder` 的类名（默认：返回类型 + 'Builder'）
-* `build()` 方法的名称（默认值：“`build`”）
-* `builder()` 方法的名称（默认值：“`builder`”）
+* `builder` 的类名（默认：返回类型 + `Builder`）
+* `build()` 方法的名称（默认值： `build`）
+* `builder()` 方法的名称（默认值： `builder`）
 * 如果你想要`toBuilder()`（默认值：否）
-* 所有生成元素的访问级别（默认：`public`）。
-* （不鼓励）如果你希望你的`builder` 的'set' 方法有一个前缀，即`Person.builder().setName("Jane").build()` 而不是`Person.builder().name ("Jane").build()` 以及它应该是什么。
+* 所有生成元素的访问级别（默认： `public` ）。
+* （不鼓励）如果你希望你的`builder` 的 `set` 方法有一个前缀，即`Person.builder().setName("Jane").build()` 而不是`Person.builder().name ("Jane").build()` 以及它应该是什么。
 
 
 Example usage where all options are changed from their defaults:
@@ -217,34 +217,34 @@ If you've put `@Builder` on a class (and not a method or constructor) you can in
 
 
 如果在构建会话期间从未设置某个字段参数，那么它总是会得到 `0` / `null` / `false` 。
-如果您将 `@Builder` 放在一个类（而不是方法或构造函数）上，您可以直接在字段上指定默认值，并使用 `@Builder.Default` 注释该字段：
+如果您将 `@Builder` 放在一个类（而不是方法或构造函数）上，您可以直接在字段上指定默认值，并使用 `@Builder.Default` 注解该字段：
 `@Builder.Default private final long created = System.currentTimeMillis();`
 
 
 ## `@Singular`
 
 
-By annotating one of the parameters (if annotating a method or constructor with `@Builder`) or fields (if annotating a class with `@Builder`) with the `@Singular` annotation, lombok will treat that builder node as a collection, and it generates 2 'adder' methods instead of a 'setter' method. 
+By annotating one of the parameters (if annotating a method or constructor with `@Builder`) or fields (if annotating a class with `@Builder`) with the `@Singular` annotation, lombok will treat that builder node as a **collection**, and it generates 2 `adder` methods instead of a `setter` method. 
 One which adds a single element to the collection, and one which adds all elements of another collection to the collection. 
 No setter to just set the collection (replacing whatever was already added) will be generated. 
 A '`clear`' method is also generated. 
-These 'singular' builders are very complicated in order to guarantee the following properties:
+These `singular` builders are very complicated in order to guarantee the following properties:
 
 
-通过使用 `@Singular` 注释来注释一个参数（如果用 `@Builder` 注释一个方法或构造函数）或字段（如果用 `@Builder` 注释一个类），lombok 会将该构建器节点视为一个集合，它生成 2 个 'adder' 方法而不是 'setter' 方法。
+通过使用 `@Singular` 注解来注解一个参数（如果用 `@Builder` 注解一个方法或构造函数）或字段（如果用 `@Builder` 注解一个类），lombok 会将该构建器节点视为一个**集合**，它生成 2 个 `adder` 方法而不是 `setter` 方法。
 一个将单个元素添加到集合中，另一个将另一个集合的所有元素添加到集合中。
 不会生成仅设置集合（替换已添加的任何内容）的设置器。
 还会生成 '`clear`' 方法。
-这些“单一”构建器非常复杂，以保证以下属性：
+这些 `singular` 构建器非常复杂，以保证以下属性：
 
 
 * When invoking `build()`, the produced collection will be immutable.
-* Calling one of the '`adder`' methods, or the '`clear`' method, after invoking `build()` does not modify any already generated objects, and, if `build()` is later called again, another collection with all the elements added since the creation of the builder is generated.
+* Calling one of the `adder` methods, or the '`clear`' method, after invoking `build()` does not modify any already generated objects, and, if `build()` is later called again, another collection with all the elements added since the creation of the builder is generated.
 * The produced collection will be compacted to the smallest feasible format while remaining efficient.
 
 
 * 调用 `build()` 时，生成的集合将是不可变的。
-* 调用 '`adder`' 方法之一或 '`clear`' 方法，在调用 `build()` 后不会修改任何已经生成的对象，并且，如果稍后再次调用 `build()` ，则另一个包含所有元素的集合添加自生成构建器的创建。
+* 调用 `adder` 方法之一或 `clear` 方法，在调用 `build()` 后不会修改任何已经生成的对象，并且，如果稍后再次调用 `build()` ，则另一个包含所有元素的集合添加自生成构建器的创建。
 * 生成的集合将被压缩为最小的可行格式，同时保持高效。
 
 
@@ -260,7 +260,7 @@ Currently, the supported types are:
   * `Iterable`, `Collection`, and `List` (backed by a compacted unmodifiable `ArrayList` in the general case).
   * `Set`, `SortedSet`, and `NavigableSet` (backed by a smartly sized unmodifiable `HashSet` or `TreeSet` in the general case).
   * `Map`, `SortedMap`, and `NavigableMap` (backed by a smartly sized unmodifiable `HashMap` or `TreeMap` in the general case).
-* [Guava]()'s `com.google.common.collect`:
+* [Guava](https://github.com/google/guava)'s `com.google.common.collect`:
   * `ImmutableCollection` and `ImmutableList` (backed by the builder feature of `ImmutableList`).
   * `ImmutableSet` and `ImmutableSortedSet` (backed by the builder feature of those types).
   * `ImmutableMap`, `ImmutableBiMap`, and `ImmutableSortedMap` (backed by the builder feature of those types).
@@ -285,9 +285,9 @@ You can also specify the singular form of your identifier explicitly by passing 
 If lombok cannot singularize your identifier, or it is ambiguous, lombok will generate an error and force you to explicitly specify the singular name.
 
 
-如果您的标识符是用通用英语编写的，lombok 会假定任何带有 `@Singular` 的集合的名称都是英文复数，并会尝试自动将该名称单数化。
+如果您的标识符是用通用英语编写的，lombok 会假定任何带有 `@Singular` 的集合的名称都是英文**复数**，并会尝试自动将该名称**单数化**。
 如果可能， `add-one` 方法将使用此名称。
-例如，如果您的集合名为`statuses`，那么`add-one` 方法将自动称为`status`。
+例如，如果您的集合名为 `statuses` ，那么 `add-one` 方法将自动称为 `status` 。
 您还可以通过将单数形式作为参数传递给注解来显式指定标识符的单数形式，如下所示： `@Singular("axis") List<Line> axes;` 。
 如果 lombok 无法将您的标识符单数化，或者它不明确，lombok 将生成错误并强制您明确指定单数名称。
 
@@ -303,7 +303,7 @@ You can view a snippet [here](https://projectlombok.org/features/builderSingular
 If also using `setterPrefix = "with"`, the generated names are, for example, `withName` (add 1 name), `withNames` (add many names), and `clearNames` (reset all names).
 
 
-如果还使用`setterPrefix = "with"`，则生成的名称例如为`withName`（添加1 个名称）、`withNames`（添加多个名称）和`clearNames`（重置所有名称）。
+如果还使用 `setterPrefix = "with"`，则生成的名称例如为 `withName` （添加1 个名称）、 `withNames` （添加多个名称）和 `clearNames` （重置所有名称）。
 
 
 Ordinarily, the generated 'plural form' method (which takes in a collection, and adds each element in this collection) will check if a `null` is passed the same way `@NonNull` does (by default, throws a `NullPointerException` with an appropriate message). 
@@ -322,9 +322,9 @@ Lombok will generate everything that you do not manually add, and put it into th
 For example, if you are trying to configure [jackson](https://github.com/FasterXML/jackson) to use a specific subtype for a collection, you can write something like:
 
 
-您可以自定义构建器的各个部分，例如通过自己制作构建器类向构建器类添加另一个方法，或在构建器类中注释一个方法。
+您可以自定义构建器的各个部分，例如通过自己制作构建器类向构建器类添加另一个方法，或在构建器类中注解一个方法。
 Lombok 会生成所有你没有手动添加的东西，并把它放到这个构建器类中。
-例如，如果您尝试将 [jackson](https://github.com/FasterXML/jackson)  配置为对集合使用特定子类型，则可以编写如下内容：
+例如，如果您尝试将 [jackson]()  配置为对集合使用特定子类型，则可以编写如下内容：
 
 
 ```java
