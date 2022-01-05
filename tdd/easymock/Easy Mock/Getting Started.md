@@ -7,7 +7,6 @@ Let's call it `ClassTested`.
 你有全新的类。
 我们称之为 `ClassTested` 。
 
----
 
 ```java
 public class ClassTested {
@@ -24,6 +23,7 @@ public class ClassTested {
 }
 ```
 
+
 Being a nice human being, you want to test your implementation. 
 You might even be a disciple of TDD and haven't done your implementation yet. 
 You want your test first!
@@ -33,7 +33,6 @@ You want your test first!
 您甚至可能是 TDD 的弟子并且还没有完成您的实现。
 你要先测试！
 
----
 
 Your tested class will depend on others so you figured you need a mocking framework. 
 Good for you. 
@@ -44,7 +43,6 @@ Add EasyMock dependency to your `POM` file.
 对你有益。
 将 EasyMock 依赖项添加到您的 `POM` 文件中
 
----
 
 ```xml
 <dependency>
@@ -55,19 +53,21 @@ Add EasyMock dependency to your `POM` file.
 </dependency>
 ```
 
+
 Ok. Now `addDocument` should do stuff and then notify a dependency. 
 Let's call it `Collaborator`.
 
 
-好的。现在`addDocument` 应该做一些事情，然后通知一个依赖项。
+好的。现在 `addDocument` 应该做一些事情，然后通知一个依赖项。
 我们称之为 `Collaborator` 。
----
+
 
 ```java
 public interface Collaborator {
     void documentAdded(String title);
 }
 ```
+
 
 > Now, a word of warning. 
 > I will mock an interface in this example. 
@@ -82,22 +82,20 @@ public interface Collaborator {
 > 现在，警告。
 > 在这个例子中，我将模拟一个接口。 
 > 这并不意味着您应该只模拟接口。
-> 我讨厌无用的界面。
-> 而你想让我快乐。
-> 请不要仅仅为了嘲笑它而创建一个界面。
+> 我讨厌无用的接口。
+> 而你想让我开心。
+> 请不要仅仅为了模拟它而创建一个接口。
 > 只是模拟具体的类。
 > 谢谢你。
 
----
 
-So, we want to make sure `addDocument` is notifying `Collaborator` by calling `documentAdded` with the right title in argument. 
+So, we want to make sure `addDocument` is notifying `Collaborator` by calling `documentAdded` with the right `title` in argument. 
 Our todo list to do that:
 
 
-因此，我们希望通过在参数中使用正确的标题调用 `documentAdded` 来确保 `addDocument` 通知 `Collaborator` 。
+因此，我们希望通过在参数中使用正确的 `title` 调用 `documentAdded` 来确保 `addDocument` 正在通知 `Collaborator` 。
 我们的待办事项清单可以做到这一点：
 
----
 
 1. Create the mock
 2. Have it set to the tested class
@@ -114,7 +112,9 @@ Our todo list to do that:
 5. 测试
 6. 确保所有应该被调用的东西都被调用了
 
----
+
+Then the code fulfilling it:
+
 
 然后实现它的代码：
 
@@ -151,7 +151,6 @@ Some comments though:
 这就是您开始所需的全部内容。
 不过也有一些评论：
 
----
 
 * Extending (or delegating to) `EasyMockSupport` is useful but not mandatory. 
     It allows to call `replayAll` instead of `replay(mock1, mock2, ...)` for instance
@@ -160,20 +159,18 @@ Some comments though:
     Any other call to our mock is a test failure
 
 
-* 继承（或委托）`EasyMockSupport` 很有用，但不是强制性的。
-    例如，它允许调用 `replayAll` 而不是 `replay(mock1, mock2, ...)`
+* 继承（或委托） `EasyMockSupport` 很有用，但不是强制性的。
+  例如，它允许调用 `replayAll` 而不是 `replay(mock1, mock2, ...)`
 * 模拟注入是在字段上完成的（通过 `EasyMockRule` ）所以你不需要一个只用于测试的 `setter`
 * 我们正在测试 `documentAdded` 只被调用一次并接收这个确切的参数。
-    对我们模拟的任何其他调用都是测试失败
-
----
-
-From there, I will highly suggest you have a look at the [samples]() and the [full documentation]() to get a fair overview of EasyMock.
+  对我们模拟的任何其他调用都是测试失败
 
 
-从那里，我强烈建议您查看 [samples]() 和 [full documentation]() 以获得对 EasyMock 的公平概述。
+From there, I will highly suggest you have a look at the [samples](https://github.com/easymock/easymock/tree/easymock-4.3/core/src/samples/java/org/easymock/samples) and the [full documentation](https://easymock.org/user-guide.html) to get a fair overview of EasyMock.
 
----
+
+从那里，我强烈建议您查看 [samples](https://github.com/easymock/easymock/tree/easymock-4.3/core/src/samples/java/org/easymock/samples) 和 [full documentation](./User%20guide/User%20Guide.md) 以获得对 EasyMock 的大致情况。
+
 
 > Happy mocking!
 

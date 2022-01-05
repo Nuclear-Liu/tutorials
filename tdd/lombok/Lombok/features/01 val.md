@@ -32,3 +32,38 @@ _WARNING: This feature does not currently work in NetBeans._
 
 _警告：此功能当前在 NetBeans 中不起作用。_
 
+
+## Supported configuration keys:
+
+
+`lombok.val.flagUsage =` [`warning` | `error`] (default: not set)
+
+
+`lombok.val.flagUsage =` [`warning` | `error`] (默认值：未设置)
+
+
+Lombok will flag any usage of `val` as a warning or error if configured.
+
+
+如果已配置，Lombok 会将任何使用 `val` 的情况标记为警告或错误。
+
+
+## Small print
+
+
+For compound types, the most common superclass is inferred, not any shared interfaces. 
+For example, `bool ? new HashSet() : new ArrayList()` is an expression with a compound type: 
+The result is both `AbstractCollection` as well as `Serializable`. 
+The type inferred will be `AbstractCollection`, as that is a class, whereas `Serializable` is an interface.
+
+
+对于复合类型，最常见的超类是推断的，而不是任何共享接口。
+例如， `bool ? new HashSet() : new ArrayList()` 是一个复合类型的表达式：
+结果是 `AbstractCollection` 和 `Serializable` 。
+推断的类型将是 `AbstractCollection` ，因为它是一个类，而 `Serializable` 是一个接口。
+
+
+In ambiguous cases, such as when the initializer expression is null, `java.lang.Object` is inferred.
+
+
+在不明确的情况下，例如初始化表达式为 null 时，会推断出 `java.lang.Object`。

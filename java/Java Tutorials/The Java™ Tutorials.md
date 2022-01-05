@@ -3,9 +3,9 @@
 > The Java Tutorials have been written for JDK 8. 
 > Examples and practices described in this page don't take advantage of improvements introduced in later releases and might use technology no longer available.
 > 
-> See Java Language Changes for a summary of updated language features in Java SE 9 and subsequent releases.
+> See [Java Language Changes](https://docs.oracle.com/pls/topic/lookup?ctx=en/java/javase&id=java_language_changes) for a summary of updated language features in Java SE 9 and subsequent releases.
 > 
-> See JDK Release Notes for information about new features, enhancements, and removed or deprecated options for all JDK releases. 
+> See [JDK Release Notes](https://www.oracle.com/technetwork/java/javase/jdk-relnotes-index-2162236.html) for information about new features, enhancements, and removed or deprecated options for all JDK releases. 
 
 
 > Java 教程是为 JDK 8 编写的。
@@ -37,11 +37,11 @@ To buy this book, refer to the box to the right.
 要购买这本书，请参阅右侧的方框。
 
 
-* [Getting Started]() — An introduction to Java technology and lessons on installing Java development software and using it to create a simple program.
-* [Learning the Java Language]() — Lessons describing the essential concepts and features of the Java Programming Language.
-* [Essential Java Classes]() — Lessons on exceptions, basic input/output, concurrency, regular expressions, and the platform environment.
-* [Collections]() — Lessons on using and extending the Java Collections Framework.
-* [Date-Time APIs]() — How to use the java.time pages to write date and time code.
+* [Getting Started](https://docs.oracle.com/javase/tutorial/getStarted/index.html) — An introduction to Java technology and lessons on installing Java development software and using it to create a simple program.
+* [Learning the Java Language](https://docs.oracle.com/javase/tutorial/java/index.html) — Lessons describing the essential concepts and features of the Java Programming Language.
+* [Essential Java Classes](https://docs.oracle.com/javase/tutorial/essential/index.html) — Lessons on exceptions, basic input/output, concurrency, regular expressions, and the platform environment.
+* [Collections](https://docs.oracle.com/javase/tutorial/collections/index.html) — Lessons on using and extending the Java Collections Framework.
+* [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
 * [Deployment]() — How to package applications and applets using JAR files, and deploy them using Java Web Start and Java Plug-in.
 * [Preparation for Java Programming Language Certification]() — List of available training and tutorial resources.
 
@@ -49,7 +49,7 @@ To buy this book, refer to the box to the right.
 * [Getting Started]() — Java 技术简介和有关安装 Java 开发软件并使用它创建简单程序的课程。
 * [Learning the Java Language]() — 描述 Java 编程语言的基本概念和特性的课程。
 * [Essential Java Classes]() — 关于异常、基本输入输出、并发、正则表达式和平台环境的课程。
-* [Collections]() — 关于使用和扩展 Java 集合框架的课程。
+* [Collections](./collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
 * [Date-Time APIs]() — 如何使用 `java.time` 页面编写日期和时间代码。
 * [Deployment]() — 如何使用 JAR 文件打包应用程序和小程序，并使用 Java Web Start 和 Java Plug-in 部署它们。
 * [Preparation for Java Programming Language Certification]() — 可用培训和教程资源列表。
