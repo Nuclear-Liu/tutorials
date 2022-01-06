@@ -38,20 +38,31 @@ To buy this book, refer to the box to the right.
 
 
 * [Getting Started](https://docs.oracle.com/javase/tutorial/getStarted/index.html) — An introduction to Java technology and lessons on installing Java development software and using it to create a simple program.
-* [Learning the Java Language](https://docs.oracle.com/javase/tutorial/java/index.html) — Lessons describing the essential concepts and features of the Java Programming Language.
-* [Essential Java Classes](https://docs.oracle.com/javase/tutorial/essential/index.html) — Lessons on exceptions, basic input/output, concurrency, regular expressions, and the platform environment.
-* [Collections](https://docs.oracle.com/javase/tutorial/collections/index.html) — Lessons on using and extending the Java Collections Framework.
-* [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
-* [Deployment]() — How to package applications and applets using JAR files, and deploy them using Java Web Start and Java Plug-in.
-* [Preparation for Java Programming Language Certification]() — List of available training and tutorial resources.
-
 
 * [Getting Started]() — Java 技术简介和有关安装 Java 开发软件并使用它创建简单程序的课程。
+
+* [Learning the Java Language](https://docs.oracle.com/javase/tutorial/java/index.html) — Lessons describing the essential concepts and features of the Java Programming Language.
+
 * [Learning the Java Language]() — 描述 Java 编程语言的基本概念和特性的课程。
+
+* [Essential Java Classes](https://docs.oracle.com/javase/tutorial/essential/index.html) — Lessons on exceptions, basic input/output, concurrency, regular expressions, and the platform environment.
+
 * [Essential Java Classes]() — 关于异常、基本输入输出、并发、正则表达式和平台环境的课程。
+
+* [Collections](https://docs.oracle.com/javase/tutorial/collections/index.html) — Lessons on using and extending the Java Collections Framework.
+
 * [Collections](./collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
+
+* [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
+
 * [Date-Time APIs]() — 如何使用 `java.time` 页面编写日期和时间代码。
+
+* [Deployment]() — How to package applications and applets using JAR files, and deploy them using Java Web Start and Java Plug-in.
+
 * [Deployment]() — 如何使用 JAR 文件打包应用程序和小程序，并使用 Java Web Start 和 Java Plug-in 部署它们。
+
+* [Preparation for Java Programming Language Certification]() — List of available training and tutorial resources.
+
 * [Preparation for Java Programming Language Certification]() — 可用培训和教程资源列表。
 
 
@@ -59,10 +70,11 @@ To buy this book, refer to the box to the right.
 
 
 * [Creating a GUI with Swing]() — A comprehensive introduction to GUI creation on the Java platform.
-* [Creating a JavaFX GUI]() — A collection of JavaFX tutorials.
-
 
 * [Creating a GUI with Swing]() — 在 Java 平台上创建 GUI 的全面介绍。
+
+* [Creating a JavaFX GUI]() — A collection of JavaFX tutorials.
+
 * [Creating a JavaFX GUI]() — JavaFX 教程的集合。
 
 
