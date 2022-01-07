@@ -11,7 +11,7 @@
 
 * [The List Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/list.html)
 
-* [The List Interface]()
+* [The List Interface](./list.md)
 
 * [The Queue Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/queue.html)
 
