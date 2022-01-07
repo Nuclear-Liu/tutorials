@@ -15,11 +15,11 @@
 
 * [The Queue Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/queue.html)
 
-* [The Queue Interface]()
+* [The Queue Interface](./queue.md)
 
 * [The Deque Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/deque.html)
 
-* [The Deque Interface]()
+* [The Deque Interface](./deque.md)
 
 * [The Map Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/map.html)
 
