@@ -1,18 +1,19 @@
 # The Map Interface
 
 
-A Map is an object that maps keys to values. 
-A map cannot contain duplicate keys: Each key can map to at most one value. 
-It models the mathematical function abstraction. 
-The Map interface includes methods for basic operations (such as put, get, remove, containsKey, containsValue, size, and empty), bulk operations (such as putAll and clear), and collection views (such as keySet, entrySet, and values).
+A [`Map`]() is an object that maps keys to values. 
+A map cannot contain duplicate keys: 
+Each key can map to at most one value. 
+It models the mathematical _function_ abstraction. 
+The `Map` interface includes methods for basic operations (such as `put`, `get`, `remove`, `containsKey`, `containsValue`, `size`, and `empty`), bulk operations (such as `putAll` and `clear`), and collection views (such as `keySet`, `entrySet`, and `values`).
 
 
-The Java platform contains three general-purpose Map implementations: HashMap, TreeMap, and LinkedHashMap. 
-Their behavior and performance are precisely analogous to HashSet, TreeSet, and LinkedHashSet, as described in The Set Interface section.
+The Java platform contains three general-purpose `Map` implementations: [`HashMap`](), [`TreeMap`](), and [`LinkedHashMap`](). 
+Their behavior and performance are precisely analogous to `HashSet`, `TreeSet`, and `LinkedHashSet`, as described in [The Set Interface]() section.
 
 
-The remainder of this page discusses the Map interface in detail. 
-But first, here are some more examples of collecting to Maps using JDK 8 aggregate operations. 
+The remainder of this page discusses the `Map` interface in detail. 
+But first, here are some more examples of collecting to `Map`s using JDK 8 aggregate operations. 
 Modeling real-world objects is a common task in object-oriented programming, so it is reasonable to think that some programs might, for example, group employees by department: 
 
 
@@ -66,14 +67,14 @@ Map<String, Map<String, List<Person>>> peopleByStateAndCity
 
 
 Again, these are but a few examples of how to use the new JDK 8 APIs. 
-For in-depth coverage of lambda expressions and aggregate operations see the lesson entitled Aggregate Operations. 
+For in-depth coverage of lambda expressions and aggregate operations see the lesson entitled [Aggregate Operations](). 
 
 
 ## Map Interface Basic Operations _Map 接口基本操作_
 
 
-The basic operations of Map (put, get, containsKey, containsValue, size, and isEmpty) behave exactly like their counterparts in Hashtable. 
-The following program generates a frequency table of the words found in its argument list. 
+The basic operations of `Map` (`put`, `get`, `containsKey`, `containsValue`, `size`, and `isEmpty`) behave exactly like their counterparts in `Hashtable`. 
+The [following program]() generates a frequency table of the words found in its argument list. 
 The frequency table maps each word to the number of times it occurs in the argument list.
 
 
@@ -97,7 +98,7 @@ public class Freq {
 ```
 
 
-The only tricky thing about this program is the second argument of the put statement. 
+The only tricky thing about this program is the second argument of the `put` statement. 
 That argument is a conditional expression that has the effect of setting the frequency to one if the word has never been seen before or one more than its current value if the word has already been seen. 
 Try running this program with the command:
 
@@ -115,7 +116,7 @@ The program yields the following output.
 
 
 Suppose you'd prefer to see the frequency table in alphabetical order. 
-All you have to do is change the implementation type of the Map from HashMap to TreeMap. 
+All you have to do is change the implementation type of the `Map` from `HashMap` to `TreeMap`. 
 Making this four-character change causes the program to generate the following output from the same command line.
 
 
@@ -125,7 +126,7 @@ Making this four-character change causes the program to generate the following o
 ```
 
 
-Similarly, you could make the program print the frequency table in the order the words first appear on the command line simply by changing the implementation type of the map to LinkedHashMap. 
+Similarly, you could make the program print the frequency table in the order the words first appear on the command line simply by changing the implementation type of the map to `LinkedHashMap`. 
 Doing so results in the following output.
 
 
@@ -138,15 +139,15 @@ Doing so results in the following output.
 This flexibility provides a potent illustration of the power of an interface-based framework.
 
 
-Like the Setand Listinterfaces, Map strengthens the requirements on the equals and hashCode methods so that two Map objects can be compared for logical equality without regard to their implementation types. 
-Two Map instances are equal if they represent the same key-value mappings.
+Like the [`Set`]() and [`List`]() interfaces, `Map` strengthens the requirements on the `equals` and `hashCode` methods so that two `Map` objects can be compared for logical equality without regard to their implementation types. 
+Two `Map` instances are equal if they represent the same key-value mappings.
 
 
-By convention, all general-purpose Map implementations provide constructors that take a Map object and initialize the new Map to contain all the key-value mappings in the specified Map. 
-This standard Map conversion constructor is entirely analogous to the standard Collection constructor: 
-It allows the caller to create a Map of a desired implementation type that initially contains all of the mappings in another Map, regardless of the other Map's implementation type. 
-For example, suppose you have a Map, named m. 
-The following one-liner creates a new HashMap initially containing all of the same key-value mappings as m.
+By convention, all general-purpose `Map` implementations provide constructors that take a `Map` object and initialize the new `Map` to contain all the key-value mappings in the specified `Map`. 
+This standard `Map` conversion constructor is entirely analogous to the standard `Collection` constructor: 
+It allows the caller to create a `Map` of a desired implementation type that initially contains all of the mappings in another `Map`, regardless of the other `Map`'s implementation type. 
+For example, suppose you have a `Map`, named `m`. 
+The following one-liner creates a new `HashMap` initially containing all of the same key-value mappings as `m`.
 
 
 `Map<K, V> copy = new HashMap<K, V>(m);`
@@ -155,10 +156,11 @@ The following one-liner creates a new HashMap initially containing all of the sa
 ## Map Interface Bulk Operations
 
 
-The clear operation does exactly what you would think it could do: It removes all the mappings from the Map. 
-The putAll operation is the Map analogue of the Collection interface's addAll operation. 
-In addition to its obvious use of dumping one Map into another, it has a second, more subtle use. 
-Suppose a Map is used to represent a collection of attribute-value pairs; the putAll operation, in combination with the Map conversion constructor, provides a neat way to implement attribute map creation with default values. 
+The `clear` operation does exactly what you would think it could do: 
+It removes all the mappings from the `Map`. 
+The `putAll` operation is the `Map` analogue of the `Collection` interface's `addAll` operation. 
+In addition to its obvious use of dumping one `Map` into another, it has a second, more subtle use. 
+Suppose a `Map` is used to represent a collection of attribute-value pairs; the `putAll` operation, in combination with the `Map` conversion constructor, provides a neat way to implement attribute map creation with default values. 
 The following is a static factory method that demonstrates this technique.
 
 
@@ -174,20 +176,20 @@ static <K, V> Map<K, V> newAttributeMap(Map<K, V>defaults, Map<K, V> overrides) 
 ## Collection Views
 
 
-The Collection view methods allow a Map to be viewed as a Collection in these three ways:
+The `Collection` view methods allow a `Map` to be viewed as a `Collection` in these three ways:
 
 
-* `keySet` — the Set of keys contained in the Map.
+* `keySet` — the `Set` of keys contained in the `Map`.
 
-* `values` — The Collection of values contained in the Map. 
-  This Collection is not a Set, because multiple keys can map to the same value.
+* `values` — The `Collection` of values contained in the `Map`. 
+  This `Collection` is not a `Set`, because multiple keys can map to the same value.
 
-* `entrySet` — the Set of key-value pairs contained in the Map. 
-  The Map interface provides a small nested interface called Map.Entry, the type of the elements in this Set.
+* `entrySet` — the `Set` of key-value pairs contained in the `Map`. 
+  The `Map` interface provides a small nested interface called `Map.Entry`, the type of the elements in this `Set`.
 
 
-The Collection views provide the only means to iterate over a Map. 
-This example illustrates the standard idiom for iterating over the keys in a Map with a for-each construct:
+The `Collection` views provide the _only_ means to iterate over a `Map`. 
+This example illustrates the standard idiom for iterating over the keys in a `Map` with a `for-each` construct:
 
 
 ```text
@@ -196,7 +198,7 @@ for (KeyType key : m.keySet())
 ```
 
 
-and with an iterator:
+and with an `iterator`:
 
 
 ```text
@@ -218,32 +220,33 @@ for (Map.Entry<KeyType, ValType> e : m.entrySet())
 ```
 
 
-At first, many people worry that these idioms may be slow because the Map has to create a new Collection instance each time a Collection view operation is called. 
-Rest easy: There's no reason that a Map cannot always return the same object each time it is asked for a given Collection view. 
-This is precisely what all the Map implementations in java.util do.
+At first, many people worry that these idioms may be slow because the `Map` has to create a new `Collection` instance each time a `Collection` view operation is called. 
+Rest easy: 
+There's no reason that a `Map` cannot always return the same object each time it is asked for a given `Collection` view. 
+This is precisely what all the `Map` implementations in `java.util` do.
 
 
-With all three Collection views, calling an Iterator's remove operation removes the associated entry from the backing Map, assuming that the backing Map supports element removal to begin with. 
+With all three `Collection` views, calling an `Iterator`'s `remove` operation removes the associated entry from the backing `Map`, assuming that the backing `Map` supports element removal to begin with. 
 This is illustrated by the preceding filtering idiom.
 
 
-With the entrySet view, it is also possible to change the value associated with a key by calling a Map.Entry's setValue method during iteration (again, assuming the Map supports value modification to begin with). 
-Note that these are the only safe ways to modify a Map during iteration; the behavior is unspecified if the underlying Map is modified in any other way while the iteration is in progress.
+With the `entrySet` view, it is also possible to change the value associated with a key by calling a `Map.Entry`'s `setValue` method during iteration (again, assuming the `Map` supports value modification to begin with). 
+Note that these are the only safe ways to modify a `Map` during iteration; the behavior is unspecified if the underlying `Map` is modified in any other way while the iteration is in progress.
 
 
-The Collection views support element removal in all its many forms — remove, removeAll, retainAll, and clear operations, as well as the Iterator.remove operation. 
-(Yet again, this assumes that the backing Map supports element removal.)
+The `Collection` views support element removal in all its many forms — `remove`, `removeAll`, `retainAll`, and `clear` operations, as well as the `Iterator.remove` operation. 
+(Yet again, this assumes that the backing `Map` supports element removal.)
 
 
-The Collection views do not support element addition under any circumstances. 
-It would make no sense for the keySet and values views, and it's unnecessary for the entrySet view, because the backing Map's put and putAll methods provide the same functionality.
+The `Collection` views do not support element addition under any circumstances. 
+It would make no sense for the `keySet` and `values` views, and it's unnecessary for the `entrySet` view, because the backing `Map`'s `put` and `putAll` methods provide the same functionality.
 
 
 ## Fancy Uses of Collection Views: Map Algebra
 
 
-When applied to the Collection views, bulk operations (containsAll, removeAll, and retainAll) are surprisingly potent tools. 
-For starters, suppose you want to know whether one Map is a submap of another — that is, whether the first Map contains all the key-value mappings in the second. 
+When applied to the `Collection` views, bulk operations (`containsAll`, `removeAll`, and `retainAll`) are surprisingly potent tools. 
+For starters, suppose you want to know whether one `Map` is a submap of another — that is, whether the first `Map` contains all the key-value mappings in the second. 
 The following idiom does the trick.
 
 
@@ -254,7 +257,7 @@ if (m1.entrySet().containsAll(m2.entrySet())) {
 ```
 
 
-Along similar lines, suppose you want to know whether two Map objects contain mappings for all of the same keys.
+Along similar lines, suppose you want to know whether two `Map` objects contain mappings for all of the same keys.
 
 
 ```text
@@ -264,7 +267,7 @@ if (m1.keySet().equals(m2.keySet())) {
 ```
 
 
-Suppose you have a Map that represents a collection of attribute-value pairs, and two Sets representing required attributes and permissible attributes. 
+Suppose you have a `Map` that represents a collection of attribute-value pairs, and two `Set`s representing required attributes and permissible attributes. 
 (The permissible attributes include the required attributes.) The following snippet determines whether the attribute map conforms to these constraints and prints a detailed error message if it doesn't.
 
 
@@ -290,7 +293,7 @@ static <K, V> boolean validate(Map<K, V> attrMap, Set<K> requiredAttrs, Set<K>pe
 ```
 
 
-Suppose you want to know all the keys common to two Map objects.
+Suppose you want to know all the keys common to two `Map` objects.
 
 
 ````text
@@ -302,7 +305,7 @@ commonKeys.retainAll(m2.keySet());
 A similar idiom gets you the common values.
 
 
-All the idioms presented thus far have been nondestructive; that is, they don't modify the backing Map. 
+All the idioms presented thus far have been nondestructive; that is, they don't modify the backing `Map`. 
 Here are a few that do. 
 Suppose you want to remove all of the key-value pairs that one Map has in common with another.
 
@@ -310,13 +313,13 @@ Suppose you want to remove all of the key-value pairs that one Map has in common
 `m1.entrySet().removeAll(m2.entrySet());`
 
 
-Suppose you want to remove from one Map all of the keys that have mappings in another.
+Suppose you want to remove from one `Map` all of the keys that have mappings in another.
 
 
 `m1.keySet().removeAll(m2.keySet());`
 
 
-What happens when you start mixing keys and values in the same bulk operation? Suppose you have a Map, managers, that maps each employee in a company to the employee's manager. 
+What happens when you start mixing keys and values in the same bulk operation? Suppose you have a `Map`, `managers`, that maps each employee in a company to the employee's manager. 
 We'll be deliberately vague about the types of the key and the value objects. 
 It doesn't matter, as long as they're the same. 
 Now suppose you want to know who all the "individual contributors" (or nonmanagers) are. 
@@ -338,7 +341,7 @@ managers.values().removeAll(Collections.singleton(simon));
 ```
 
 
-Note that this idiom makes use of Collections.singleton, a static factory method that returns an immutable Set with the single, specified element.
+Note that this idiom makes use of `Collections.singleton`, a static factory method that returns an immutable `Set` with the single, specified element.
 
 
 Once you've done this, you may have a bunch of employees whose managers no longer work for the company (if any of Simon's direct-reports were themselves managers). 
@@ -353,9 +356,9 @@ Set<Employee> slackers = m.keySet();
 
 
 This example is a bit tricky. 
-First, it makes a temporary copy of the Map, and it removes from the temporary copy all entries whose (manager) value is a key in the original Map. 
-Remember that the original Map has an entry for each employee. 
-Thus, the remaining entries in the temporary Map comprise all the entries from the original Map whose (manager) values are no longer employees. 
+First, it makes a temporary copy of the `Map`, and it removes from the temporary copy all entries whose (manager) value is a key in the original `Map`. 
+Remember that the original `Map` has an entry for each employee. 
+Thus, the remaining entries in the temporary `Map` comprise all the entries from the original `Map` whose (manager) values are no longer employees. 
 The keys in the temporary copy, then, represent precisely the employees that we're looking for.
 
 
@@ -366,22 +369,22 @@ Once you get the hang of it, it's not that difficult to come up with the right o
 ## Multimaps
 
 
-A multimap is like a Map but it can map each key to multiple values. 
+A _multimap_ is like a `Map` but it can map each key to multiple values. 
 The Java Collections Framework doesn't include an interface for multimaps because they aren't used all that commonly. 
-It's a fairly simple matter to use a Map whose values are List instances as a multimap. 
+It's a fairly simple matter to use a `Map` whose values are `List` instances as a multimap. 
 This technique is demonstrated in the next code example, which reads a word list containing one word per line (all lowercase) and prints out all the anagram groups that meet a size criterion. 
-An anagram group is a bunch of words, all of which contain exactly the same letters but in a different order. 
+An _anagram group_ is a bunch of words, all of which contain exactly the same letters but in a different order. 
 The program takes two arguments on the command line: (1) the name of the dictionary file and (2) the minimum size of anagram group to print out. 
 Anagram groups containing fewer words than the specified minimum are not printed.
 
 
 There is a standard trick for finding anagram groups: For each word in the dictionary, alphabetize the letters in the word (that is, reorder the word's letters into alphabetical order) and put an entry into a multimap, mapping the alphabetized word to the original word. 
-For example, the word bad causes an entry mapping abd into bad to be put into the multimap. 
+For example, the word _bad_ causes an entry mapping abd into bad to be put into the multimap. 
 A moment's reflection will show that all the words to which any given key maps form an anagram group. 
 It's a simple matter to iterate over the keys in the multimap, printing out each anagram group that meets the size constraint.
 
 
-The following program is a straightforward implementation of this technique.
+[The following program]() is a straightforward implementation of this technique.
 
 
 ```java
@@ -458,6 +461,6 @@ Running this program on a 173,000-word dictionary file with a minimum anagram gr
 ```
 
 
-Many of these words seem a bit bogus, but that's not the program's fault; they're in the dictionary file. 
+Many of these words seem a bit bogus, but that's not the program's fault; they're in the [dictionary file](). 
 Here's the dictionary file we used. 
 It was derived from the Public Domain ENABLE benchmark reference word list. 
