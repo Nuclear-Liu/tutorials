@@ -1,12 +1,12 @@
 # The Queue Interface
 
 
-A `Queue` is a collection for holding elements prior to processing. 
+A [`Queue`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html) is a collection for holding elements prior to processing. 
 Besides basic `Collection` operations, queues provide additional insertion, removal, and inspection operations. 
 The `Queue` interface follows.
 
 
-`Queue` 是在处理之前保存元素的集合。
+[`Queue`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html) 是在处理之前保存元素的集合。
 除了基本的 `Collection` 操作外，队列还提供额外的插入、删除和检查操作。
 `Queue` 接口如下。
 
@@ -49,7 +49,7 @@ The regular structure of the interface is illustrated in the following table.
 
 
 Queues typically, but not necessarily, order elements in a FIFO (first-in-first-out) manner. 
-Among the exceptions are priority queues, which order elements according to their values — see the [Object Ordering]() section for details. 
+Among the exceptions are priority queues, which order elements according to their values — see the [Object Ordering](https://docs.oracle.com/javase/tutorial/collections/interfaces/order.html) section for details. 
 Whatever ordering is used, the head of the queue is the element that would be removed by a call to `remove` or `poll`. 
 In a FIFO queue, all new elements are inserted at the tail of the queue. 
 Other kinds of queues may use different placement rules. 
@@ -57,7 +57,7 @@ Every `Queue` implementation must specify its ordering properties.
 
 
 队列通常但不一定以 FIFO （先进先出）方式对元素进行排序。
-其中的例外是优先级队列，它根据元素的值对元素进行排序 —— 有关详细信息，请参阅 [Object Ordering]() 部分。
+其中的例外是优先级队列，它根据元素的值对元素进行排序 —— 有关详细信息，请参阅 [Object Ordering](./order.md) 部分。
 无论使用什么排序，队列的头部都是将通过调用 `remove` 或 `poll` 删除的元素。
 在 FIFO 队列中，所有新元素都插入到队列的尾部。
 其他类型的队列可能使用不同的放置规则。
@@ -117,11 +117,11 @@ Queue implementations generally do not define element-based versions of the `equ
 
 
 The `Queue` interface does not define the blocking queue methods, which are common in concurrent programming. 
-These methods, which wait for elements to appear or for space to become available, are defined in the interface `java.util.concurrent.BlockingQueue`, which extends `Queue`.
+These methods, which wait for elements to appear or for space to become available, are defined in the interface [`java.util.concurrent.BlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html), which extends `Queue`.
 
 
 `Queue` 接口没有定义并发编程中常见的阻塞队列方法。
-这些等待元素出现或空间可用的方法在接口 `java.util.concurrent.BlockingQueue` 中定义，它扩展了 `Queue` 。
+这些等待元素出现或空间可用的方法在接口 [`java.util.concurrent.BlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html) 中定义，它扩展了 `Queue` 。
 
 
 In the following example program, a queue is used to implement a countdown timer. 

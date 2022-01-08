@@ -4,17 +4,17 @@
 Usually pronounced as `deck`, a deque is a double-ended-queue. 
 A double-ended-queue is a linear collection of elements that supports the insertion and removal of elements at both end points. 
 The `Deque` interface is a richer abstract data type than both `Stack` and `Queue` because it implements both stacks and queues at the same time. 
-The `Deque` interface, defines methods to access the elements at both ends of the `Deque` instance. 
+The [`Deque`](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html) interface, defines methods to access the elements at both ends of the `Deque` instance. 
 Methods are provided to insert, remove, and examine the elements. 
-Predefined classes like `ArrayDeque` and `LinkedList` implement the `Deque` interface.
+Predefined classes like [`ArrayDeque`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html) and [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html) implement the `Deque` interface.
 
 
 通常发音为 `deck` ，双端队列是一个双端队列。
 双端队列是元素的线性集合，支持在两个端点插入和删除元素。
 `Deque` 接口是比 `Stack` 和 `Queue` 更丰富的抽象数据类型，因为它同时实现了堆栈和队列。
-`Deque` 接口，定义了访问 `Deque` 实例两端元素的方法。
+[`Deque`](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html) 接口，定义了访问 `Deque` 实例两端元素的方法。
 提供了插入、删除和检查元素的方法。
-`ArrayDeque` 和 `LinkedList` 等预定义类实现了 `Deque` 接口。
+[`ArrayDeque`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html) 和 [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html) 等预定义类实现了 `Deque` 接口。
 
 
 Note that the `Deque` interface can be used both as last-in-first-out stacks and first-in-first-out queues. 
