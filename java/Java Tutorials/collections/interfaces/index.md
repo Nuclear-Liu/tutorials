@@ -31,19 +31,19 @@
 
 * [The SortedSet Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/sorted-set.html)
 
-* [The SortedSet Interface]()
+* [The SortedSet Interface](./sorted-set.md)
 
 * [The SortedMap Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/sorted-map.html)
 
-* [The SortedMap Interface]()
+* [The SortedMap Interface](./sorted-map.md)
 
 * [Summary of Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/summary.html)
 
-* [Summary of Interfaces]()
+* [Summary of Interfaces](./summary.md)
 
 * [Questions and Exercises](https://docs.oracle.com/javase/tutorial/collections/interfaces/QandE/questions.html)
 
-* [Questions and Exercises]()
+* [Questions and Exercises](./QandE/questions.md)
 
 
 The _core collection_ interfaces encapsulate different types of collections, which are shown in the figure below. 
