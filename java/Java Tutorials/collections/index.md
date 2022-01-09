@@ -27,7 +27,7 @@ You'll learn about the core elements — interfaces, implementations, aggregate 
 
 * [Aggregate Operations](https://docs.oracle.com/javase/tutorial/collections/streams/index.html) iterate over collections on your behalf, which enable you to write more concise and efficient code that process elements stored in collections.
 
-* [Aggregate Operations]() 代表您迭代集合，这使您能够编写更简洁高效的代码来处理存储在集合中的元素。
+* [Aggregate Operations](./streams/index.md) 代表您迭代集合，这使您能够编写更简洁高效的代码来处理存储在集合中的元素。
 
 * [Implementations](https://docs.oracle.com/javase/tutorial/collections/implementations/index.html) describes the JDK's general-purpose collection implementations and tells you when to use which implementation. 
   You'll also learn about the wrapper implementations, which add functionality to general-purpose implementations.
