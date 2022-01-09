@@ -5,11 +5,11 @@
 
 
 1. At the beginning of this lesson, you learned that the core collection interfaces are organized into two distinct inheritance trees. 
-  One interface in particular is not considered to be a true Collection, and therefore sits at the top of its own tree. 
+  One interface in particular is not considered to be a true `Collection`, and therefore sits at the top of its own tree. 
   What is the name of this interface?
 
-2. Each interface in the collections framework is declared with the <E> syntax, which tells you that it is generic. 
-  When you declare a Collection instance, what is the advantage of specifying the type of objects that it will contain?
+2. Each interface in the collections framework is declared with the `<E>` syntax, which tells you that it is generic. 
+  When you declare a `Collection` instance, what is the advantage of specifying the type of objects that it will contain?
 
 3. What interface represents a collection that does not allow duplicate elements?
 
@@ -23,7 +23,7 @@
 
 8. What interface represents a double-ended queue?
 
-9. Name three different ways to iterate over the elements of a List.
+9. Name three different ways to iterate over the elements of a `List`.
 
 10. True or False: Aggregate operations are mutative operations that modify the underlying collection.
 
@@ -35,12 +35,12 @@
   Do not make a copy of the argument array. 
   Demonstrate how to print out the elements using both streams and the traditional enhanced for statement.
 
-2. Take the FindDups example and modify it to use a SortedSet instead of a Set. 
-  Specify a Comparator so that case is ignored when sorting and identifying set elements.
+2. Take the [FindDups]() example and modify it to use a `SortedSet` instead of a `Set`. 
+  Specify a `Comparator` so that case is ignored when sorting and identifying set elements.
 
-3. Write a method that takes a List<String> and applies String.trim to each element.
+3. Write a method that takes a `List<String>` and applies [`String.trim`]() to each element.
 
-4. Consider the four core interfaces, Set, List, Queue, and Map. 
+4. Consider the four core interfaces, `Set`, `List`, `Queue`, and `Map`. 
   For each of the following four assignments, specify which of the four core interfaces is best-suited, and explain how to use it to implement the assignment.
 
    1. Whimsical Toys Inc (WTI) needs to record the names of all its employees. Every month, an employee will be chosen at random from these records to receive a free toy.
