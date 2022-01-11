@@ -7,10 +7,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ import static org.junit.Assert.*;
  */
 public class EmployeeTest {
     private List<Employee> employees;
+    private List<Employee> managers;
     @Before
     public void init() {
         employees = new ArrayList<>();
@@ -31,6 +34,12 @@ public class EmployeeTest {
         employees.add(new Employee("emplyee1", "Dept02", "dev", 3600));
         employees.add(new Employee("emplyee3", "Dept03", "dev", 3000));
         employees.add(new Employee("emplyee3", "Dept03", "dev", 6600));
+
+        managers = new ArrayList<>();
+
+        managers.add(new Employee("emplyee1", "Dept01", "dev", 3600));
+        managers.add(new Employee("emplyee2", "Dept01", "test", 3200));
+        managers.add(new Employee("emplyee1", "Dept02", "dev", 3600));
     }
     @Test
     public void testMap1() {
@@ -100,6 +109,57 @@ public class EmployeeTest {
             }
         }
         for (Map.Entry<String, List<Employee>> entry : deptEmployees.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+    @Test
+    public void testMapAlgebra() {
+        Map<String, List<Employee>> deptEmployees = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        Map<String, List<Employee>> deptManager = managers.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        assertTrue(deptEmployees.entrySet().containsAll(deptManager.entrySet()));
+        assertFalse(deptEmployees.keySet().equals(deptManager.keySet()));
+    }
+
+    static <K, V> boolean validate(Map<K, V> attrMap, Set<K> requiredAttrs, Set<K> permittedAttrs) {
+        boolean valid = true;
+        Set<K> attrs = attrMap.keySet();
+
+        if (! attrs.containsAll(requiredAttrs)) {
+            Set<K> missing = new HashSet<>(requiredAttrs);
+            missing.removeAll(attrs);
+            System.out.println("Missing attributes: " + missing);
+            valid = false;
+        }
+        if (! permittedAttrs.containsAll(attrs)) {
+            Set<K> illegal = new HashSet<>(attrs);
+            illegal.removeAll(permittedAttrs);
+            System.out.println("Illegal attributes: " + illegal);
+            valid = false;
+        }
+        return valid;
+    }
+    @Test
+    public void testRetainAll() {
+        Map<String, List<Employee>> employeesMap = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        Map<String, List<Employee>> managersMap = managers.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        assertTrue(employeesMap.entrySet().retainAll(managersMap.entrySet()));
+        assertFalse(managersMap.entrySet().retainAll(employeesMap.entrySet()));
+    }
+    @Test
+    public void testEntrySetRemoveAll() {
+        Map<String, List<Employee>> employeesMap = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        Map<String, List<Employee>> managersMap = managers.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        employeesMap.entrySet().removeAll(managersMap.entrySet());
+        for (Map.Entry<String, List<Employee>> entry : employeesMap.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+    @Test
+    public void testKeySetRemoveAll() {
+        Map<String, List<Employee>> employeesMap = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        Map<String, List<Employee>> managersMap = managers.stream().collect(Collectors.groupingBy(Employee::getDepartment));
+        employeesMap.keySet().removeAll(managersMap.keySet());
+        for (Map.Entry<String, List<Employee>> entry : employeesMap.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }
