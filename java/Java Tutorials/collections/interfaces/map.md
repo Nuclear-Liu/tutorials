@@ -502,8 +502,15 @@ managers.values().removeAll(Collections.singleton(simon));
 Note that this idiom makes use of `Collections.singleton`, a static factory method that returns an immutable `Set` with the single, specified element.
 
 
+请注意，这个习惯用法使用了 `Collections.singleton` ，这是一个静态工厂方法，它返回一个带有单个指定元素的不可变 `Set` 。
+
+
 Once you've done this, you may have a bunch of employees whose managers no longer work for the company (if any of Simon's direct-reports were themselves managers). 
 The following code will tell you which employees have managers who no longer works for the company.
+
+
+完成此操作后，您可能会拥有一批经理不再为公司工作的员工（如果 Simon 的任何直接下属本身就是经理）。
+以下代码将告诉您哪些员工的经理不再为公司工作。
 
 
 ```text
@@ -520,8 +527,19 @@ Thus, the remaining entries in the temporary `Map` comprise all the entries from
 The keys in the temporary copy, then, represent precisely the employees that we're looking for.
 
 
+这个例子有点棘手。
+首先，它制作 `Map` 的临时副本，并从临时副本中删除（ manager ）值是原始 `Map` 中的键的所有条目。
+请记住，原始的 `Map` 对每个员工都有一个条目。
+因此，临时 `Map` 中的剩余条目包括原始 `Map` 中的所有条目，其（ manager ）值不再是雇员。
+因此，临时副本中的键准确地代表了我们正在寻找的员工。
+
+
 There are many more idioms like the ones contained in this section, but it would be impractical and tedious to list them all. 
 Once you get the hang of it, it's not that difficult to come up with the right one when you need it.
+
+
+还有很多类似本节中包含的成语，但将它们全部列出是不切实际且乏味的。
+一旦你掌握了窍门，当你需要它的时候想出合适的就不是那么难了。
 
 
 ## Multimaps
@@ -532,8 +550,19 @@ The Java Collections Framework doesn't include an interface for multimaps becaus
 It's a fairly simple matter to use a `Map` whose values are `List` instances as a multimap. 
 This technique is demonstrated in the next code example, which reads a word list containing one word per line (all lowercase) and prints out all the anagram groups that meet a size criterion. 
 An _anagram group_ is a bunch of words, all of which contain exactly the same letters but in a different order. 
-The program takes two arguments on the command line: (1) the name of the dictionary file and (2) the minimum size of anagram group to print out. 
+The program takes two arguments on the command line: 
+(1) the name of the dictionary file and (2) the minimum size of anagram group to print out. 
 Anagram groups containing fewer words than the specified minimum are not printed.
+
+
+_multimap_ 类似于 `Map`，但它可以将每个键映射到多个值。
+Java Collections Framework 不包含用于 multimap 的接口，因为它们并不常用。
+使用值为 `List` 实例的 `Map` 作为 multimap 是一件相当简单的事情。
+该技术在下一个代码示例中进行了演示，它读取每行包含一个单词（全部小写）的单词列表，并打印出所有符合大小标准的字谜组。
+_anagram group_ 是一堆单词，所有单词都包含完全相同的字母，但顺序不同。
+该程序在命令行上有两个参数：
+(1) 字典文件的名称和 (2) 要打印的字谜组的最小大小。
+不打印包含少于指定最小值的单词的 Anagram 组。
 
 
 There is a standard trick for finding anagram groups: For each word in the dictionary, alphabetize the letters in the word (that is, reorder the word's letters into alphabetical order) and put an entry into a multimap, mapping the alphabetized word to the original word. 
@@ -542,7 +571,16 @@ A moment's reflection will show that all the words to which any given key maps f
 It's a simple matter to iterate over the keys in the multimap, printing out each anagram group that meets the size constraint.
 
 
+查找字谜组有一个标准技巧：对于字典中的每个单词，将单词中的字母按字母顺序排列（即，将单词的字母重新排序为字母顺序）并将条目放入 multimap 中，将按字母顺序排列的单词映射到原始单词单词。
+例如，单词 _bad_ 会导致将条目映射 abd 放入 bad 到 multimap 中。
+稍加思考就会发现，任何给定键映射到的所有单词都形成了一个字谜组。
+迭代多图中的键是一件简单的事情，打印出每个符合大小约束的字谜组。
+
+
 [The following program]() is a straightforward implementation of this technique.
+
+
+[The following program]() 是该技术的直接实现。
 
 
 ```java
@@ -589,6 +627,9 @@ public class Anagrams {
 Running this program on a 173,000-word dictionary file with a minimum anagram group size of eight produces the following output.
 
 
+在最小字谜组大小为 8 的 173,000 字词典文件上运行该程序会产生以下输出。
+
+
 ```text
 9: [estrin, inerts, insert, inters, niters, nitres, sinter,
      triens, trines]
@@ -622,3 +663,8 @@ Running this program on a 173,000-word dictionary file with a minimum anagram gr
 Many of these words seem a bit bogus, but that's not the program's fault; they're in the [dictionary file](). 
 Here's the dictionary file we used. 
 It was derived from the Public Domain ENABLE benchmark reference word list. 
+
+
+其中许多话似乎有点假，但这不是程序的错；它们在 [dictionary file]() 中。
+这是我们使用的字典文件。
+它源自 Public Domain ENABLE 基准参考词表。
