@@ -577,10 +577,10 @@ It's a simple matter to iterate over the keys in the multimap, printing out each
 迭代多图中的键是一件简单的事情，打印出每个符合大小约束的字谜组。
 
 
-[The following program]() is a straightforward implementation of this technique.
+[The following program](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/Anagrams.java) is a straightforward implementation of this technique.
 
 
-[The following program]() 是该技术的直接实现。
+[The following program](./examples/Anagrams.java) 是该技术的直接实现。
 
 
 ```java
