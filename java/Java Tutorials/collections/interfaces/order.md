@@ -26,7 +26,7 @@ The following table summarizes some of the more important Java platform classes 
 下表总结了一些实现 `Comparable` 的更重要的 Java 平台类。
 
 
-**Classes Implementing Comparable**
+**Classes Implementing `Comparable`**
 
 | Class          | Natural Ordering                            |
 |----------------|---------------------------------------------|
@@ -46,10 +46,10 @@ The following table summarizes some of the more important Java platform classes 
 | `CollationKey` | Locale-specific lexicographic               |
 
 
-**实现 Comparable 的类**
+**实现 `Comparable` 的类**
 
 | 类              | 原生排序                           |
-|----------------|:-------------------------------|
+|----------------|--------------------------------|
 | `Byte`         | 带符号的数字                         |
 | `Character`    | 无符号数字                          |
 | `Long`         | 带符号的数字                         |
@@ -169,7 +169,7 @@ Nonetheless, it illustrates the following important points:
 
 * `Name` 对象是*不可变的*。
   在所有其他条件相同的情况下，不可变类型是可行的方法，特别是对于将用作 `Set` 中的元素或用作 `Map` 中的键的对象。
-  如果您在集合中修改它们的元素或键，这些集合将中断。
+  如果您在集合中修改它们的元素或键，这些集合将打破。
 
 * The constructor checks its arguments for `null`. 
   This ensures that all `Name` objects are well formed so that none of the other methods will ever throw a `NullPointerException`.
@@ -228,14 +228,14 @@ If there were more parts, you'd proceed in the obvious fashion, comparing parts 
 在这种情况下，该部分是一个 `String` ，自然（字典）排序正是我们所要求的。
 如果比较结果不是零，代表相等，你就完成了：你只返回结果。
 如果最重要的部分相等，则继续比较下一个最重要的部分。
-在这种情况下，只有两个部分——名字和姓氏。
+在这种情况下，只有两个部分 —— 名字和姓氏。
 如果有更多部分，您将以明显的方式继续，比较部分，直到您发现两个不相等或者您正在比较最不重要的部分，此时您将返回比较结果。
 
 
 Just to show that it all works, here's [a program that builds a list of names and sorts them](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/NameSort.java).
 
 
-只是为了证明这一切都有效，这里是[一个构建名称列表并对其进行排序的程序](./examples/NameSort.java)。
+只是为了证明这一切都有效，这里是 [a program that builds a list of names and sorts them](./examples/NameSort.java) 。
 
 
 ```java
