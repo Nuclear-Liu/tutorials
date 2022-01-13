@@ -425,6 +425,13 @@ Here the employee number is the obvious attribute.
 This is the `Comparator` that results.
 
 
+要解决这个问题，只需调整 `Comparator` 使其产生一个与 `equals` 兼容的排序。
+换句话说，调整它以便在使用 `compare` 时唯一被视为相等的元素是那些在使用 `equals` 进行比较时也被视为相等的元素。
+做到这一点的方法是执行两部分比较（对于“姓名”），其中第一部分是我们感兴趣的部分——在这种情况下，是雇用日期——第二部分是一个属性唯一标识对象。
+这里员工编号是明显的属性。
+这是产生的 `Comparator` 。
+
+
 ```text
 static final Comparator<Employee> SENIORITY_ORDER = 
                                         new Comparator<Employee>() {
@@ -443,6 +450,9 @@ static final Comparator<Employee> SENIORITY_ORDER =
 One last note: You might be tempted to replace the final `return` statement in the `Comparator` with the simpler:
 
 
+最后一点：您可能想用更简单的替换 `Comparator` 中的最终 `return` 语句：
+
+
 `return e1.number() - e2.number();`
 
 
@@ -451,3 +461,10 @@ This trick does not work in general because the signed integer type is not big e
 If `i` is a large positive integer and j is a large negative integer, `i - j` will overflow and will return a negative integer. 
 The resulting `comparator` violates one of the four technical restrictions we keep talking about (transitivity) and produces horrible, subtle bugs. 
 This is not a purely theoretical concern; people get burned by it.
+
+
+不要这样做，除非您*绝对确定*没有人会有负的员工编号！
+这个技巧通常不起作用，因为有符号整数类型不足以表示两个任意有符号整数的差异。
+如果 `i` 是一个大的正整数，而 j 是一个大的负整数，则 `i - j` 将溢出并返回一个负整数。
+由此产生的 `comparator` 违反了我们一直在谈论的四个技术限制之一（传递性），并产生了可怕的、微妙的错误。
+这不是纯粹的理论问题；人们被它烧死。
