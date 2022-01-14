@@ -1,8 +1,12 @@
-# The SortedSet Interface
+# The `SortedSet` Interface
 
 
-A [`SortedSet`]() is a [`Set`]() that maintains its elements in ascending order, sorted according to the elements' natural ordering or according to a `Comparator` provided at `SortedSet` creation time. 
+A [`SortedSet`](https://docs.oracle.com/javase/8/docs/api/java/util/SortedSet.html) is a [`Set`](https://docs.oracle.com/javase/8/docs/api/java/util/Set.html) that maintains its elements in ascending order, sorted according to the elements' natural ordering or according to a `Comparator` provided at `SortedSet` creation time. 
 In addition to the normal `Set` operations, the `SortedSet` interface provides operations for the following:
+
+
+[`SortedSet`](https://docs.oracle.com/javase/8/docs/api/java/util/SortedSet.html) 是 [`Set`](https://docs.oracle.com/javase/8/docs/api/java/util/Set.html) 以升序维护其元素，根据元素的自然顺序或根据在 `SortedSet` 创建时提供的 `Comparator` 排序。
+除了常规的 `Set` 操作外，`SortedSet` 接口还提供以下操作：
 
 
 * `Range view` — allows arbitrary range operations on the sorted set
@@ -10,7 +14,15 @@ In addition to the normal `Set` operations, the `SortedSet` interface provides o
 * `Comparator access` — returns the `Comparator`, if any, used to sort the set
 
 
+* `Range view` — 允许对排序集进行任意范围操作
+* `Endpoints` — 返回排序集中的第一个或最后一个元素
+* `Comparator access` — 返回用于对集合进行排序的 `Comparator` （如果有）
+
+
 The code for the `SortedSet` interface follows.
+
+
+`SortedSet` 接口的代码如下。
 
 
 ```java
@@ -30,18 +42,31 @@ public interface SortedSet<E> extends Set<E> {
 ```
 
 
-## Set Operations
+## `Set` Operations _`Set` 操作_
 
 
 The operations that `SortedSet` inherits from `Set` behave identically on sorted sets and normal sets with two exceptions:
 
+
+`SortedSet` 从 `Set` 继承的操作在有序集合和普通集合上表现相同，但有两个例外：
+
+
 * The `Iterator` returned by the `iterator` operation traverses the sorted set in order.
+
+* `iterator` 操作返回的 `Iterator` 按顺序遍历有序集合。
+
 * The array returned by `toArray` contains the sorted set's elements in order.
+
+* `toArray` 返回的数组按顺序包含已排序集合的元素。
+
 
 Although the interface doesn't guarantee it, the `toString` method of the Java platform's `SortedSet` implementations returns a string containing all the elements of the sorted set, in order.
 
 
-## Standard Constructors
+尽管接口不保证，Java 平台的 `SortedSet` 实现的 `toString` 方法会按顺序返回一个包含已排序集合的所有元素的字符串。
+
+
+## Standard Constructors _标准构造函数_
 
 
 By convention, all general-purpose `Collection` implementations provide a standard conversion constructor that takes a `Collection`; `SortedSet` implementations are no exception. 
@@ -52,11 +77,23 @@ Because `TreeSet` took the approach that it did, it also provides a constructor 
 Note that it is the compile-time type of the argument, not its runtime type, that determines which of these two constructors is invoked (and whether the sorting criterion is preserved).
 
 
+按照惯例，所有通用的 `Collection` 实现都提供了一个标准的转换构造函数，该构造函数采用 `Collection` ； `SortedSet` 实现也不例外。
+在 `TreeSet` 中，此构造函数创建一个实例，该实例根据元素的自然顺序对其元素进行排序。
+这可能是一个错误。
+最好动态检查指定的集合是否为 `SortedSet` 实例，如果是，则根据相同的标准（比较器或自然排序）对新的 `TreeSet` 进行排序。
+因为 `TreeSet` 采用了它所做的方法，所以它还提供了一个构造函数，该构造函数接受 `SortedSet` 并返回一个新的 `TreeSet`，其中包含根据相同标准排序的相同元素。
+请注意，决定调用这两个构造函数中的哪一个（以及是否保留排序标准）的是参数的编译时类型，而不是其运行时类型。
+
+
 `SortedSet` implementations also provide, by convention, a constructor that takes a `Comparator` and returns an empty set sorted according to the specified `Comparator`. 
 If `null` is passed to this constructor, it returns a set that sorts its elements according to their natural ordering.
 
 
-## Range-view Operations
+按照惯例， `SortedSet` 实现还提供了一个构造函数，它接受一个 `Comparator` 并返回一个根据指定的 `Comparator` 排序的空集。
+如果 `null` 被传递给此构造函数，它会返回一个集合，该集合根据元素的自然顺序对其元素进行排序。
+
+
+## Range-view Operations _Range-view 操作_
 
 
 The `range-view` operations are somewhat analogous to those provided by the `List` interface, but there is one big difference. 
@@ -66,10 +103,20 @@ A `range-view` of a sorted set is really just a window onto whatever portion of 
 Changes to the `range-view` write back to the backing sorted set and vice versa. 
 Thus, it's okay to use `range-view`s on sorted sets for long periods of time, unlike `range-view`s on lists.
 
+
+The `range-view` operations are somewhat analogous to those provided by the `List` interface, but there is one big difference. 
+Range views of a sorted set remain valid even if the backing sorted set is modified directly. 
+This is feasible because the endpoints of a range view of a sorted set are absolute points in the element space rather than specific elements in the backing collection, as is the case for lists. 
+A `range-view` of a sorted set is really just a window onto whatever portion of the set lies in the designated part of the element space. 
+Changes to the `range-view` write back to the backing sorted set and vice versa. 
+Thus, it's okay to use `range-view`s on sorted sets for long periods of time, unlike `range-view`s on lists.
+
+
 Sorted sets provide three `range-view` operations. 
 The first, `subSet`, takes two endpoints, like `subList`. 
 Rather than indices, the endpoints are objects and must be comparable to the elements in the sorted set, using the `Set`'s `Comparator` or the natural ordering of its elements, whichever the `Set` uses to order itself. 
 Like `subList`, the range is half open, including its low endpoint but excluding the high one.
+
 
 Thus, the following line of code tells you how many words between `"doorbell"` and `"pickle"`, including `"doorbell"` but excluding `"pickle"`, are contained in a `SortedSet` of strings called `dictionary`:
 
