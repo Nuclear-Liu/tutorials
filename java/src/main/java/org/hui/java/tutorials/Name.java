@@ -1,5 +1,10 @@
 package org.hui.java.tutorials;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Formatter;
+
 /**
  * Comparable Demo.
  * @author Hui.Liu
@@ -7,13 +12,15 @@ package org.hui.java.tutorials;
  */
 public class Name implements Comparable<Name> {
     private final String firstName, lastName;
+    private final LocalDate birthday;
 
-    public Name(String firstName, String lastName) {
+    public Name(String firstName, String lastName, LocalDate birthday) {
         if (firstName == null || lastName == null) {
             throw new NullPointerException();
         }
         this.firstName = firstName;
         this.lastName = lastName;
+        this.birthday = birthday;
     }
 
     public String firstName() {
@@ -21,6 +28,9 @@ public class Name implements Comparable<Name> {
     }
     public String lastName() {
         return lastName;
+    }
+    public LocalDate birthday() {
+        return birthday;
     }
 
     @Override
@@ -39,7 +49,7 @@ public class Name implements Comparable<Name> {
 
     @Override
     public String toString() {
-        return firstName + " " + lastName;
+        return firstName + " " + lastName + " birthday:" + birthday;
     }
 
     @Override

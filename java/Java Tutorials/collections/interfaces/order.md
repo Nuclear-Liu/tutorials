@@ -273,7 +273,7 @@ Attempting to sort a list of objects that violate the restrictions has undefined
 Technically speaking, these restrictions ensure that the natural ordering is a _total order_ on the objects of a class that implements it; this is necessary to ensure that sorting is well defined.
 
 
-`compareTo` 方法的行为有四个限制，我们现在不会讨论，因为它们相当技术性和无聊，最好留在 API 文档中。
+`compareTo` 方法的行为有**四个限制**，我们现在不会讨论，因为它们相当技术性和无聊，最好留在 API 文档中。
 实现 `Comparable` 的所有类都遵守这些限制非常重要，因此如果您正在编写实现它的类，请阅读 `Comparable` 的文档。
 尝试对违反限制的对象列表进行排序具有未定义的行为。
 从技术上讲，这些限制确保自然排序是实现它的类的对象的 _total order_ ；这对于确保明确定义排序是必要的。
@@ -411,7 +411,7 @@ If you use this `Comparator` to insert multiple employees hired on the same date
 
 
 前面程序中的 `Comparator` 可以很好地对 `List` 进行排序，但它确实有一个不足：
-它不能用于对已排序的集合进行排序，例如 `TreeSet` ，因为它生成的排序与 `equals` _不兼容_。
+它不能用于对已排序的集合进行排序，例如 `TreeSet` ，因为它生成的排序与 `equals` _不兼容_ 。
 这意味着这个 `Comparator` 等同于 `equals` 方法不等同的对象。
 特别是，在同一日期雇用的任何两名员工都将进行比较。
 当您对 `List` 进行排序时，这无关紧要；但是当您使用 `Comparator` 来排序排序集合时，这是致命的。
@@ -427,7 +427,7 @@ This is the `Comparator` that results.
 
 要解决这个问题，只需调整 `Comparator` 使其产生一个与 `equals` 兼容的排序。
 换句话说，调整它以便在使用 `compare` 时唯一被视为相等的元素是那些在使用 `equals` 进行比较时也被视为相等的元素。
-做到这一点的方法是执行两部分比较（对于“姓名”），其中第一部分是我们感兴趣的部分——在这种情况下，是雇用日期——第二部分是一个属性唯一标识对象。
+做到这一点的方法是执行两部分比较（对于 `Name` ），其中第一部分是我们感兴趣的部分——在这种情况下，是雇用日期——第二部分是一个属性唯一标识对象。
 这里员工编号是明显的属性。
 这是产生的 `Comparator` 。
 
