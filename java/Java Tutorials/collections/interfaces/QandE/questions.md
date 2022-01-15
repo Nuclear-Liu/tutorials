@@ -52,4 +52,7 @@
    4. WTI acquires season tickets for the local lacrosse team, to be shared by employees. Create a waiting list for this popular sport.
 
 
-[Check your answers.]()
+[Check your answers.](https://docs.oracle.com/javase/tutorial/collections/interfaces/QandE/answers.html)
+
+
+[Check your answers.](./answers.md)
