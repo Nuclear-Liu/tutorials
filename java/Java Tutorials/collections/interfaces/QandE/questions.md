@@ -76,7 +76,7 @@
   For each of the following four assignments, specify which of the four core interfaces is best-suited, and explain how to use it to implement the assignment.
 
 * 考虑四个核心接口， `Set`、 `List`、 `Queue` 和 `Map` 。
-  For each of the following four assignments, specify which of the four core interfaces is best-suited, and explain how to use it to implement the assignment.
+  对于以下四个分配中的每一个，指定四个核心接口中的哪一个最适合，并说明如何使用它来实现分配。
 
    * Whimsical Toys Inc (WTI) needs to record the names of all its employees. 
      Every month, an employee will be chosen at random from these records to receive a free toy.
