@@ -131,6 +131,10 @@ A _pipeline_ is a sequence of aggregate operations.
 The following example prints the male members contained in the collection `roster` with a pipeline that consists of the aggregate operations `filter` and `forEach`:
 
 
+_pipeline_ 是一系列聚合操作。
+以下示例使用由聚合操作 `filter` 和 `forEach` 组成的管道打印集合 `roster` 中包含的男性成员：
+
+
 ```text
 roster
     .stream()
@@ -140,6 +144,9 @@ roster
 
 
 Compare this example to the following that prints the male members contained in the collection `roster` with a for-each loop:
+
+
+将此示例与以下示例进行比较，该示例使用 for-each 循环打印集合 `roster` 中包含的男性成员：
 
 
 ```text
@@ -152,6 +159,10 @@ for (Person p : roster) {
 
 
 A pipeline contains the following components:
+
+
+管道包含以下组件：
+
 
 * A source: This could be a collection, an array, a generator function, or an I/O channel. 
   In this example, the source is the collection `roster`.
