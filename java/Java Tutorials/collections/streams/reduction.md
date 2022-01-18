@@ -17,37 +17,49 @@ double average = roster
 ```
 
 
-The JDK contains many terminal operations (such as [`average`](), [`sum`](), [`min`](), [`max`](), and [`count`]()) that return one value by combining the contents of a stream. 
+The JDK contains many terminal operations (such as [`average`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#average--java/lang/reflect/Executable.html), [`sum`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#sum--), [`min`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#min-java.util.Comparator-), [`max`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#max-java.util.Comparator-), and [`count`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#count--)) that return one value by combining the contents of a stream. 
 These operations are called reduction operations. 
 The JDK also contains reduction operations that return a collection instead of a single value. 
 Many reduction operations perform a specific task, such as finding the average of values or grouping elements into categories. 
-However, the JDK provides you with the general-purpose reduction operations [`reduce`]() and [`collect`](), which this section describes in detail.
+However, the JDK provides you with the general-purpose reduction operations [`reduce`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#reduce-T-java.util.function.BinaryOperator-) and [`collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-), which this section describes in detail.
 
 
-The JDK contains many terminal operations (such as [`average`](), [`sum`](), [`min`](), [`max`](), and [`count`]()) that return one value by combining the contents of a stream. 
-These operations are called reduction operations. 
-The JDK also contains reduction operations that return a collection instead of a single value. 
-Many reduction operations perform a specific task, such as finding the average of values or grouping elements into categories. 
-However, the JDK provides you with the general-purpose reduction operations [`reduce`]() and [`collect`](), which this section describes in detail.
+JDK包含许多终端操作（如 [`average`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#average--java/lang/reflect/Executable.html)、 [`sum`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#sum--)、 [`min`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#min-java.util.Comparator-)、 [`max`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#max-java.util.Comparator-) 和 [`count`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#count--) ）通过组合流的内容返回一个值。
+这些操作称为归约操作。
+JDK 还包含返回集合而不是单个值的归约操作。
+许多归约操作执行特定任务，例如查找值的平均值或将元素分组。
+但是，JDK 为您提供了通用的归约操作 [`reduce`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#reduce-T-java.util.function.BinaryOperator-) 和 [`collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-)，本节将详细介绍。
 
 
 This section covers the following topics:
 
 
-* [The `Stream.reduce` Method]()
+* [The `Stream.reduce` Method](https://docs.oracle.com/javase/tutorial/collections/streams/reduction.html#reduce)
 
-* [The `Stream.collect` Method]()
+* [The `Stream.reduce` Method](./reduction.md#the-streamreduce-method)
+
+* [The `Stream.collect` Method](https://docs.oracle.com/javase/tutorial/collections/streams/reduction.html#collect)
+
+* [The `Stream.collect` Method](./reduction.md#the-streamcollect-method)
 
 
-You can find the code excerpts described in this section in the example [`ReductionExamples`]().
+You can find the code excerpts described in this section in the example [`ReductionExamples`](https://docs.oracle.com/javase/tutorial/collections/streams/examples/ReductionExamples.java).
+
+
+您可以在示例 [`ReductionExamples`](./examples/ReductionExamples.java) 中找到本节中描述的代码摘录。
 
 
 ## The `Stream.reduce `Method
 
 
-The [`Stream.reduce`]() method is a general-purpose reduction operation. 
+The [`Stream.reduce`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#reduce-T-java.util.function.BinaryOperator-) method is a general-purpose reduction operation. 
 Consider the following pipeline, which calculates the sum of the male members' ages in the collection `roster`. 
-It uses the [`Stream.sum`]() reduction operation:
+It uses the [`Stream.sum`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#sum--) reduction operation:
+
+
+[`Stream.reduce`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#reduce-T-java.util.function.BinaryOperator-) 方法是一种通用的归约操作。
+考虑以下管道，它计算集合 `roster` 中男性成员的年龄总和。
+它使用 [`Stream.sum`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/IntStream.html#sum--) 归约操作：
 
 
 ```text
@@ -58,7 +70,10 @@ Integer totalAge = roster
 ```
 
 
-Compare this with the following pipeline, which uses the [`Stream.reduce`]() operation to calculate the same value:
+Compare this with the following pipeline, which uses the `Stream.reduce` operation to calculate the same value:
+
+
+将此与以下管道进行比较，后者使用 `Stream.reduce` 操作来计算相同的值：
 
 
 ```text
@@ -74,12 +89,28 @@ Integer totalAgeReduce = roster
 The `reduce` operation in this example takes two arguments:
 
 
-* `identity`: The identity element is both the initial value of the reduction and the default result if there are no elements in the stream. 
+本例中的 `reduce` 操作有两个参数：
+
+
+* `identity`: 
+  The identity element is both the initial value of the reduction and the default result if there are no elements in the stream. 
   In this example, the identity element is `0`; this is the initial value of the sum of ages and the default value if no members exist in the collection `roster`.
 
-* `accumulator`: The accumulator function takes two parameters: a partial result of the reduction (in this example, the sum of all processed integers so far) and the next element of the stream (in this example, an integer). 
+* `identity`: 
+  标识元素既是归约的初始值，也是流中没有元素时的默认结果。
+  在此示例中，标识元素为 `0` ；这是年龄总和的初始值，如果集合 `roster` 中不存在任何成员，则为默认值。
+
+* `accumulator`: 
+  The `accumulator` function takes two parameters: a partial result of the reduction (in this example, the sum of all processed integers so far) and the next element of the stream (in this example, an integer). 
   It returns a new partial result. 
   In this example, the accumulator function is a lambda expression that adds two `Integer` values and returns an `Integer` value:
+
+    `(a, b) -> a + b`
+
+* `accumulator`:
+  `accumulator` 函数有两个参数：归约的部分结果（在此示例中，为到目前为止所有已处理整数的总和）和流的下一个元素（在此示例中为整数）。
+  它返回一个新的部分结果。
+  在此示例中，累加器函数是一个 lambda 表达式，它将两个 `Integer` 值相加并返回一个 `Integer` 值：
 
     `(a, b) -> a + b`
 
@@ -90,19 +121,37 @@ Suppose that you want to reduce the elements of a stream to a more complex objec
 This might hinder the performance of your application. 
 If your `reduce` operation involves adding elements to a collection, then every time your accumulator function processes an element, it creates a new collection that includes the element, which is inefficient. 
 It would be more efficient for you to update an existing collection instead. 
-You can do this with the [`Stream.collect`]() method, which the next section describes.
+You can do this with the [`Stream.collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-) method, which the next section describes.
+
+
+`reduce` 操作总是返回一个新值。
+但是，累加器函数在每次处理流的元素时也会返回一个新值。
+假设您要将流的元素简化为更复杂的对象，例如集合。
+这可能会妨碍您的应用程序的性能。
+如果您的 `reduce` 操作涉及将元素添加到集合中，那么每次您的累加器函数处理一个元素时，它都会创建一个包含该元素的新集合，这是低效的。
+相反，更新现有集合对您来说会更有效。
+您可以使用 [`Stream.collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-) 方法执行此操作，下一节将对此进行介绍。
 
 
 ## The `Stream.collect` Method
 
 
-Unlike the `reduce` method, which always creates a new value when it processes an element, the [`collect`]() method modifies, or mutates, an existing value.
+Unlike the `reduce` method, which always creates a new value when it processes an element, the [`collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-) method modifies, or mutates, an existing value.
+
+
+与在处理元素时总是创建新值的 `reduce` 方法不同， [`collect`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#collect-java.util.function.Supplier-java.util.function.BiConsumer-java.util.function.BiConsumer-) 方法修改或改变现有值。
 
 
 Consider how to find the average of values in a stream. 
 You require two pieces of data: the total number of values and the sum of those values. 
 However, like the `reduce` method and all other reduction methods, the `collect` method returns only one value. 
-You can create a new data type that contains member variables that keep track of the total number of values and the sum of those values, such as the following class, [`Averager`]():
+You can create a new data type that contains member variables that keep track of the total number of values and the sum of those values, such as the following class, [`Averager`](https://docs.oracle.com/javase/tutorial/collections/streams/examples/Averager.java):
+
+
+考虑如何找到流中值的平均值。
+您需要两条数据：值的总数和这些值的总和。
+但是，与 `reduce` 方法和所有其他归约方法一样， `collect` 方法只返回一个值。
+您可以创建一个包含成员变量的新数据类型，这些变量会跟踪值的总数和这些值的总和，例如以下类 [`Averager`](./examples/Averager.java)：
 
 
 ```java
