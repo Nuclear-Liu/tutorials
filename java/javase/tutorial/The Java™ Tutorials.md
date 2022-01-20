@@ -51,7 +51,7 @@ To buy this book, refer to the box to the right.
 
 * [Collections](https://docs.oracle.com/javase/tutorial/collections/index.html) — Lessons on using and extending the Java Collections Framework.
 
-* [Collections](collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
+* [Collections](./collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
 
 * [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
 
