@@ -13,17 +13,17 @@ Java SE 提供了 [fork/join framework](../../essential/concurrency/forkjoin.md)
 通过聚合操作，Java 运行时为您执行这种分区和组合解决方案。
 
 
-One difficulty in implementing parallelism in applications that use collections is that collections are not thread-safe, which means that multiple threads cannot manipulate a collection without introducing thread interference or memory consistency errors. 
-The Collections Framework provides synchronization wrappers, which add automatic synchronization to an arbitrary collection, making it thread-safe. 
-However, synchronization introduces thread contention. 
+One difficulty in implementing parallelism in applications that use collections is that collections are not thread-safe, which means that multiple threads cannot manipulate a collection without introducing [thread interference](https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html) or [memory consistency errors](https://docs.oracle.com/javase/tutorial/essential/concurrency/memconsist.html). 
+The Collections Framework provides [synchronization wrappers](https://docs.oracle.com/javase/tutorial/collections/implementations/wrapper.html), which add automatic synchronization to an arbitrary collection, making it thread-safe. 
+However, synchronization introduces [thread contention](https://docs.oracle.com/javase/tutorial/essential/concurrency/sync.html#thread_contention). 
 You want to avoid thread contention because it prevents threads from running in parallel. 
 Aggregate operations and parallel streams enable you to implement parallelism with non-thread-safe collections provided that you do not modify the collection while you are operating on it.
 
 
-One difficulty in implementing parallelism in applications that use collections is that collections are not thread-safe, which means that multiple threads cannot manipulate a collection without introducing thread interference or memory consistency errors. 
-The Collections Framework provides synchronization wrappers, which add automatic synchronization to an arbitrary collection, making it thread-safe. 
-However, synchronization introduces thread contention. 
-You want to avoid thread contention because it prevents threads from running in parallel. 
+在使用集合的应用程序中实现并行性的一个困难是集合不是线程安全的，这意味着多个线程无法在不引入 [thread interference](./../../essential/concurrency/interfere.md) 或 [memory consistency errors](./../../essential/concurrency/memconsist.md) 的情况下操作集合。
+Collections Framework 提供了 [synchronization wrappers](./../../collections/implementations/wrapper.md) ，它将自动同步添加到任意集合，使其成为线程安全的。
+但是，同步引入了 [thread contention](./../../essential/concurrency/sync.md#thread_contention) 。
+您希望避免线程争用，因为它会阻止线程并行运行。
 Aggregate operations and parallel streams enable you to implement parallelism with non-thread-safe collections provided that you do not modify the collection while you are operating on it.
 
 
