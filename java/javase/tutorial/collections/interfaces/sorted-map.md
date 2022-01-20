@@ -7,7 +7,7 @@ The `SortedMap` interface provides operations for normal `Map` operations and fo
 
 
 [`SortedMap`](https://docs.oracle.com/javase/8/docs/api/java/util/SortedMap.html) 是一个 [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html) 以升序维护其条目，根据键的自然顺序或根据 `SortedMap` 时提供的 `Comparator` 排序创建。
-自然排序和 `Comparators` 在 [Object Ordering](./order.md) 部分中讨论。
+自然排序和 `Comparators` 在 [Object Ordering](order.md) 部分中讨论。
 `SortedMap` 接口为普通的 `Map` 操作和以下操作提供操作：
 
 
@@ -99,4 +99,4 @@ If `null` is passed to this constructor, it returns a `Map` that sorts its mappi
 Because this interface is a precise `Map` analog of `SortedSet`, all the idioms and code examples in [The SortedSet Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/sorted-set.html) section apply to `SortedMap` with only trivial modifications.
 
 
-因为这个接口是 `SortedSet` 的精确 `Map` 模拟，所以 [The SortedSet Interface](./sorted-set.md) 部分中的所有习语和代码示例都适用于 `SortedMap`，只需进行细微的修改。
+因为这个接口是 `SortedSet` 的精确 `Map` 模拟，所以 [The SortedSet Interface](sorted-set.md) 部分中的所有习语和代码示例都适用于 `SortedMap`，只需进行细微的修改。

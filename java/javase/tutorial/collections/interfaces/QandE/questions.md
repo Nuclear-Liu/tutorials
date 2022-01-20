@@ -65,7 +65,7 @@
 * Take the [FindDups](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/FindDups.java) example and modify it to use a `SortedSet` instead of a `Set`. 
   Specify a `Comparator` so that case is ignored when sorting and identifying set elements.
 
-* 以 [FindDups](./../examples/FindDups.java) 示例为例，将其修改为使用 `SortedSet` 而不是 `Set` 。
+* 以 [FindDups](../examples/FindDups.java) 示例为例，将其修改为使用 `SortedSet` 而不是 `Set` 。
   指定一个 `Comparator` ，以便在排序和识别集合元素时忽略大小写。
 
 * Write a method that takes a `List<String>` and applies [`String.trim`](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#trim--) to each element.
@@ -106,4 +106,4 @@
 [Check your answers.](https://docs.oracle.com/javase/tutorial/collections/interfaces/QandE/answers.html)
 
 
-[Check your answers.](./answers.md)
+[Check your answers.](answers.md)

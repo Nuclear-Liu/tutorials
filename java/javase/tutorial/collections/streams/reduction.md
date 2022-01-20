@@ -4,7 +4,7 @@
 The section [Aggregate Operations](https://docs.oracle.com/javase/tutorial/collections/streams/index.html) describes the following pipeline of operations, which calculates the average age of all male members in the collection `roster`:
 
 
-[Aggregate Operations](./index.md) 部分描述了以下操作管道，它计算集合 `roster` 中所有男性成员的平均年龄：
+[Aggregate Operations](index.md) 部分描述了以下操作管道，它计算集合 `roster` 中所有男性成员的平均年龄：
 
 
 ```text
@@ -46,7 +46,7 @@ This section covers the following topics:
 You can find the code excerpts described in this section in the example [`ReductionExamples`](https://docs.oracle.com/javase/tutorial/collections/streams/examples/ReductionExamples.java).
 
 
-您可以在示例 [`ReductionExamples`](./examples/ReductionExamples.java) 中找到本节中描述的代码摘录。
+您可以在示例 [`ReductionExamples`](examples/ReductionExamples.java) 中找到本节中描述的代码摘录。
 
 
 ## The `Stream.reduce `Method
@@ -151,7 +151,7 @@ You can create a new data type that contains member variables that keep track of
 考虑如何找到流中值的平均值。
 您需要两条数据：值的总数和这些值的总和。
 但是，与 `reduce` 方法和所有其他归约方法一样， `collect` 方法只返回一个值。
-您可以创建一个包含成员变量的新数据类型，这些变量会跟踪值的总数和这些值的总和，例如以下类 [`Averager`](./examples/Averager.java)：
+您可以创建一个包含成员变量的新数据类型，这些变量会跟踪值的总数和这些值的总和，例如以下类 [`Averager`](examples/Averager.java)：
 
 
 ```java
@@ -241,7 +241,7 @@ Note the following:
   (If you run the `collect` method with a parallel stream, then the JDK creates a new thread whenever the combiner function creates a new object, such as an `Averager` object in this example. 
   Consequently, you do not have to worry about synchronization.)
 
-* 您可以对并行流使用“收集”操作；有关详细信息，请参阅 [Parallelism](./parallelism.md) 部分。
+* 您可以对并行流使用“收集”操作；有关详细信息，请参阅 [Parallelism](parallelism.md) 部分。
   (如果您使用并行流运行 `collect` 方法，则只要组合器函数创建一个新对象（例如本例中的 `Averager` 对象），JDK 就会创建一个新线程。
   因此，您不必担心同步问题。)
 

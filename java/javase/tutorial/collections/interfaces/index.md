@@ -3,47 +3,47 @@
 
 * [The Collection Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/collection.html)
 
-* [The Collection Interface](./collection.md)
+* [The Collection Interface](collection.md)
 
 * [The Set Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/set.html)
 
-* [The Set Interface](./set.md)
+* [The Set Interface](set.md)
 
 * [The List Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/list.html)
 
-* [The List Interface](./list.md)
+* [The List Interface](list.md)
 
 * [The Queue Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/queue.html)
 
-* [The Queue Interface](./queue.md)
+* [The Queue Interface](queue.md)
 
 * [The Deque Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/deque.html)
 
-* [The Deque Interface](./deque.md)
+* [The Deque Interface](deque.md)
 
 * [The Map Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/map.html)
 
-* [The Map Interface](./map.md)
+* [The Map Interface](map.md)
 
 * [Object Ordering](https://docs.oracle.com/javase/tutorial/collections/interfaces/order.html)
 
-* [Object Ordering](./order.md)
+* [Object Ordering](order.md)
 
 * [The SortedSet Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/sorted-set.html)
 
-* [The SortedSet Interface](./sorted-set.md)
+* [The SortedSet Interface](sorted-set.md)
 
 * [The SortedMap Interface](https://docs.oracle.com/javase/tutorial/collections/interfaces/sorted-map.html)
 
-* [The SortedMap Interface](./sorted-map.md)
+* [The SortedMap Interface](sorted-map.md)
 
 * [Summary of Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/summary.html)
 
-* [Summary of Interfaces](./summary.md)
+* [Summary of Interfaces](summary.md)
 
 * [Questions and Exercises](https://docs.oracle.com/javase/tutorial/collections/interfaces/QandE/questions.html)
 
-* [Questions and Exercises](./QandE/questions.md)
+* [Questions and Exercises](QandE/questions.md)
 
 
 The _core collection_ interfaces encapsulate different types of collections, which are shown in the figure below. 
@@ -58,7 +58,7 @@ As you can see in the following figure, the core collection interfaces form a hi
 如下图所示，核心集合接口形成了一个层次结构。
 
 
-![The core collection interfaces.](./colls-coreInterfaces.gif)
+![The core collection interfaces.](colls-coreInterfaces.gif)
 
 
 A `Set` is a special kind of `Collection`, a `SortedSet` is a special kind of `Set`, and so forth. 
@@ -137,7 +137,7 @@ The following list describes the core collection interfaces:
   某些类型的集合允许重复元素，而其他类型则不允许。
   有些是有序的，有些是无序的。
   Java 平台不提供该接口的任何直接实现，但提供了更具体的子接口的实现，例如 `Set` 和 `List` 。
-  另请参阅 [The Collection Interface](./collection.md) 部分。
+  另请参阅 [The Collection Interface](collection.md) 部分。
 
 * `Set` — a collection that cannot contain duplicate elements. 
   This interface models the mathematical set abstraction and is used to represent sets, such as the cards comprising a poker hand, the courses making up a student's schedule, or the processes running on a machine. 

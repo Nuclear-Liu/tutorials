@@ -177,7 +177,7 @@ The `n+1` valid `index` values correspond to the `n+1` gaps between elements, fr
 The following figure shows the five possible cursor positions in a list containing four elements.
 
 
-![The five possible cursor positions.](./colls-fivePossibleCursor.gif)
+![The five possible cursor positions.](colls-fivePossibleCursor.gif)
 
 
 Calls to `next` and `previous` can be intermixed, but you have to be a bit careful. 

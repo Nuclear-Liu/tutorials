@@ -22,9 +22,9 @@ This trail is divided into these lessons:
 * [JDBC Basics](https://docs.oracle.com/javase/tutorial/jdbc/basics/index.html) covers the JDBC API.
 
 
-* [JDBC Introduction](./JDBC%20Introduction.md) 列出 JDBC 功能，描述 JDBC 体系结构并回顾 SQL 命令和关系数据库概念。
+* [JDBC Introduction](JDBC%20Introduction.md) 列出 JDBC 功能，描述 JDBC 体系结构并回顾 SQL 命令和关系数据库概念。
 
-* [JDBC Basics](./JDBC%20Basics.md) 涵盖 JDBC API。
+* [JDBC Basics](JDBC%20Basics.md) 涵盖 JDBC API。
 
 
 By the end of the first lesson, you will know how to use the basic JDBC API to create tables, insert values into them, query the tables, retrieve the results of the queries, and update the tables. 

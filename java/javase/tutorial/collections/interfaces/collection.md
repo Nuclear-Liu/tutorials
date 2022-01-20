@@ -58,7 +58,7 @@ In JDK 8 and later, the `Collection` interface also exposes methods `Stream<E> s
 
 
 在 JDK 8 及更高版本中， `Collection` 接口还公开了 `Stream<E> stream()` 和 `Stream<E> parallelStream()` 方法，用于从底层集合中获取顺序或并行流
-（有关使用流的更多信息，请参阅标题为 [Aggregate Operations](./../streams/index.md) 的课程。）
+（有关使用流的更多信息，请参阅标题为 [Aggregate Operations](../streams/index.md) 的课程。）
 
 
 The `Collection` interface does about what you'd expect given that a `Collection` represents a group of objects. 
@@ -153,7 +153,7 @@ For more information and examples, see the lesson entitled [Aggregate Operations
 
 
 这些只是您可以使用流和聚合操作执行的操作的几个示例。
-有关更多信息和示例，请参阅标题为 [Aggregate Operations](./../streams/index.md) 的课程。
+有关更多信息和示例，请参阅标题为 [Aggregate Operations](../streams/index.md) 的课程。
 
 
 The Collections framework has always provided a number of so-called "bulk operations" as part of its API. 
@@ -179,7 +179,7 @@ The `for-each` construct allows you to concisely traverse a collection or array 
 The following code uses the `for-each` construct to print out each element of a collection on a separate line.
 
 
-`for-each` 构造允许您使用 `for` 循环简洁地遍历集合或数组 —— 参见 [The for Statement](./../../java/nutsandbolts/for.md)。
+`for-each` 构造允许您使用 `for` 循环简洁地遍历集合或数组 —— 参见 [The for Statement](../../java/nutsandbolts/for.md)。
 以下代码使用 `for-each` 构造在单独的行上打印出集合的每个元素。
 
 

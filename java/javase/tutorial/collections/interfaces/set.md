@@ -47,7 +47,7 @@ It uses the standard conversion constructor described in the [The Collection Int
 
 
 它的工作原理是创建一个 `Set` （根据定义，它不能包含重复项），最初包含 `c` 中的所有元素。
-它使用 [The Collection Interface](./collection.md) 部分中描述的标准转换构造函数。
+它使用 [The Collection Interface](collection.md) 部分中描述的标准转换构造函数。
 
 
 Or, if using JDK 8 or later, you could easily collect into a `Set` using aggregate operations: 
@@ -122,7 +122,7 @@ The first uses JDK 8 aggregate operations.
 The second uses the for-each construct.
 
 
-下面的 [program](./examples/FindDups.java) 打印出其参数列表中的所有不同单词。
+下面的 [program](examples/FindDups.java) 打印出其参数列表中的所有不同单词。
 提供了该程序的两个版本。
 第一个使用 JDK 8 聚合操作。
 第二个使用 for-each 结构。
@@ -298,7 +298,7 @@ Here's how [the resulting program](https://docs.oracle.com/javase/tutorial/colle
 假设您想知道参数列表中哪些词只出现一次，哪些词出现多次，但不希望重复打印任何重复项。
 这种效果可以通过生成两个集合来实现 —— 一个包含参数列表中的每个单词，另一个只包含重复项。
 只出现一次的词是这两个集合的集合差，我们知道如何计算。
-这是 [the resulting program](./examples/FindDups2.java) 的样子。
+这是 [the resulting program](examples/FindDups2.java) 的样子。
 
 
 ```java
@@ -360,4 +360,4 @@ These operations are described in [The Collection Interface](https://docs.oracle
 
 
 除了对任何其他 `Collection` 所做的操作之外，数组操作对 `Set` 没有任何特殊作用。
-These operations are described in [The Collection Interface](./collection.md) section.
+These operations are described in [The Collection Interface](collection.md) section.

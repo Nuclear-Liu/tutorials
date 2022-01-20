@@ -57,7 +57,7 @@ Every `Queue` implementation must specify its ordering properties.
 
 
 队列通常但不一定以 FIFO （先进先出）方式对元素进行排序。
-其中的例外是优先级队列，它根据元素的值对元素进行排序 —— 有关详细信息，请参阅 [Object Ordering](./order.md) 部分。
+其中的例外是优先级队列，它根据元素的值对元素进行排序 —— 有关详细信息，请参阅 [Object Ordering](order.md) 部分。
 无论使用什么排序，队列的头部都是将通过调用 `remove` 或 `poll` 删除的元素。
 在 FIFO 队列中，所有新元素都插入到队列的尾部。
 其他类型的队列可能使用不同的放置规则。

@@ -20,7 +20,7 @@ Their behavior and performance are precisely analogous to `HashSet`, `TreeSet`, 
 
 
 Java 平台包含三个通用的 `Map` 实现： [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) 、 [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) 和 [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) 。
-它们的行为和性能与 `HashSet`、`TreeSet` 和 `LinkedHashSet` 非常相似，如 [The Set Interface](./set.md) 部分所述。
+它们的行为和性能与 `HashSet`、`TreeSet` 和 `LinkedHashSet` 非常相似，如 [The Set Interface](set.md) 部分所述。
 
 
 The remainder of this page discusses the `Map` interface in detail. 
@@ -99,7 +99,7 @@ For in-depth coverage of lambda expressions and aggregate operations see the les
 
 
 同样，这些只是如何使用新的 JDK 8 API 的几个示例。
-有关 lambda 表达式和聚合操作的深入介绍，请参阅标题为 [Aggregate Operations](./../streams/index.md) 的课程。 
+有关 lambda 表达式和聚合操作的深入介绍，请参阅标题为 [Aggregate Operations](../streams/index.md) 的课程。 
 
 
 ## Map Interface Basic Operations _Map 接口基本操作_
@@ -111,7 +111,7 @@ The frequency table maps each word to the number of times it occurs in the argum
 
 
 `Map` 的基本操作（ `put`、 `get`、 `containsKey`、 `containsValue`、 `size` 和 `isEmpty`）的行为与 `Hashtable` 中的对应项完全相同。
-[following program](./examples/Freq.java) 生成在其参数列表中找到的单词的频率表。
+[following program](examples/Freq.java) 生成在其参数列表中找到的单词的频率表。
 频率表将每个单词映射到它在参数列表中出现的次数。
 
 
@@ -580,7 +580,7 @@ It's a simple matter to iterate over the keys in the multimap, printing out each
 [The following program](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/Anagrams.java) is a straightforward implementation of this technique.
 
 
-[The following program](./examples/Anagrams.java) 是该技术的直接实现。
+[The following program](examples/Anagrams.java) 是该技术的直接实现。
 
 
 ```java

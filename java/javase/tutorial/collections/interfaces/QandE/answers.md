@@ -142,7 +142,7 @@
 
   Answer: 
 
-* 练习：以 [`FindDups`](./../examples/FindDups.java) 为例，修改它以使用 `SortedSet` 而不是 `Set`。
+* 练习：以 [`FindDups`](../examples/FindDups.java) 为例，修改它以使用 `SortedSet` 而不是 `Set`。
   指定一个 `Comparator` ，以便在排序和识别集合元素时忽略大小写。
 
   答案：

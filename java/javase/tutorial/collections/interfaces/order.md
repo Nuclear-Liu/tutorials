@@ -113,7 +113,7 @@ If the specified object cannot be compared to the receiving object, the method t
 The [following class representing a person's name](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/Name.java) implements `Comparable`.
 
 
-[following class representing a person's name](./examples/Name.java) 实现了 `Comparable`。
+[following class representing a person's name](examples/Name.java) 实现了 `Comparable`。
 
 
 ```java
@@ -235,7 +235,7 @@ If there were more parts, you'd proceed in the obvious fashion, comparing parts 
 Just to show that it all works, here's [a program that builds a list of names and sorts them](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/NameSort.java).
 
 
-只是为了证明这一切都有效，这里是 [a program that builds a list of names and sorts them](./examples/NameSort.java) 。
+只是为了证明这一切都有效，这里是 [a program that builds a list of names and sorts them](examples/NameSort.java) 。
 
 
 ```java

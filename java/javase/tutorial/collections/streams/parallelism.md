@@ -2,9 +2,22 @@
 
 
 Parallel computing involves dividing a problem into subproblems, solving those problems simultaneously (in parallel, with each subproblem running in a separate thread), and then combining the results of the solutions to the subproblems. 
-Java SE provides the [fork/join framework](), which enables you to more easily implement parallel computing in your applications. 
+Java SE provides the [fork/join framework](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html), which enables you to more easily implement parallel computing in your applications. 
 However, with this framework, you must specify how the problems are subdivided (partitioned). 
 With aggregate operations, the Java runtime performs this partitioning and combining of solutions for you.
+
+
+并行计算涉及将问题划分为子问题，同时解决这些问题（并行，每个子问题在单独的线程中运行），然后将解决方案的结果组合到子问题。
+Java SE 提供了 [fork/join framework](../../essential/concurrency/forkjoin.md)，它使您能够更轻松地在应用程序中实现并行计算。
+但是，使用此框架，您必须指定如何细分（分区）问题。
+通过聚合操作，Java 运行时为您执行这种分区和组合解决方案。
+
+
+One difficulty in implementing parallelism in applications that use collections is that collections are not thread-safe, which means that multiple threads cannot manipulate a collection without introducing thread interference or memory consistency errors. 
+The Collections Framework provides synchronization wrappers, which add automatic synchronization to an arbitrary collection, making it thread-safe. 
+However, synchronization introduces thread contention. 
+You want to avoid thread contention because it prevents threads from running in parallel. 
+Aggregate operations and parallel streams enable you to implement parallelism with non-thread-safe collections provided that you do not modify the collection while you are operating on it.
 
 
 One difficulty in implementing parallelism in applications that use collections is that collections are not thread-safe, which means that multiple threads cannot manipulate a collection without introducing thread interference or memory consistency errors. 

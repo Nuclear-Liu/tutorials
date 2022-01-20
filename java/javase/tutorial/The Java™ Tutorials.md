@@ -51,7 +51,7 @@ To buy this book, refer to the box to the right.
 
 * [Collections](https://docs.oracle.com/javase/tutorial/collections/index.html) — Lessons on using and extending the Java Collections Framework.
 
-* [Collections](./collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
+* [Collections](collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
 
 * [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
 
@@ -120,7 +120,7 @@ These trails and lessons are only available as web pages.
 * [JavaBeans]() — Java 平台的组件技术。
 * [JAXB]() — 介绍用于 XML 绑定 (JAXB) 技术的 Java 体系结构。
 * [JAXP]() — 介绍用于 XML 处理的 Java API (JAXP) 技术。
-* [JDBC Database Access](./jdbc/JDBC%20Database%20Access.md) — 引入了用于在 Java 应用程序与各种数据库和数据源之间进行连接的 API。
+* [JDBC Database Access](jdbc/JDBC%20Database%20Access.md) — 引入了用于在 Java 应用程序与各种数据库和数据源之间进行连接的 API。
 * [JMX]()— Java 管理扩展提供了一种管理资源（例如应用程序、设备和服务）的标准方法。
 * [JNDI]()— Java 命名和目录接口支持访问命名和目录服务，例如 DNS 和 LDAP。
 * [Reflection]() — 表示（"reflects"）当前 Java 虚拟机中的类、接口和对象的 API。

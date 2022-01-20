@@ -3,21 +3,21 @@
 
 * [Reduction](https://docs.oracle.com/javase/tutorial/collections/streams/reduction.html)
 
-* [Reduction](./reduction.md)
+* [Reduction](reduction.md)
 
 * [Parallelism](https://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html)
 
-* [Parallelism](./parallelism.md)
+* [Parallelism](parallelism.md)
 
 * [Questions and Exercises](https://docs.oracle.com/javase/tutorial/collections/streams/QandE/questions.html)
 
-* [Questions and Exercises](./QandE/questions.md)
+* [Questions and Exercises](QandE/questions.md)
 
 
 **Note**: To better understand the concepts in this section, review the sections [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html).
 
 
-**注意**：为了更好地理解本节中的概念，请查看 [Lambda Expressions](./../../java/javaOO/lambdaexpressions.md) 和 [Method References](./../../java/javaOO/methodreferences.md) 部分。
+**注意**：为了更好地理解本节中的概念，请查看 [Lambda Expressions](../../java/javaOO/lambdaexpressions.md) 和 [Method References](../../java/javaOO/methodreferences.md) 部分。
 
 
 For what do you use collections? 
@@ -35,7 +35,7 @@ Suppose that you are creating a social networking application.
 You want to create a feature that enables an administrator to perform any kind of action, such as sending a message, on members of the social networking application that satisfy certain criteria.
 
 
-再次考虑 [Lambda Expressions](./../../java/javaOO/lambdaexpressions.md) 部分中描述的场景。
+再次考虑 [Lambda Expressions](../../java/javaOO/lambdaexpressions.md) 部分中描述的场景。
 假设您正在创建一个社交网络应用程序
 您希望创建一个功能，使管理员能够对满足特定条件的社交网络应用程序的成员执行任何类型的操作，例如发送消息。
 
@@ -43,7 +43,7 @@ You want to create a feature that enables an administrator to perform any kind o
 As before, suppose that members of this social networking application are represented by the following [`Person`](https://docs.oracle.com/javase/tutorial/collections/streams/examples/Person.java) class:
 
 
-如前所述，假设此社交网络应用程序的成员由以下 [`Person`](./examples/Person.java) 类表示：
+如前所述，假设此社交网络应用程序的成员由以下 [`Person`](examples/Person.java) 类表示：
 
 
 ```java
@@ -121,7 +121,7 @@ The following topics are covered:
 Find the code excerpts described in this section in the example [`BulkDataOperationsExamples`](https://docs.oracle.com/javase/tutorial/collections/streams/examples/BulkDataOperationsExamples.java).
 
 
-在示例 [`BulkDataOperationsExamples`](./examples/BulkDataOperationsExamples.java) 中查找本节中描述的代码摘录。
+在示例 [`BulkDataOperationsExamples`](examples/BulkDataOperationsExamples.java) 中查找本节中描述的代码摘录。
 
 
 ## Pipelines and Streams _Pipeline 与 Stream_
@@ -248,7 +248,7 @@ These operations are called reduction operations; see the section [Reduction](ht
 它返回一个 `OptionalDouble` 类型的对象。
 如果流不包含任何元素，则 `average` 操作会返回 `OptionalDouble` 的空实例，并且调用 `getAsDouble` 方法会抛出 `NoSuchElementException` 。
 JDK 包含许多终端操作，例如通过组合流的内容返回一个值的 `average` 。
-这些操作称为归约操作；有关详细信息，请参阅 [Reduction](./reduction.md) 部分。
+这些操作称为归约操作；有关详细信息，请参阅 [Reduction](reduction.md) 部分。
 
 
 ## Differences Between Aggregate Operations and Iterators _聚合操作和迭代器之间的区别_
@@ -278,7 +278,7 @@ However, they have several fundamental differences:
   但是，外部迭代只能按顺序迭代集合的元素。
   内部迭代没有这个限制。
   它可以更轻松地利用并行计算，其中包括将问题划分为子问题，同时解决这些问题，然后将解决方案的结果组合到子问题中。
-  有关详细信息，请参阅 [Parallelism](./parallelism.md) 部分。
+  有关详细信息，请参阅 [Parallelism](parallelism.md) 部分。
 
 * **They process elements from a stream**: 
   Aggregate operations process elements from a stream, not directly from a collection. 
@@ -293,5 +293,5 @@ However, they have several fundamental differences:
   This enables you to customize the behavior of a particular aggregate operation.
 
 * **它们支持作为参数的行为**：
-  您可以将 [lambda expressions](./../../java/javaOO/lambdaexpressions.md) 指定为大多数聚合操作的参数。
+  您可以将 [lambda expressions](../../java/javaOO/lambdaexpressions.md) 指定为大多数聚合操作的参数。
   这使您能够自定义特定聚合操作的行为。
