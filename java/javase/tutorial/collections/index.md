@@ -32,7 +32,7 @@ You'll learn about the core elements — interfaces, implementations, aggregate 
 * [Implementations](https://docs.oracle.com/javase/tutorial/collections/implementations/index.html) describes the JDK's general-purpose collection implementations and tells you when to use which implementation. 
   You'll also learn about the wrapper implementations, which add functionality to general-purpose implementations.
 
-* [Implementations]() 描述了 JDK 的通用集合实现，并告诉您何时使用哪个实现。
+* [Implementations](./implementations/index.md) 描述了 JDK 的通用集合实现，并告诉您何时使用哪个实现。
   您还将了解包装器实现，它为通用实现添加功能。
 
 * [Algorithms](https://docs.oracle.com/javase/tutorial/collections/algorithms/index.html) describes the polymorphic algorithms provided by the JDK to operate on collections. 
