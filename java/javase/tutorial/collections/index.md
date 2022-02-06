@@ -38,7 +38,7 @@ You'll learn about the core elements — interfaces, implementations, aggregate 
 * [Algorithms](https://docs.oracle.com/javase/tutorial/collections/algorithms/index.html) describes the polymorphic algorithms provided by the JDK to operate on collections. 
   With any luck you'll never have to write your own sort routine again!
 
-* [Algorithms]() 描述了 JDK 提供的用于操作集合的多态算法。
+* [Algorithms](./algorithms/index.md) 描述了 JDK 提供的用于操作集合的多态算法。
   运气好的话，您再也不必编写自己的排序例程了！
 
 * [Custom Implementations](https://docs.oracle.com/javase/tutorial/collections/custom-implementations/index.html) tells you why you might want to write your own collection implementation (instead of using one of the general-purpose implementations provided by the JDK), and how you'd go about it. 
