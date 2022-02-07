@@ -50,5 +50,5 @@ You'll learn about the core elements — interfaces, implementations, aggregate 
 * [Interoperability](https://docs.oracle.com/javase/tutorial/collections/interoperability/index.html) tells you how the Collections Framework interoperates with older APIs that predate the addition of Collections to Java. 
   Also, it tells you how to design new APIs so that they'll interoperate seamlessly with other new APIs.
 
-* [Interoperability]() 告诉您集合框架如何与早于将集合添加到 Java 的旧 API 进行互操作。
+* [Interoperability](./interoperability/index.md) 告诉您集合框架如何与早于将集合添加到 Java 的旧 API 进行互操作。
   此外，它还告诉您如何设计新 API，以便它们能够与其他新 API 无缝互操作。
