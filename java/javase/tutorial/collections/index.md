@@ -44,7 +44,7 @@ You'll learn about the core elements — interfaces, implementations, aggregate 
 * [Custom Implementations](https://docs.oracle.com/javase/tutorial/collections/custom-implementations/index.html) tells you why you might want to write your own collection implementation (instead of using one of the general-purpose implementations provided by the JDK), and how you'd go about it. 
   It's easy with the JDK's abstract collection implementations!
 
-* [Custom Implementations]() 告诉您为什么要编写自己的集合实现（而不是使用 JDK 提供的通用实现之一），以及您将如何进行。
+* [Custom Implementations](./custom-implementations/index.md) 告诉您为什么要编写自己的集合实现（而不是使用 JDK 提供的通用实现之一），以及您将如何进行。
   使用 JDK 的抽象集合实现很容易！
 
 * [Interoperability](https://docs.oracle.com/javase/tutorial/collections/interoperability/index.html) tells you how the Collections Framework interoperates with older APIs that predate the addition of Collections to Java. 
