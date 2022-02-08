@@ -135,9 +135,9 @@ These trails and lessons are only available as web pages.
 
 * [JNDI]()— Java 命名和目录接口支持访问命名和目录服务，例如 DNS 和 LDAP。
 
-* [Reflection]() — An API that represents ("reflects") the classes, interfaces, and objects in the current Java Virtual Machine.
+* [Reflection](https://docs.oracle.com/javase/tutorial/reflect/index.html) — An API that represents ("reflects") the classes, interfaces, and objects in the current Java Virtual Machine.
 
-* [Reflection]() — 表示（"reflects"）当前 Java 虚拟机中的类、接口和对象的 API。
+* [Reflection](./reflect/index.md) — 表示（"reflects"）当前 Java 虚拟机中的类、接口和对象的 API。
 
 * [RMI]() — The Remote Method Invocation API allows an object to invoke methods of an object running on another Java Virtual Machine.
 
