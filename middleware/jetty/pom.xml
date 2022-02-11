@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.middleware.jetty</groupId>
+    <groupId>org.hui.middleware</groupId>
     <artifactId>jetty</artifactId>
 
     <properties>
