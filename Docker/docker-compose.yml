@@ -1,0 +1,16 @@
+version: '3.1'
+services:
+  jenkins:
+    image: jenkins:2.60.3
+    container_name: jenkins
+    privileged: true
+    ports:
+      - 8080:8080
+      - 5000:5000
+    environment:
+      TZ: Asia/Shanghai
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: 3.0
+#          memory: 8G
