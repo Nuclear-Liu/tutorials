@@ -16,7 +16,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <org.eclipse.jetty.server.version>11.0.7</org.eclipse.jetty.server.version>
-        <junit.junit.version>4.13.2</junit.junit.version>
     </properties>
 
     <dependencies>
