@@ -53,7 +53,7 @@ To buy this book, refer to the box to the right.
 
 * [Collections](./collections/index.md) — 关于使用和扩展 Java 集合框架的课程。
 
-* [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the java.time pages to write date and time code.
+* [Date-Time APIs](https://docs.oracle.com/javase/tutorial/datetime/index.html) — How to use the `java.time` pages to write date and time code.
 
 * [Date-Time APIs]() — 如何使用 `java.time` 页面编写日期和时间代码。
 
