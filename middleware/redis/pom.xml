@@ -12,6 +12,7 @@
     <artifactId>redis</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>lettuce</module>
         <module>spring-data-redis</module>
     </modules>
 
