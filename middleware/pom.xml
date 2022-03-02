@@ -18,6 +18,7 @@
         <module>jetty</module>
         <module>lettuce</module>
         <module>springframework</module>
+        <module>redis</module>
     </modules>
 
     <properties>
