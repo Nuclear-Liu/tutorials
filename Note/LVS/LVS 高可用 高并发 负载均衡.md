@@ -330,6 +330,51 @@ ipvsadm -lnc
 
   3. 投票选择
 
+
+###### Keepalived 实现主备 HA （高可用）
+
+
+Keepalived 解决单点故障，实现高可用 (HA) ，是一个存在于用户空间的外挂程序； Keepalived 提供的功能：
+
+1. 监控自己身的功能服务 (`LVS`) 服务；
+
+2. Master 主机通告自己存活； Backup 备机监听 Master 主机状态；如果 Master 不可用，多台 Backup 推举出一个新的 Master ；
+
+3. 配置功能：通过配置文件实现配置（设置 `VIP` ，添加 `ipvs` ）；
+
+4. 对被负载对象做健康检查；
+
+
+> Keepalived 是一个通用工具（不仅仅用于 `LVS` ，包括 Nginx 、 Tomcat 高可用实现），主要作为高可用 (HA) 的实现。
+
+
+清理已有 LVS 配置 ： `ipvsadm -C`
+
+清理虚拟网卡配置 ： `ifconfig eth:8 down`
+
+**Keepalived 实现 LVS HA （高可用）**
+```shell
+# noed01 keepalived+lvm noed04 keepalived+lvm node02 
+yum install keepalived -y
+# edit keepalived config `/etc/keepalived/keepalived.conf`
+cd /etc/keepalived/
+# backup keepalived.conf to keepalived.conf.bak
+cp keepalived.conf keepalived.conf.bak
+# edit config
+vi keepalived.conf
+```
+
+配置文件结构： [keepalived.conf](./keepalived.conf)
+
+  * `global_defs` 全局配置
+  * `vrrp_instance` 虚拟路由冗余协议
+  * `virtual_server` 虚拟服务器
+    * `real_server` 真是服务器
+
+`man` 帮助手册： `yum install man -y`
+
+查看帮助文件： `man 5 keepalived.conf`
+
 ##### 主主模型
 
 主主模式需要在LVS之前加一层动态 DNS 。
