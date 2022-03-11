@@ -362,6 +362,8 @@ cd /etc/keepalived/
 cp keepalived.conf keepalived.conf.bak
 # edit config
 vi keepalived.conf
+# start service
+service keepalived start
 ```
 
 配置文件结构： [keepalived.conf](./keepalived.conf)
@@ -370,16 +372,34 @@ vi keepalived.conf
   * `vrrp_instance` 虚拟路由冗余协议
   * `virtual_server` 虚拟服务器
     * `real_server` 真是服务器
+    
 
-`man` 帮助手册： `yum install man -y`
+> **不是所有的主备模型，主正常上线后一定可以抢回主的地位。**
+>
+> **LVS 上没有太多的数据同步，所以可以抢回主的状态。（HDFS不可以抢回）。而且主一般比从配置强**
+> 
+> **一个主异常下线恢复后是否抢回主：参考成本复杂度。**
+> 
+> 主要想抢回原为的主地位，需要同步会不可用时间内的数据。如果时间太长，就不合适。
+> 所以 HDFS 主从配置一般一致，为了避免需要同步不可用时间内的数据，不回去抢回主的地位。
 
-查看帮助文件： `man 5 keepalived.conf`
+* `man` 帮助手册： `yum install man -y`
+
+* 查看帮助文件： `man 5 keepalived.conf`
+
+* 远程文件拷贝： 
+
+    ```shell
+    scp ./keepalived.conf root@node04:`pwd`
+    ```
+* 关闭网卡： `ifconfig eth0 down`
+* 开启网卡： `ifconfig eth0 up`
 
 ##### 主主模型
 
-主主模式需要在LVS之前加一层动态 DNS 。
+主主模式需要在 LVS 之前加一层动态 DNS 。
 
-#### RS 可能**挂掉**
+#### RS (Real Server) 可能**挂掉**
 
 RS 不可用确定机制：
 
@@ -389,15 +409,20 @@ RS 不可用确定机制：
 > `ping` 只能检测 IP 层状态；并不能确定应用状态。
 
 
+#### Keepalived 优缺点
 
 
+> Keepalived 后台会有三个进程（一个主进程和若干个主进程的子进程）
+> 
+> * **主进程**：负责主动广播自身状态信息。
+> 
+> * **子进程**：每个子进程连接一个 RS 负责健康检查（HTTP连接）。
 
+问题：
 
+* Keepalived 是一个第三方程序，有可能会异常退出
 
+    异常退出会导致 LVS 配置信息没有被正确收回（VIP、内核配置）；备机不知道主机还活着，备机称为主机，出现VIP冲突。
+    导致网络异常（连接原子性被破坏、网络稳定性被破坏）。
 
-
-
-
-
-
-
+**通过 Zookeeper 高可靠集群来解决 Keepalived 不可靠问题。**
