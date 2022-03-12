@@ -166,7 +166,7 @@ redis-cli 中提供了 `help` 帮助。
   
     Return the number of references of the value associated with the specified key.
 
-## `@string` 字符串 (`byte`) 组
+### `@string` 字符串 (`byte`) 组
 
 Redis string 二进制安全；
 Redis 只存储字节流，没有对字符串进行编解码
@@ -188,6 +188,18 @@ Redis 只存储字节流，没有对字符串进行编解码
 
   有一笔操作失败，所有的多比操作都失败。
 
+* Int Operation
+
+  > 数值类型应用场景：
+  > 
+  > 使用 `INCR key` `DECR key` 实现。
+  > 
+  > 将对数据库的事务操作完全转换为 redis 的内存操作，降低数据库压力。
+  > 
+  > 1. 秒杀
+  > 2. 抢购
+  > 3. 详情页的一些统计数据，评论数，好友数
+
 * Bitmap Operation
 
   * `SETBIT key offset value`
@@ -197,14 +209,210 @@ Redis 只存储字节流，没有对字符串进行编解码
   * `BITCOUNT key [start end]`
   
     Count set bits in a string
+  
+  * `BITPOS key bit [start] [end]`
+  
+    Find first bit set or clear in a string
+  
+  * `BITOP operation destkey key [key ...]`
+  
+    Perform bitwise operations between strings
 
-## Redis 提供的 `Value` 类型
+> 位图类型应用场景：
+> 
+> 1. 统计用户登录天数，且时间窗口随机：
+>
+>  使用时间（天）和用户 id 构成一个二位数组；
+>  如果登陆了，对应时间和用户id的位置二进制位置为 `1` ;
+>  一年最多 366 天， `366d/8bit < 46byte` 需要的存储空间： `46byte*count(user)`
+>
+> 2. 电商做活动，假设电商有 2 亿用户，登录的用户送礼物，没人只能送一次，大库备货多少礼物？
+>
+>  用户分为 僵尸用户、冷热用户；
+>
+>  过往某一个时间段内的活跃用户量。再将活跃用户量膨胀一定的比例，既是备货量。
+>
+>  活跃用户量的计算：再统计时间窗口内多次登陆的用户需要去重只记一次。
+>
+>  将时间段内的 `bit` 数组做或运算。然后统计运算结果中 `1` 的个数。
 
-### `String`
-#### `BitMaps`
-#### 字符类型
-#### 数值类型
-### `Hashes`
-### `Lists`
-### `Sets`
-### `Sorted Sets`
+### `@list` 链表组
+
+> 底层实现双向链表；
+> 
+> 同样的提供了正负索引的功能。
+> 
+> 可以抽象提供：链表操作、队列操作、堆栈操作、数组操作、阻塞单播队列( `FIFO` )。
+
+* Left Operation
+
+  * `LPUSH key value [value ...]`
+  
+    Prepend one or multiple values to a list
+
+  * `LPOP key`
+  
+    Remove and get the first element in a list
+  
+  * `LPUSH key value`
+  
+    Prepend a value to a list, only if the list exists
+
+* Right Operation
+
+  * `RPUSH key value [value ...]`
+  
+    Append one or multiple values to a list
+  
+  * `RPOP key`
+  
+    Remove and get the last element in a list
+
+* Blocking Operation
+
+  > `timeout = 0` ：一直阻塞；
+  > 
+  > `timeout > 0` ： 阻塞 `timeout` 时间；
+
+  * `BLPOP key [key ...] timeout`
+  
+    Remove and get the first element in a list, or block until one is available
+  
+  * `BRPOP key [key ...] timeout`
+
+* General Operation
+
+  * `LRANGE key start stop`
+
+    Get a range of elements from a list
+
+  * `LINDEX key index`
+
+    Get an element from a list by its index
+
+  * `LSET key index value`
+
+    Set the value of an element in a list by its index
+
+  * `LREM key count value`
+
+    Remove elements from a list
+
+    > `count > 0` ：从左侧开始移除 `|count|` 个 `value` ；
+    > `count = 0` : 移除链表中出现的所有 `value` ；
+    > `count < 0` ： 从右侧开始移除 `|count|` 个 `value` ；
+
+  * `LINSERT key BEFORE|AFTER pivot value`
+  
+    Insert an element before or after another element in a list
+  
+  * `LTRIM key start stop`
+  
+    Trim a list to the specified range
+
+### `@hash` 字典组
+
+
+* General Operation
+
+  * `HSET key field value`
+
+    Set the string value of a hash field
+
+  * `HMSET key field value [field value ...]`
+
+    Set multiple hash fields to multiple values
+
+* Calculating Operation
+
+  * `HINCRBY key field increment`
+  
+    Increment the integer value of a hash field by the given number
+  
+    > `increment > 0` : add
+    > 
+    > `increment < 0` : sub
+  * `HINCRBYFLOAT key field increment`
+  
+    Increment the float value of a hash field by the given amount
+
+> 应用场景：
+> 
+> 商品的详情页的各种数据的查询与计算。
+
+### `@set` 集合组
+
+> 无重复，随机；
+
+* General Operation
+
+  * `SADD key member [member ...]`
+
+    Add one or more members to a set
+  
+  * `SCARD key`
+  
+    Get the number of members in a set
+    
+  * `SISMEMBER key member`
+  
+    Determine if a given value is a member of a set
+  
+  * `SMEMBERS key`
+  
+    Get all the members in a set
+  
+  * `SRANDMEMBER key [count]`
+  
+    Get one or multiple random members from a set
+  
+    > `count > 0` : 返回集合中元素数量和 `count` 中最小一个数量的随机元素；
+    > `count = 0` : 返回空；
+    > `count < 0` : 返回一个长度一定是 `|count|` 的结果集（可能重复）；
+    
+    > 应用场景： 
+    > 
+    > **抽奖**
+    > 
+    > 参与人数于奖品数量、中奖是否可以重复；
+    >
+    > 参与人放入 `set` 
+    > 
+    > 如果参与人数大于奖品数量： 通过控制 `count` 的正负，实现是否可以重复抽奖， `count` 值是抽取的奖品数量。
+    > 
+    > 如果参与人数小于奖品数量： `count` 为负， `count` 值为礼品数量。
+
+  * `SPOP key [count]`
+  
+    Remove and return one or multiple random members from a set
+
+    > 应用场景：
+    > 
+    > **年会抽奖**
+
+* Calculating Operation
+
+  * `SDIFF key [key ...]`
+  
+    Subtract multiple sets
+
+  * `SDIFFSTORE destination key [key ...]`
+  
+    Subtract multiple sets and store the resulting set in a key
+
+  * `SINTER key [key ...]`
+
+    Intersect multiple sets
+  
+  * `SINTERSTORE destination key [key ...]`
+
+    Intersect multiple sets and store the resulting set in a key
+  
+  * `SUNION key [key ...]`
+
+    Add multiple sets
+  
+  * `SUNIONSTORE destination key [key ...]`
+
+    Add multiple sets and store the resulting set in a key
+
