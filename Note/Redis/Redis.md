@@ -77,6 +77,10 @@
 > 这个时期 Socket 是 blocking (阻塞，Socket 产生的这些文件描述符，当被读的时候，如果数据包没有到 `read` 系统调用不能返回，处于阻塞状体) 。
 > 
 > 需要创建多了线程进行读网络文件描述符，且需要频繁的线程切换。
+> JVM 中一个线程栈大小默认为 `1M` 。
+> 
+> * 线程多了调度成本 CPU 浪费；
+> * 内存成本增加；
 
 
 > **NIO (SYN NONBLOCK) 同步非阻塞时期** 
@@ -91,7 +95,7 @@
 > 轮询所有的网络文件描述符发生在用户空间。每次轮询都需要调用内核系统调用 `read` ，内核调用成本大。
 
 
-> **多路复用的 NIO**
+> **多路复用的 NIO 同步非阻塞时期**
 > 
 > 内核增加了 `select` 系统调用，用户空间调用新的 `select` 系统调用将所有需要的监听的网络文件描述符作为传参给 `select` 调用，知道有一个或多个文件描述符变成 `ready` 。
 > 然后在根据返回的文件描述符依次调用 `read fd` 读取数据（ `read` 只读取有数据的文件描述符）。
@@ -111,15 +115,88 @@
 > epoll - I/O event notification facility # I/O 事件通知功能
 > `epoll` 包括： `epoll_create`(2) `epoll_ctl`(2) `epoll_wait`(2)
 > 
+> * `epoll_create` : 返回 `epfd` 文件描述符，创建一个共享空间。
+> * `epoll_ctl` : 向 `interest list` 添加 socket `fd` 文件描述符， 从 `interest list` 删除 socket `fd` 文件描述符。
+> * `epoll_wait` : 等待事件（事件驱动）。
+> 
 > 零拷贝系统调用 `ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);`
 > 
 > `sendfile` + `mmap` => Kafka # `mmap` 对发送来的消息的 `fd` 进行用户空间和内核空间的零拷贝， `sendfile` 实现消费这对磁盘文件的网络传输的零拷贝传递给消费者。
 
 
-Redis 和内核之间使用的是 epoll (eventpoll) （非阻塞多路复用）系统调用。
-因为是单线程， Redis 对命令的执行是顺序的。
+Redis 和内核之间使用的是 `epoll` (eventpoll) （非阻塞多路复用）系统调用。
+因为是单线程， Redis 对命令的执行是顺序性（每链接内的命令顺序执行）的。
 
 
+## 命令使用
+
+
+redis-cli 使用帮助： `redis-cli -h` ；
+
+redis-cli 中提供了 `help` 帮助。
+
+### `@generic` 通用组
+
+* `TYPE key`
+
+  > Determine the type stored at key
+
+* `OBJECT subcommand [arguments [arguments ...]]`
+
+  > Inspect the internals of Redis objects
+  
+  `OBJECT help` 获取 `OBJECT` 命令参数的帮助；
+
+  **Subcommands**:
+
+  * `ENCODING <key>`
+  
+    Return the kind of internal representation used in order to store the value associated with a key.
+  
+  * `FREQ <key>`
+  
+    Return the access frequency index of the key. 
+    The returned integer is proportional to the logarithm of the recent access frequency of the key.
+  
+  * `IDETINE <key>`
+  
+    Return the idle time of the key, that is the approximated number of seconds elapsed since the last access to the key.
+  
+  * `REFCOUNT <key>`
+  
+    Return the number of references of the value associated with the specified key.
+
+## `@string` 字符串 (`byte`) 组
+
+Redis string 二进制安全；
+Redis 只存储字节流，没有对字符串进行编解码
+
+> 具有 5 种类型：
+
+* `SET`
+  * `[NX|XX]` 
+    `NX` : 只有 `key` 不存在的时候才会设置 `value` ；可以用于**分布式锁**，成功的获得到锁。
+    `XX` : 只有 `key` 存在的时候才可以设置 `value` ；
+
+* `MSET`
+
+* `MGET`
+
+* `MSETNX`
+
+  Set multiple keys to multiple values, only if none of the keys exist
+
+  有一笔操作失败，所有的多比操作都失败。
+
+* Bitmap Operation
+
+  * `SETBIT key offset value`
+  
+    Sets or clears the bit at offset in the string value stored at key
+  
+  * `BITCOUNT key [start end]`
+  
+    Count set bits in a string
 
 ## Redis 提供的 `Value` 类型
 
