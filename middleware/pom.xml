@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.middleware</groupId>
     <artifactId>middleware</artifactId>
     <packaging>pom</packaging>
     <description>middleware component</description>
@@ -18,6 +17,7 @@
         <module>jetty</module>
         <module>springframework</module>
         <module>redis</module>
+        <module>zookeeper</module>
     </modules>
 
     <properties>
