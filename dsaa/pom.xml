@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.dsaa</groupId>
     <artifactId>dsaa</artifactId>
+
     <description>DataStructuresAndAlgorithmAnalysis</description>
 
     <properties>

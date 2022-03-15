@@ -9,10 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.tdd</groupId>
     <artifactId>tdd</artifactId>
+
     <packaging>pom</packaging>
+
     <description>Test-Driven Development</description>
+
     <modules>
         <module>junit4</module>
         <module>hamcrest</module>

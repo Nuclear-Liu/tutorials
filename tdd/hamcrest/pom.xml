@@ -4,13 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>tdd</artifactId>
-        <groupId>org.hui.tdd</groupId>
+        <groupId>org.hui</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.tdd.hamcrest</groupId>
+    <groupId>org.hui.hamcrest</groupId>
     <artifactId>hamcrest</artifactId>
+
     <description>Hamcrest Tutorials</description>
 
     <properties>
