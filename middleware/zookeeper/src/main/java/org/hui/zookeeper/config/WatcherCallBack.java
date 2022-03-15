@@ -26,7 +26,6 @@ public class WatcherCallBack implements Watcher, AsyncCallback.StatCallback, Asy
 
     @Override
     public void process(WatchedEvent event) {
-        log.error("event start");
 
         switch (event.getType()) {
             case None:
@@ -46,7 +45,7 @@ public class WatcherCallBack implements Watcher, AsyncCallback.StatCallback, Asy
             case NodeChildrenChanged :
                 break;
         }
-        log.error("event end");
+
     }
 
     @Override
@@ -62,7 +61,7 @@ public class WatcherCallBack implements Watcher, AsyncCallback.StatCallback, Asy
 
     @Override
     public void processResult(int rc, String path, Object ctx, Stat stat) {
-        log.error("exec call back");
+        log.info("exec call back");
         if (stat != null) {
             zk.getData("/AppConf", this, this, "sdfs");
         }

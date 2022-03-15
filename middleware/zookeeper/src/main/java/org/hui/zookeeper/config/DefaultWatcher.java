@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class DefaultWatcher implements Watcher {
 
-    private CountDownLatch latch;
+    private final CountDownLatch latch;
 
     public DefaultWatcher(CountDownLatch latch) {
         this.latch = latch;
