@@ -1,6 +1,12 @@
 package org.hui.zookeeper;
 
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
@@ -26,7 +32,7 @@ public class App {
                 Event.KeeperState state = event.getState();
                 Event.EventType type = event.getType();
                 String path = event.getPath();
-                System.out.println(event.toString());
+                System.out.println("new zk watch: " + event.toString());
 
                 switch (state) {
                     case Unknown:
@@ -96,8 +102,38 @@ public class App {
             @Override
             public void process(WatchedEvent event) {
                 System.out.println("getData watch:" + event.toString());
+                try {
+                    // true default watch 被重新注册为默认 watch
+                    // new zk 的那个 watch
+//                    zk.getData("/ooxx", true, stat);
+                    zk.getData("/ooxx", this, stat);
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }, stat);
 
+        System.out.println(new String(node, StandardCharsets.UTF_8));
+
+        // 触发事件
+        Stat stat1 = zk.setData("/ooxx", "new data".getBytes(StandardCharsets.UTF_8), 0);
+
+        // 不会再次出发事件
+        Stat stat2 = zk.setData("/ooxx", "newdata01".getBytes(StandardCharsets.UTF_8), stat1.getVersion());
+
+        System.out.println("--------------- async start -------------");
+        zk.getData("/ooxx", false, new AsyncCallback.DataCallback() {
+            @Override
+            public void processResult(int rc, String path, Object ctx, byte[] data, Stat stat) {
+                System.out.println("--------------- async call back -------------");
+                System.out.println(ctx.toString());
+                System.out.println(new String(data, StandardCharsets.UTF_8));
+            }
+        }, "abc");
+        System.out.println("--------------- async over -------------");
+
+        Thread.sleep( 2222222);
     }
 }
