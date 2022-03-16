@@ -10,7 +10,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZKUtils {
 
-    private static String address = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183,127.0.0.1:2184/testConf";
+    private static String address = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183,127.0.0.1:2184/testLock";
 
     private static ZooKeeper zk;
 
