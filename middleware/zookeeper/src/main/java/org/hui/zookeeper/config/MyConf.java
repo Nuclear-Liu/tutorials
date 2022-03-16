@@ -11,6 +11,7 @@ public class MyConf {
         return conf;
     }
 
+
     public void setConf(String conf) {
         this.conf = conf;
     }
