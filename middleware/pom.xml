@@ -19,6 +19,7 @@
         <module>springframework</module>
         <module>redis</module>
         <module>zookeeper</module>
+        <module>netty</module>
     </modules>
 
     <properties>
