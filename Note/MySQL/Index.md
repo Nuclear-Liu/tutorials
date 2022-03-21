@@ -18,6 +18,10 @@ mysql -h ip -u user -P port -ppassword
 mysql -h 127.0.0.1 -u root -P 3306 -proot
 ```
 
+#### 查看版本信息
+
+`status;`
+
 #### 切换数据库
 
 
@@ -26,3 +30,5 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 #### 查看当前数据库下的所有表
 
 `show tables;`
+
+
