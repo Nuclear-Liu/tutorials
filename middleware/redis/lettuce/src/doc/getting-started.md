@@ -83,7 +83,13 @@ Download the latest binary package from [https://github.com/lettuce-io/lettuce-c
 So easy! No more boring routines, we can start.
 
 
+太简单！没有更多无聊的套路，我们可以开始了。
+
+
 Import required classes:
+
+
+导入所需的类：
 
 
 ```java
@@ -92,6 +98,9 @@ import io.lettuce.core.*;
 
 
 and now, write your code:
+
+
+现在，编写您的代码：
 
 
 ```text
@@ -109,7 +118,30 @@ redisClient.shutdown();
 Done!
 
 
+完毕！
+
+
 Do you want to see working examples?
+
+
+您想查看工作示例吗？
+
+
+* [Standalone Redis](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce//ConnectToRedis.java)
+
+* [Standalone Redis with SSL](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples/ConnectToRedisSSL.java)
+
+* [Redis Sentinel](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples/ConnectToRedisUsingRedisSentinel.java)
+
+* [Redis Cluster](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples/ConnectToRedisCluster.java)
+
+* [Connecting to a ElastiCache Master](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples/ConnectToElastiCacheMaster.java)
+
+* [Connecting to ElastiCache with Master/Replica](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples/ConnectToMasterSlaveUsingElastiCacheCluster.java)
+
+* [Connecting to Azure Redis Cluster](https://github.com/lettuce-io/lettuce-core/blob/6.1.8.RELEASE/src/test/java/io/lettuce/examples//ConnectToRedisClusterSSL.java)
+
+* [Lettuce with Spring](https://docs.spring.io/spring-data/redis/docs/current/reference/html/#redis:connectors:lettuce)
 
 
 * [Standalone Redis]()

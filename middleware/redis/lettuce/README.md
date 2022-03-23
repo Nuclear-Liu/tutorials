@@ -39,7 +39,7 @@
   完全支持 Reactive 流式传输。
 
 
-## [Simple, yet Powerful](https://lettuce.io/docs/getting-started.html) _[简单但功能强大]()_
+## [Simple, yet Powerful](https://lettuce.io/docs/getting-started.html) _[简单但功能强大](./src/doc/getting-started.md)_
 
 
 Lettuce comes with an API that gets you started quickly. 
