@@ -144,7 +144,7 @@ Do you want to see working examples?
 * [Lettuce with Spring](https://docs.spring.io/spring-data/redis/docs/current/reference/html/#redis:connectors:lettuce)
 
 
-* [Standalone Redis]()
+* [Standalone Redis](./../test/java/org/hui/middleware/lettuce/ConnectToRedisTest.java)
 
 * [Standalone Redis with SSL]()
 

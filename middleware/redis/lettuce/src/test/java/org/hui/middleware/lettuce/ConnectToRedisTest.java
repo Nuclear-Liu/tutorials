@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
  */
 @Slf4j
 public class ConnectToRedisTest {
+
+    /**
+     * Syntax: redis://[password@]host[:port][/databaseNumber]
+     */
     final String uri = "redis://127.0.0.1:6379/0";
 
     @Test
