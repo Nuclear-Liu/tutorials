@@ -22,13 +22,39 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `status;`
 
+### 清屏
+
+`system clear;`
+
+
 #### 切换数据库
 
 
 `use database_name;`
 
+#### 查看当前所有的数据库
+
+`show databases;`
+
 #### 查看当前数据库下的所有表
 
 `show tables;`
 
+### 查看表索引
+
+`show index from table_name;`
+
+
+### 查看表结构
+
+`desc table_name;`
+
+
+`show create table table_name;`
+
+### 创建索引
+
+* 普通索引
+
+`create index index_name on table_name(colums);`
 
