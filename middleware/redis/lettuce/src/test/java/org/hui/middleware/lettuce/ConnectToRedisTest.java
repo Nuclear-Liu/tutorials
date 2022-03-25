@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 public class ConnectToRedisTest {
 
     /**
-     * Syntax: redis://[password@]host[:port][/databaseNumber]
+     * Standalone Syntax redis://[[username:]password@]host[:port][/database][?[timeout=timeout[d|h|m|s|ms|us|ns]]
      */
-    final String uri = "redis://127.0.0.1:6379/0";
+    final String standaloneUri = "redis://127.0.0.1:6379/0";
 
     @Test
-    public void testConnect() {
-        RedisClient redisClient = RedisClient.create(uri);
+    public void testStandaloneConnect() {
+        RedisClient redisClient = RedisClient.create(standaloneUri);
         StatefulRedisConnection<String, String> connection = redisClient.connect();
 
         log.info("Connected to Redis");
