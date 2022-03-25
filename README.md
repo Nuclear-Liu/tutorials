@@ -26,6 +26,7 @@ My Tutorials
 
 * [How to Write an Equality Method in Java](./tdd/lombok/Lombok/How%20to%20Write%20an%20Equality%20Method%20in%20Java.md)
 * [Understanding Java Records From Java 16](./tdd/lombok/Lombok/Understanding%20Java%20Records%20From%20Java%2016.md)
+* [Logging exceptions in Java](https://www.loggly.com/blog/logging-exceptions-in-java/)
 
 
 * [用户系统设计:三户模型&三层身份模型](https://www.biaodianfu.com/customer-user-account-model.html)

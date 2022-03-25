@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
  * @author BadMan
  */
 @Slf4j
-public class ConnectToRedisTest {
+public class ConnectToRedisTests {
 
     /**
      * Standalone Syntax redis://[[username:]password@]host[:port][/database][?[timeout=timeout[d|h|m|s|ms|us|ns]]
