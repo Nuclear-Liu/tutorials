@@ -58,3 +58,9 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `create index index_name on table_name(colums);`
 
+`alter table table_name index index_name(colums);`
+
+### 读取外部sql文件
+
+`source filePath/fileName.sql`
+
