@@ -7,6 +7,6 @@ package org.hui.dsaa.sort;
  */
 public class SelectionSort {
     public static void main(String[] args) {
-        int[] nums = new int[1,3];
+        int[] nums = new int[]{1, 3};
     }
 }
