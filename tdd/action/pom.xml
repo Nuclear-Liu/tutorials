@@ -18,7 +18,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <junit.junit.version>4.13.2</junit.junit.version>
-        <commons.logging.version>1.1.1</commons.logging.version>
+        <commons.logging.version>1.2</commons.logging.version>
     </properties>
 
     <dependencies>
