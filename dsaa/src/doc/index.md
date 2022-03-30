@@ -21,11 +21,53 @@
 
 ## 排序
 
-### 选择排序
+* 选择排序
+* 冒泡排序
+* 插入排序
 
-`n` 个元素无需存放在 `[0 ~ n - 1]` 索引位置；
+## 数据结构
 
-1. 从 [0 ~ n - 1] 查找最小的元素得索引；
-2. 交换索引位置与0元素得位置；
-3. 依次处理其他元素；
+* 连续结构
+* 跳转结构
 
+
+> 随机函数： `Math.random()`
+> 
+> 返回值： `double` `[0,1)` 等概率返回；
+> 
+> `Math.random() * K`: `[0, K)` 等概率
+> 
+> `(int)(Math.random() * K)`: `[0, K - 1]` 等概率；
+
+
+```java
+public class RandTest {
+    /**
+     * 等概率返回 1 ~ 5 .
+     * @return [1, 5]
+     */
+    public static int f() {
+        return (int) (Math.random() * 5) + 1;
+    }
+
+    /**
+     * 0 1 等概率返回 利用 f().
+     * @return [0, 1]
+     */
+    public static int f1() {
+        int ans = 0;
+        do {
+            ans = f();
+        } while (ans == 3);
+        return ans < 3 ? 0 : 1;
+    }
+
+    /**
+     * 0 ~7 等概率返回
+     * @return [0, 7]
+     */
+    public static int f2() {
+        return (f1() << 2) + (f1() << 1) + (f1() << 0);
+    }
+}
+```
