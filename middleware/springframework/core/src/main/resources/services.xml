@@ -10,4 +10,10 @@
         <property name="itemDao" ref="itemDao"/>
         <!-- additional collaborators and configuration for this bean go here -->
     </bean>
+    <bean id="petStore2" class="org.hui.middleware.springframework.core.xml.services.PetStoreServiceImpl2">
+        <constructor-arg name="accountDao" ref="accountDao"/>
+        <constructor-arg name="itemDao" ref="itemDao"/>
+        <constructor-arg name="str" value="'hello'"/>
+    </bean>
+    <bean class="org.hui.middleware.springframework.core.MyBeanFactoryPostProcessor"/>
 </beans>
