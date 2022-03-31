@@ -58,7 +58,16 @@ Bean 初始化流程（Spring在具体的实现过程中在各个阶段增加了
 > `BeanFactoryPostProcessor` : 增强 beanDefinition 信息；
 > `BeanPostProcessor` : 增强 bean 信息
 
-实例化：
+* 创建对象
+    * 实例化：在堆中开辟一片空间（执行**构造方法**，对象属性值都是默认值）；
+
+    * 初始化：给属性设置值；
+        1. 填充属性 `popu` ；
+        2. 设置 `Aware` 接口属性；
+           `Aware`: 
+        3. 执行初始化方法 (`init-method`) ；
+
+    
 
 * `new`
 * 反射
