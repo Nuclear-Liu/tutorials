@@ -58,16 +58,51 @@ Bean 初始化流程（Spring在具体的实现过程中在各个阶段增加了
 > `BeanFactoryPostProcessor` : 增强 beanDefinition 信息；
 > `BeanPostProcessor` : 增强 bean 信息
 
-* 创建对象
+* 创建对象（bean生命周期）
     * 实例化：在堆中开辟一片空间（执行**构造方法**，对象属性值都是默认值）；
 
     * 初始化：给属性设置值；
         1. 填充属性 `popu` ；
         2. 设置 `Aware` 接口属性；
-           `Aware`: 
-        3. 执行初始化方法 (`init-method`) ；
-
+           `Aware`: 当容器创建的 bean 对象在进行具体操作的时候，如果需要容器的其他对象，此时可以将对象实现 `Aware` 接口满足需求；
+        3. `BeanPostProcessor` : 增强(扩展 AOP)
+            * `postProcessBeforeInitialization` : 前置处理方法
+        4. 执行初始化方法 (`init-method`) ；
+            
+        5. `BeanPostProcessor` : 增强(扩展 AOP)
+            * `postProcessAfterInitialization` : 后置处理方法
+           
+    * 得到完整对象； `context.getBean()` 获取对象；
     
 
-* `new`
-* 反射
+
+* Spring Bean
+  * 普通对象（自定义对象）
+  * 容器对象（Spring 内置对象）
+
+> `AbstractAutoProxyCreator implements BeanPostProcessor` : AOP
+> 
+
+观察者模式： 在不同的阶段处理不同的工作；
+  * 监听器 `listener`
+  * 监听事件
+  * 多播器（广播器） `multicaster`
+
+Spring 重点： **接口**
+* `BeanFactory`
+* `Aware`
+* `BeanDefinition`
+* `BeanDefinitionRegistry`
+* `BeanDefinitionReader`
+* `BeanFactoryPostProcessor`
+* `BeanPostProcessor`
+* `Environment` : `StanderEnvironment`
+    * `System.getEnv()`
+    * `System.getProperties()`
+* `FactoryBean`
+
+> `BeanFactory` vs `FactoryBean`
+> 
+1. 都是用来创建对象；
+2. 使用 `BeanFactory` 必须遵循由 Spring 管理控制的创建过程；
+3. 使用 `FactoryBean` 只需要调用 `getObject()` 可以得到具体对象，整个对象的创建过程由用户自己控制，更加灵活；
