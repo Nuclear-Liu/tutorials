@@ -27,10 +27,12 @@
         <junit.version>4.12</junit.version>
         <junit-jupiter.version>5.7.1</junit-jupiter.version>
         <junit-vintage.version>${junit-jupiter.version}</junit-vintage.version>
+        <springframework.version>5.3.18</springframework.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -52,11 +54,19 @@
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
             </dependency>
+            <!-- spring framework -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
-                <version>5.3.16</version>
+                <version>${springframework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${springframework.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- redis client -->
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-redis</artifactId>
@@ -72,6 +82,7 @@
                 <artifactId>jedis</artifactId>
                 <version>3.7.1</version>
             </dependency>
+            <!-- junit5 -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
