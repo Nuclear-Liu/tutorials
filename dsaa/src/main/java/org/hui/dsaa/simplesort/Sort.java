@@ -1,22 +1,11 @@
-package org.hui.dsaa.sort;
-
-import java.util.Arrays;
+package org.hui.dsaa.simplesort;
 
 /**
- * 选择排序；
+ * 简单排序
  * @author Hui.Liu
  * @since 2022-03-28 14:18
  */
 public class Sort {
-    public static void main(String[] args) {
-        int[] nums = {3, 1, 2, 7, 9, 6, 5};
-        System.out.println(Arrays.toString(nums));
-//        selectionSort(nums);
-//        bubbleSort(nums);
-//        insertSort1(nums);
-        insertSort2(nums);
-        System.out.println(Arrays.toString(nums));
-    }
 
     public static void insertSort2(int[] arr) {
         if (null == arr || arr.length < 2) {
