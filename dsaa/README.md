@@ -21,6 +21,6 @@
 ## 基础
 
 * [排序](src/main/doc/SimpleSort/Sort.md)
-* [`Math.random()`]()
+* [`Math.random()` & 对数器](src/main/doc/jdk/Random.md)
 * [对数器]()
 * [动态数组](src/main/doc/DynamicArray/DynamicArray.md)
