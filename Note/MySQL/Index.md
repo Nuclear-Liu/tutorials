@@ -60,7 +60,16 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `alter table table_name index index_name(colums);`
 
-### 读取外部sql文件
+### 读取外部 sql 文件
 
 `source filePath/fileName.sql`
 
+### 查看表信息(`information_schema`)
+
+`use information_schema;`
+
+* 查询所有数据大小： `select concat(round(sum(DATA_LENGTH/1024/1024),2), 'MB') from TABLES;`
+
+* 查询指定数据库大小： `select concat(round(sum(DATA_LENGTH/1024/1024),2), 'MB') from TABLES where table_shema = 'database_name';`
+
+* 查询指定表大小： `select concat(round(sum(DATA_LENGTH/1024/1024),2), 'MB') from TABLES where table_shema = 'database_name' and table_name = 'table_name';`
