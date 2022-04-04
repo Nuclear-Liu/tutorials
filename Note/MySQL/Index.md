@@ -22,7 +22,7 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `status;`
 
-### 清屏
+#### 清屏
 
 `system clear;`
 
@@ -40,19 +40,19 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `show tables;`
 
-### 查看表索引
+#### 查看表索引
 
 `show index from table_name;`
 
 
-### 查看表结构
+#### 查看表结构
 
 `desc table_name;`
 
 
 `show create table table_name;`
 
-### 创建索引
+#### 创建索引
 
 * 普通索引
 
@@ -60,11 +60,11 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 
 `alter table table_name index index_name(colums);`
 
-### 读取外部 sql 文件
+#### 读取外部 sql 文件
 
 `source filePath/fileName.sql`
 
-### 查看表信息(`information_schema`)
+#### 查看表信息(`information_schema`)
 
 `use information_schema;`
 
@@ -73,3 +73,12 @@ mysql -h 127.0.0.1 -u root -P 3306 -proot
 * 查询指定数据库大小： `select concat(round(sum(DATA_LENGTH/1024/1024),2), 'MB') from TABLES where table_shema = 'database_name';`
 
 * 查询指定表大小： `select concat(round(sum(DATA_LENGTH/1024/1024),2), 'MB') from TABLES where table_shema = 'database_name' and table_name = 'table_name';`
+
+
+#### 事务
+
+* 查询事务： `select @@autocommit;`
+
+* 设置事务自动提交；
+  * 关闭自动提交： `set autocommit = 0;`
+  * 打开自动提交： `set autocommit = 1;`
