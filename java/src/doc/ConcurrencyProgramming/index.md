@@ -1,6 +1,14 @@
 # 多线程与高并发
 
 
+> 线程数计算：
+> 
+> `N(threads) = N(cpu) * U(cpu) * (1 + W / C)`
+> 
+> * `N(cpu)`: 处理器的核心数（可以通过 `Runtime.getRuntime().avaliableProcessors()` 得到）；
+> * `U(cpu)`: 期望的 CPU 利用率（该值应该介于 `0` 和 `1` 之间）；
+> * `W / C`: 等待时间与计算时间的比率（通过 `Profiler`(java 中 `JProfiler` `Arthas` ``) 工具获取）；
+
 ## 基础概念
 
 ### 进程
@@ -22,3 +30,6 @@
 
 
 操作系统的可执行文件；
+
+
+
