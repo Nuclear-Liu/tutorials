@@ -1,8 +1,6 @@
 package org.hui.java.languageupdate;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Hui.Liu

@@ -5,7 +5,7 @@
 
 
 * `@Test`
-* `@BeforEach`
+* `@BeforeEach`
 * `@AfterEach`
 * `@BeforAll`
 * `@AfterAll`

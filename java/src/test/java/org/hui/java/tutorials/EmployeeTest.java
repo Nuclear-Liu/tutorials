@@ -1,22 +1,19 @@
 package org.hui.java.tutorials;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Hui.Liu
@@ -25,7 +22,7 @@ import static org.junit.Assert.*;
 public class EmployeeTest {
     private List<Employee> employees;
     private List<Employee> managers;
-    @Before
+    @BeforeEach
     public void init() {
         employees = new ArrayList<>();
 

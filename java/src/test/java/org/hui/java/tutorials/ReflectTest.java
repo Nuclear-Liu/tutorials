@@ -1,6 +1,6 @@
 package org.hui.java.tutorials;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Hui.Liu
