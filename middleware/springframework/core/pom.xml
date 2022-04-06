@@ -12,11 +12,6 @@
     <groupId>org.hui.middleware.springframework</groupId>
     <artifactId>core</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
-
     <dependencies>
         <!-- springframework -->
         <dependency>

@@ -15,9 +15,6 @@
     <description>Easy Mock Tutorials</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <junit.junit.version>4.13.2</junit.junit.version>
         <org.easymock.version>4.3</org.easymock.version>
     </properties>
 
@@ -31,7 +28,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

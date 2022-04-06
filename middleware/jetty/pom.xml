@@ -13,8 +13,6 @@
     <artifactId>jetty</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
         <org.eclipse.jetty.server.version>11.0.8</org.eclipse.jetty.server.version>
     </properties>
 
@@ -27,7 +25,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.junit.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
