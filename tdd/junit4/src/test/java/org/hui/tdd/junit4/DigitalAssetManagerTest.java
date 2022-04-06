@@ -17,8 +17,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class DigitalAssetManagerTest {
     @Rule
-//    public final TemporaryFolder tempFolder = new TemporaryFolder();
-    public final TemporaryFolder tempFolder = TemporaryFolder.builder().assureDeletion().build();
+    public final TemporaryFolder tempFolder = new TemporaryFolder();
+//    public final TemporaryFolder tempFolder = TemporaryFolder.builder().assureDeletion().build();
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
