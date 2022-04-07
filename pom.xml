@@ -17,8 +17,8 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
         <junit.junit.version>4.13.2</junit.junit.version>
         <projectlombok.version>1.18.22</projectlombok.version>
         <slf4j.version>1.7.32</slf4j.version>
