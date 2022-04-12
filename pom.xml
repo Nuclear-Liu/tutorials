@@ -33,6 +33,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- jol-core jol(java object layout) -->
+            <dependency>
+                <groupId>org.openjdk.jol</groupId>
+                <artifactId>jol-core</artifactId>
+                <version>0.16</version>
+                <scope>provided</scope>
+            </dependency>
             <!-- Disruptor -->
             <dependency>
                 <groupId>com.lmax</groupId>
