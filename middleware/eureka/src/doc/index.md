@@ -11,9 +11,48 @@
 `EurekaServerInitializerConfiguration` 实现了 spring-context 的 `SmartLifecycle` 接口；
 `SmartLifecycle` 接口继承 spring-context 的 `Lifecycle` 接口
 
-## [`EurekaServerAutoConfiguration`]() 自动配置类
+## `EurekaServerAutoConfiguration` 自动配置类
 
+使用 `@import` 导入了 `EurekaServerInitializerConfiguration.class` 配置类；
+配置类实现了 `SmartLifecycle` 接口（继承 `LifeCycle` 接口，导入配置类时执行 `Lifecycle` 接口的 `void start();` 方法；
 
+* `EurekaServerInitializerConfiguration`
+    1. `public void start()`
+    2. `contextInitialized`
+    3. `initEurekaServerContext`
+    4. `int registryCount = this.registry.syncUp();` CAP 不满足 C 的原因（从其他 Peer 获取注册信息）；
+    5. `openForTraffic`
+    6. `postInit`
+    7. `public boolean isLeaseExpirationEnabled()` 
+        
+        自我保护关闭：导致 `isLeaseExpirationEnabled` 结果为 `true` 剔除服务；
+        自我保护开启：最后一分钟续约数大于阈值，结果为 `true` ，剔除服务；最后一分钟小于阈值，结果为 `false` ，不踢除，自我保护正式开启；
+        * 为 `false` 不踢除服务
+        * 为 `true` 剔除服务
+
+`EurekaServerInitializerConfiguration` 完成功能
+1. 从 `peer` 拉去注册表
+2. 启动定时剔除任务
+3. 自我保护
+
+* `public EurekaController eurekaController()` Eureka dashboard 控制器
+
+* `peerEurekaNodes` 封装其他 Peer 节点信息；
+
+* `public EurekaServerContext eurekaServerContext()`
+    1. `new DefaultEurekaServerContext`
+    2. `public void initialize()`
+    3. `peerEurekaNodes.start()`
+    4. `registry.init(peerEurekaNodes)`
+    5. `initializedResponseCache();` 初始化缓存
+    6. `new ResponseCacheImpl(serverConfig, serverCodecs, this)` 设置缓存
+
+* `public FilterRegistrationBean<?> jerseyFilterRegistration` 提供http请求的（Eureka Server）
+    1. 接受注册
+    2. 接收心跳
+    3. 下线
+    4. 获取注册列表
+    5. 集群同步（多个 resource ）
 
 ## 服务注册于服务发现
 

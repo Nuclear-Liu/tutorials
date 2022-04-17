@@ -29,10 +29,23 @@
         <junit-vintage.version>${junit-jupiter.version}</junit-vintage.version>
         <springframework.version>5.3.18</springframework.version>
         <spring.data.redis.version>2.6.3</spring.data.redis.version>
+        <spring.cloud.netflix.eureka>3.1.1</spring.cloud.netflix.eureka>
+        <spring.boot.test>2.6.6</spring.boot.test>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Cloud Netflix -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+                <version>${spring.cloud.netflix.eureka}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+                <version>${spring.cloud.netflix.eureka}</version>
+            </dependency>
             <!-- jol-core jol(java object layout) -->
             <dependency>
                 <groupId>org.openjdk.jol</groupId>
@@ -69,6 +82,11 @@
                 <version>${logback.version}</version>
             </dependency>
             <!-- spring framework -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.test}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
