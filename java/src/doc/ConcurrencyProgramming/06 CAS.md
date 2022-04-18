@@ -55,6 +55,10 @@
 
 即共享锁（读）、排它锁（写）；
 
+## `StampedLock` 
+
+`ReadWriteLock` 的优化版本；
+
 ## `Semaphore` 信号量
 
 默认非公平；
@@ -69,3 +73,17 @@
 ## `Exchanger` 交换器
 
 线程之间交换数据（有类似于 `CyclicBarrier` 的特性，两个线程都需要到达 `exchanger()` 方法处才触发交换，否则阻塞）；
+
+## `LockSupport`
+
+提供了不需要锁来阻塞线程和唤醒线程（为专门实现锁做的支持，可以直接用）；
+**子线程启动后 `unpark` 可以先于 `park()` 调用，提供了更好的灵活性**；
+
+* `park()` 暂停线程执行，线程阻塞；
+* `unpark(Thread thread)` 唤醒阻塞的 `park` 的线程 `thread` 继续运行
+
+> `synchronized` vs `ReentrantLock`
+> 
+> * `synchronized` 系統提供，系统自动加锁解锁， `ReentrantLock` 需要手动加锁解锁；
+> * `ReentrantLock` 可以提供各种 `condition` （不同的等待队列）， `synchronized` 做不到；
+> * `ReentrantLock` 基于 CAS 实现， `synchronized` 设计四种锁状态的升级； 
