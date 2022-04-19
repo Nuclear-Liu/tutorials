@@ -87,3 +87,9 @@
 > * `synchronized` 系統提供，系统自动加锁解锁， `ReentrantLock` 需要手动加锁解锁；
 > * `ReentrantLock` 可以提供各种 `condition` （不同的等待队列）， `synchronized` 做不到；
 > * `ReentrantLock` 基于 CAS 实现， `synchronized` 设计四种锁状态的升级； 
+
+
+> 实现一个容器，提供两个方法： `add` `size`
+> 写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数为5个时，线程2给出提示并结束；
+> 
+> 
