@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 
 @Slf4j
 public class T01HelloVarHandle {
@@ -32,6 +35,11 @@ public class T01HelloVarHandle {
 
         handle.getAndAdd(t, 10);
         log.info("{}", t.x);
+
+        SoftReference<byte[]> m = new SoftReference<>(new byte[1024]);
+        byte[] bytes = m.get();
+
+        PhantomReference<String> phantomReference = new PhantomReference<>(new String("sdfwe"), new ReferenceQueue<String>());
     }
 
 }
