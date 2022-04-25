@@ -54,6 +54,11 @@
                 <scope>test</scope>
             </dependency>
             <!-- kafka -->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.kafka</groupId>-->
+<!--                <artifactId>kafka_2.13</artifactId>-->
+<!--                <version>3.1.0</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-streams</artifactId>
