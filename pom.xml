@@ -35,6 +35,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Disruptor -->
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>4.0.0.RC1</version>
+            </dependency>
             <!-- JMH -->
             <dependency>
                 <groupId>org.openjdk.jmh</groupId>
