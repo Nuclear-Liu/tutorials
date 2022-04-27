@@ -20,6 +20,14 @@ Class 文件加载到内存，通过三大步骤完成加载：
 1. `.class` 二进制文件在内存中占用的空间；
 2. 生成 `.class` 文件对应 `Class` 类对象，指向内存中 `.class` 二进制文件位置；
 
+> **`LazyLoading` 懒加载**五种情况（JVM 规范没有具体规定）；
+> JVM 严格规定了初始化的情形：
+> 1. `new` `getstatic` `putstatic` `invokestatic` 指令，访问 `final` 变量除外；
+> 2. `java.lang.reflect` 对类进行反射调用时；
+> 3. 初始化子类的时候，父类需要先初始化；
+> 4. 虚拟机启动时，被执行的主类必须初始化；
+> 5. 动态语言支持： `java.lang.invoke.MethodHandle` 解析的结果为 `REF_getstatic` `REF_putstatic` `REF_invokestatic` 的方法句柄时，该类必须初始化；
+
 ### 类加载器
 
 类加载器分成不同的层次，不同的类加载器负责加载不同的 `Class` ：
@@ -40,7 +48,7 @@ Class 文件加载到内存，通过三大步骤完成加载：
 
 * Custom ClassLoader : ``
 
-    自定义加载器：
+    自定义加载器（模板方法设计模式）：
 
     1. 重写 `ClassLoader` 的 `findClass()` ；
 
@@ -53,7 +61,7 @@ Class 文件加载到内存，通过三大步骤完成加载：
 JVM 支持**解释器**解释执行与**编译器**编译执行(`JIT`)；
 默认情况下使用**混合模式**；
 
-配置：
+编译模式配置：
 * `-Xmixed` : （默认）混合模式；开始解释执行，启动速度较快，对热点代码进行检测和编译；
 * `-Xint` : 解释模式；启动速度快，执行相对慢；
 * `-Xcomp` : 编译模式；启动相对慢，执行速度快；
@@ -65,7 +73,7 @@ JVM 支持**解释器**解释执行与**编译器**编译执行(`JIT`)；
 > 
 > 混合使用解释器 + 热点代码编译
 > * 其实阶段采用解释执行
-> * 热点代码检测，进行编译：
+> * 热点代码检测，进行编译（热点检测**计数器配置**： `-XX:CompileThreshold = 10000` ）：
 >     * 多次被调用的**方法**（**方法计数器**：检测方法执行频率）
 >     * 多次被调用的**循环**（**循环计数器**：检测循环执行频率）
 
@@ -95,6 +103,15 @@ JVM 支持**解释器**解释执行与**编译器**编译执行(`JIT`)；
 > * 主要是为了**安全**，父子加载器对应不同安全等级；
 > * 避免重复加载；
 
+> 打破双亲委派：
+> 
+> 重写 `ClassLoader::loadClass()` ；
+> 
+> 应用情形：
+> 1. JDK 1.2 之前，自定义 `ClassLoader` 都必须重写 `loadClass()` ；
+> 2. `ThreadContextClassLoader` 可以实现基础类调用实现类代码，通过 `thread.setContextClassLoader` 指定；
+> 3. 热启动，热部署： （ OSGI tomcat 都有自己模块指定 `ClassLoader` （加载同一个类库的不同版本））；
+
 #### 类加载器加载范围
 
 * jdk 18: `jdk.internal.loader.ClassLoaders`
@@ -104,13 +121,27 @@ JVM 支持**解释器**解释执行与**编译器**编译执行(`JIT`)；
     * `java.ext.dirs`: ExtClassLoader 加载路径
     * `java.class.path`: AppClassLoader 加载路径
 
-## `Linking`
+## `Linking` 链接
 
-### `verification`
+### `verification` 验证
 
-### `preparation`
+验证 `.class` 文件是否符合 JVM 规定；
 
-### `resolution`
+### `preparation` 预处理
+
+静态变量**赋默认值**；
+
+### `resolution` 解析
+
+将**类**、**方法**、**属性**等符号引用解析为**直接引用**；
+常量池中的各种符号引用解析为指针、偏移量等内存地址的直接引用；
 
 ## `Initializing`
 
+调用类初始化代码 `<clinit>` ；
+静态变量**赋初始值**；
+
+> 创建对象的过程（与类加载过程类似）：
+> 
+> 1. 申请内存，属性赋默认值；
+> 2. 调用构造方法，属性赋初始值；
