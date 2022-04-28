@@ -1,4 +1,4 @@
-# java memory model
+# JMM java memory model
 
 ## 硬件层的并发优化
 
@@ -28,3 +28,145 @@ CPU 为每个 cache line 标记四种状态（额外两位）：
 > 
 > 位于同一个缓存行的两个数据，被不同的 CPU 锁定，产生互相影响的伪共享问题；
 > 使用**缓存行的对齐**解决伪共享问题；
+
+## 内存屏障指令
+
+乱序执行（打乱指令顺序），提高效率；
+
+> 读指令的同时可以同时执行不影响的其他指令，而写的同时可以进行**合并写**(WC Buffer 比 L1 速度还要快，只有 4 个位置);
+
+CPU 提供内存屏障指令来保证有序性；
+
+> Intel 内存屏障指令：
+> 
+> `sfence`: 写屏障，在 `sfence` 指令前的写操作当必须在 `sfence` 指令后的写操作前完成；
+> `lfence`: 读屏障，在 `lfence` 指令前的读操作当必须在 `lfence` 指令后的读操作前完成；
+> `mfence`: 读写屏障，在 `mfence` 指令前的读写操作当必须在 `mfence` 指令后的读写操作前完成；
+> 
+> `lock` 汇编指令，原子指令； 
+> `lock ...` 指令是一个 Full Barrier 执行是会锁住内存子系统来确保执行顺序，甚至跨多个 CPU ；
+> Software Locks 通常使用了内存屏障或原子指令来实现变量可见性和保持程序顺序；
+
+## JVM 内存管理规范
+
+### Jva 并发内存模型
+
+Java线程有自己独立的**工作内存**；
+`store` `load` 操作发生在主内存中； 
+
+
+### JSR 内存屏障(JSR-133)：
+
+* `LoadLoad`
+
+    `Load1; LoadLoad; Load2;`
+
+    在 `Load2` 及后续指令操作前，保证 `Load1` 读取指令执行完毕；
+
+* `StoreStore`
+
+    `Store1; StoreStore; Store2;`
+
+    在 `Store2` 及后续指令完成前，保证 `Store1` 写入指令指向完毕；
+
+* `LoadStore`
+
+    `Load1; LoadStore; Store2;`
+
+    在 `Store2` 及后续指令完成前，保证 `Load1` 读取指令执行完毕；
+
+* `StoreLoad`
+
+    `Store1; StoreLoad; Load2;`
+
+    在 `Load2` 及后续指令完成前，保证 `Store1` 写入指令执行完毕；
+
+> `volatile` 实现细节
+> 
+> * 字节码层面
+> 
+>     添加： `ACC_VOLATILE` 标记；
+> 
+> * JVM 层面
+> 
+>     `volatile` 内存区的读写都加屏障；
+>     * `volatile` 写操作
+>         `StoreStoreBarrier; volatile write operation; StoreLoadBarrier;`
+>     * `volatile` 读操作
+>         `LoadLoadBarrier; volatile read operation; LoadStoreBarrier;`
+> * 硬件指令集层面
+> 
+>     使用 `hsdis`(hotspot dis assembler) 工具用于观察汇编指令；
+> 
+>     * Windows 环境下使用： `lock` 指令实现；
+
+> `synchronized` 实现细节
+>
+> * 字节码层面
+> 
+>     `ACC_SYNCHRONIZED` 指令实现；
+> 
+>     `monitorenter` `montorexit`
+> 
+>     将同步块转变为： `monitorenter; synchronized operation; montorexit; catche exception; montorexit;`
+> 
+> * JVM 层面
+> 
+>     （平台相关）调用 C/C++ 实现的操作系统的同步机制；
+> 
+> * 硬件指令集层面
+> 
+>     通过 `lock` 指令实现；
+>     
+>     x86: `lock comxchg ...` 
+
+### ~~Java 原子操作~~ 
+
+> 最新的 JSR-133 已弃用
+
+* `lock` 主内存，标识变量为线程独占
+* `unlock` 主内存，解锁线程独占变量
+* `read` 主内存，读取内存到工作内存
+* `load` 工作内存， `read` 后的值放入线程本地变量副本
+* `use` 工作内存，传值给执行引擎
+* `assign` 工作内存，执行引擎结果赋值给线程本地变量
+* `store` 工作内存，存值到主内存给 `write` 备用
+* `write` 主内存，写变量值
+
+### Happens-before Order
+
+JVM 规定重排序必须遵守的原则：
+* 程序次序规则：同一个线程内，按照代码出现的顺序，前面的代码先行于后面的代码，准确说是控制流顺序，以内要考虑到分支和循环结构；
+* 管程锁定规则：一个 `unlock` 操作先行发生于后面（时间上）对同一个锁的 `lock` 操作；
+* `volatile` 变量规则：对一个 `volatile` 变量的写操作先行发生于后面（时间上）对这个变量的读操作；
+* 线程启动规则： `Thread` 的 `start()` 方法先行于当前线程的每一个操作；
+* 线程终止规则：线程的所有操作都要先行于此线程的终止检测；可以通过 `Thread.join()` `Thread.isAlive()` 的返回值等手段检测线程的状态；
+* 线程中断规则：对线程 `interrupt()` 方法的调用先行发生于被中断线程的代码检测到中断时间的发生，可以通过 `Thread.interrupt()` 方法检测线程是否中断；
+* 对象终结规则：一个对象的初始化完成先行于发生它的 `finalize()` 方法的开始；
+* 传递性：如果操作 `A` 先行于操作 `B` ，操作 `B` 先行于操作 `C` ，那么操作 `A` 先行于操作 `C`
+
+> **as if serial**
+> 
+> 不管线程如何乱序执行，单线程执行结果不会改变；
+
+### 对象的内存布局
+
+
+
+
+> 1. 请解释一下对象的创建过程？
+> 
+>     * class loading
+>     * class linking(verification, preparation, resolution)
+>     * class initializing
+>     * 分配对象内存
+>     * 成员便令赋默认值
+>     * 调用构造方法 `<init>`
+>         * 成员变量顺序赋初始值
+>         * 执行构造方法语句
+> 
+> 2. 对象在内存中的存储布局？
+> 3. 对象头具体包括什么？
+> 4. 对象怎么定位？
+> 5. 对象怎么分配？
+> 6. `Object o = new Object()` 在内存中占用多少字节？
