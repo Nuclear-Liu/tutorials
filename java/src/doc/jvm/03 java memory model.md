@@ -166,7 +166,72 @@ JVM 规定重排序必须遵守的原则：
 >         * 执行构造方法语句
 > 
 > 2. 对象在内存中的存储布局？
+>
+>     hotspot 中使用（C++实现） `oopDesc` 数据结构代表一个 Java 对象（最终大小要符合 `8 Byte` 对齐；
+>
+>     * **普通对象**由四部分构成： `markword` 标记字、 `class pointer` 类型指针（指向 `*.class` ，对象在内存中的类型Class对象地址）、 `instance data` 实例数据（包括**类型引用** `Oops` ）、 `padding` 对齐
+>     * **数组对象**由五部分构成： `markword` 标记字、 `class pointer` 类型指针（指向 `*.class` ，数组类型在内存中类型Class对象地址）、 `length`(4Byte) 数组 长度、 `instance data` 实例数据、 `padding` 对齐
+> 
+>     > `class pointer`
+>     >
+>     > 虚拟机参数 `UseCompressedClassPointers`: 开启 `4 Byte` ，关闭 `8 Byte`
+> 
+>     > 类型引用
+>     >
+>     > 虚拟机参数 `UseCompressedOops`: 开启 `4 Byte` ，关闭 `8 Byte`
+> 
+>     > `Oops`
+>     >
+>     > Ordinary object pointers 普通对象指针
+> 
 > 3. 对象头具体包括什么？
+>
+>     对象头包括两部分： `markword` `class pointer`
+>
+>     ```text
+>     java.lang.Object object internals:
+>      OFFSET  SIZE   TYPE DESCRIPTION                               VALUE
+>           0     4        (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
+>           4     4        (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+>           8     4        (object header)                           e5 01 00 f8 (11100101 00000001 00000000 11111000) (-134217243)
+>          12     4        (loss due to the next object alignment)
+>     Instance size: 16 bytes
+>     Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+>     ```
+>
+>     * `markword`: `[0, 8)Byte`
+>         
+>         ![markword](./markword.png)
+>         ![markword](./markword2.png)
+>         * 锁信息
+>         * `hashCode` ： Identity Hashcode(是独一无二的 hashCode)
+>             * 未重写：只有调用过对象的 `hashCode` (`System.identityHashCode()`) 后才会记录在此位置
+>             * 重写过：不存放在 `markword` 中
+>         * gc 信息
+>     * `klass pointer` `[8, 12)Byte`
+> 
 > 4. 对象怎么定位？
+>
+>     * 直接指针 （hotspot 实现方式；优点：直接访问；缺点：GC需要移动对象的时候麻烦；）
+>    
+>         引用直接**指向实例化对象（堆）**，实例化对象包含**类型指针（方法区）**；
+>    
+>     * 句柄方式 （优点：对象体积小，垃圾回收时不用频繁改动引用本身；缺点：两次访问；）
+>         
+>         引用指向一个包含实例数据指针（指向堆空间实际对象）和类型指针（指向方法区）的结构体（堆）
+> 
 > 5. 对象怎么分配？
+>
+>     > 多个线程相同一块内存空间分配对象需要经历**同步sync**的过程；
+>     > TLAB： 线程启动时在线程Edon中分配一块线程独占区域（空间比较小）；
+>
+>     * 首先尝试在**栈**上分配（栈帧弹出自动清理对象，不需要垃圾回收机制，效率极高）；
+>         * 对象需要符合：逃逸分析
+>         * 对象需要符合：标量替换
+>     * 如果体积够大，分配在 Old 老年代（通过 `FGC` 实现对象回收）；
+>     * 否则在 TLAB(Thread Local Allocation Buffer, 线程本地分配缓冲区) 中分配；
+>     * 如果 TLAB 分配不下分配在 Edon 区（经过GC清理，如果回收释放内存，没有回收放入 S1 ，之后再经过GC清理年龄够了进入 Old 老年代，不够进入 S2，S2再经过GC清理）；
+> 
+>     ![对象分配](./malloc.png)
+> 
 > 6. `Object o = new Object()` 在内存中占用多少字节？
