@@ -107,15 +107,136 @@ public static void printPersonsWithinAgeRange(
 
 What if you want to print members of a specified sex, or a combination of a specified gender and age range? 
 What if you decide to change the class and add other attributes such as relationship status or geographical location? 
-Although this method is more generic than , trying to create a separate method for each possible search query can still lead to brittle code. 
+Although this method is more generic than `printPersonsOlderThan`, trying to create a separate method for each possible search query can still lead to brittle code. 
 You can instead separate the code that specifies the criteria for which you want to search in a different class.
-PersonprintPersonsOlderThan
+
+如果要打印指定性别的成员或指定性别和年龄范围的组合，该怎么办？
+如果您决定更改类并添加其他属性（如关系状态或地理位置），该怎么办？
+尽管此方法比 `printPersonsOlderThan` 更通用，但尝试为每个可能的搜索查询创建单独的方法仍会导致代码脆弱。
+您可以改为分隔指定要在其他类中搜索的条件的代码。
 
 ## Approach 3: Specify Search Criteria Code in a Local Class _在本地类中指定搜索条件代码_
 
+The following method prints members that match search criteria that you specify:
+
+以下方法打印与您指定的搜索条件匹配的成员：
+
+```text
+public static void printPersons(
+    List<Person> roster, CheckPerson tester) {
+    for (Person p : roster) {
+        if (tester.test(p)) {
+            p.printPerson();
+        }
+    }
+}
+```
+
+This method checks each `Person` instance contained in the `List` parameter `roster` whether it satisfies the search criteria specified in the `CheckPerson` parameter `tester` by invoking the method `tester.test`. 
+If the method `tester.test` returns a `true` value, then the method `printPersons` is invoked on the `Person` instance.
+
+此方法通过调用方法 `tester.test` 来检查 `List` 参数 `roster` 中包含的每个 `Person` 实例是否满足 `CheckPerson` 参数 `tester` 中指定的搜索条件。
+如果方法 `tester.test` 返回 `true` 值，则在 `Person` 实例上调用方法 `printPersons` 。
+
+To specify the search criteria, you implement the `CheckPerson` interface:
+
+若要指定搜索条件，请实现 `CheckPerson` 接口：
+
+```text
+interface CheckPerson {
+    boolean test(Person p);
+}
+```
+
+The following class implements the `CheckPerson` interface by specifying an implementation for the method `test`. 
+This method filters members that are eligible for Selective Service in the United States: 
+it returns a `true` value if its `Person` parameter is male and between the ages of 18 and 25:
+
+下面的类通过指定方法 `test` 的实现来实现 `CheckPerson` 接口。
+此方法筛选有资格在美国服兵役的成员：
+如果其 `Person` 参数是男性且年龄在 18 到 25 岁之间，则返回 `true` 值：
+
+```text
+class CheckPersonEligibleForSelectiveService implements CheckPerson {
+    public boolean test(Person p) {
+        return p.gender == Person.Sex.MALE &&
+            p.getAge() >= 18 &&
+            p.getAge() <= 25;
+    }
+}
+```
+
+To use this class, you create a new instance of it and invoke the `printPersons` method:
+
+若要使用此类，请创建它的新实例并调用 `printPersons` 方法：
+
+```text
+printPersons(
+    roster, new CheckPersonEligibleForSelectiveService());
+```
+
+Although this approach is less brittle—you don't have to rewrite methods if you change the structure of the `Person`—you still have additional code: 
+a new interface and a local class for each search you plan to perform in your application. 
+Because `CheckPersonEligibleForSelectiveService` implements an interface, you can use an anonymous class instead of a local class and bypass the need to declare a new class for each search.
+
+尽管这种方法不那么脆弱（如果更改 `Person` 的结构，则不必重写方法），但您仍然有其他代码：
+一个新接口和一个本地类，用于您计划在应用程序中执行的每个搜索。
+由于 `CheckPersonEligibleForSelectiveService` 实现了一个接口，因此您可以使用匿名类而不是本地类，并绕过为每个搜索声明新类的需要。
+
 ## Approach 4: Specify Search Criteria Code in an Anonymous Class _在匿名类中指定搜索条件代码_
 
+One of the arguments of the following invocation of the method `printPersons` is an anonymous class that filters members that are eligible for Selective Service in the United States: 
+those who are male and between the ages of 18 and 25:
+
+以下调用方法 `printPersons` 的参数之一是一个匿名类，该类过滤有资格在美国服兵役的成员：
+年龄在 18 至 25 岁之间的男性：
+
+```text
+printPersons(
+    roster,
+    new CheckPerson() {
+        public boolean test(Person p) {
+            return p.getGender() == Person.Sex.MALE
+                && p.getAge() >= 18
+                && p.getAge() <= 25;
+        }
+    }
+);
+```
+
+This approach reduces the amount of code required because you don't have to create a new class for each search that you want to perform. 
+However, the syntax of anonymous classes is bulky considering that the `CheckPerson` interface contains only one method. 
+In this case, you can use a lambda expression instead of an anonymous class, as described in the next section.
+
+此方法减少了所需的代码量，因为您不必为要执行的每个搜索创建新类。
+但是，考虑到 `CheckPerson` 接口只包含一个方法，匿名类的语法很庞大。
+在这种情况下，您可以使用 lambda 表达式而不是匿名类，如下一节所述。
+
 ## Approach 5: Specify Search Criteria Code with a Lambda Expression _使用 Lambda 表达式指定搜索条件代码_
+
+The `CheckPerson` interface is a _functional interface_. 
+A functional interface is any interface that contains only one abstract method. 
+(A functional interface may contain one or more default methods or static methods.) 
+Because a functional interface contains only one abstract method, you can omit the name of that method when you implement it. 
+To do this, instead of using an anonymous class expression, you use a lambda expression, which is highlighted in the following method invocation:
+
+`CheckPerson` 接口是一个 _functional interface_。
+功能接口是仅包含一个抽象方法的任何接口。
+（函数接口可能包含一个或多个默认方法或静态方法。）
+
+
+```text
+printPersons(
+    roster,
+    (Person p) -> p.getGender() == Person.Sex.MALE
+        && p.getAge() >= 18
+        && p.getAge() <= 25
+);
+```
+
+See Syntax of Lambda Expressions for information about how to define lambda expressions.
+
+You can use a standard functional interface in place of the interface `CheckPerson`, which reduces even further the amount of code required.
 
 ## Approach 6: Use Standard Functional Interfaces with Lambda Expressions _将标准函数接口与 Lambda 表达式结合使用_
 

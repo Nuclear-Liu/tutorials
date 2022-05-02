@@ -1,5 +1,8 @@
 package org.hui.java.functionalprogramming.domain;
 
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class RosterTest {
@@ -21,5 +24,35 @@ public class RosterTest {
                 p.printPerson();
             }
         }
+    }
+
+    interface CheckPerson {
+        boolean test(Person p);
+    }
+
+    public static void printPersons(List<Person> roster, CheckPerson tester) {
+        for (Person p : roster) {
+            if (tester.test(p)) {
+                p.printPerson();
+            }
+        }
+    }
+
+    @Test
+    public void test() {
+        List<Person> roster = Person.createRoster();
+        class CheckPersonEligibleForSelectiveService implements CheckPerson {
+            @Override
+            public boolean test(Person p) {
+                return p.getGender() == Person.Sex.MALE && p.getAge() >= 18 && p.getAge() <= 25;
+            }
+        }
+        printPersons(roster, new CheckPersonEligibleForSelectiveService());
+        printPersons(roster, new CheckPerson() {
+            @Override
+            public boolean test(Person p) {
+                return p.getGender() == Person.Sex.MALE && p.getAge() >= 18 && p.getAge() <= 25;
+            }
+        });
     }
 }
