@@ -12,7 +12,7 @@ Java GC 自动垃圾回收，开发效率高，执行效率相对低；
 
     引用计数不能处理**循环引用**；
 
-* root searching _根可达_
+* root searching _根可达_(Hotspot)
 
     GC `roots` (根对象): 线程栈变量、静态变量、常量池、 `JNI` 指针 (GC `roots` : JVM stack, native method stack, run-time-constant pool, static references in method area, Clazz)
 
@@ -130,15 +130,20 @@ Java GC 自动垃圾回收，开发效率高，执行效率相对低；
 
 * `Metaspace` 元数空间（1.8+），JDK 1.7 叫做 `PermGen` 永久代
 
-    > `PermGen` JDK 1.7 时必须指定大小限制，类多的情形下容易内存溢出；
+    > `PermGen` JDK 1.7 时（通过命令）必须指定大小限制，类多的情形下容易内存溢出；
     > 
     > **字符串常量**：
-    > * JDK 1.7： 永久代
+    > * JDK 1.7： 永久代 `PermGen`
     > * JDK 1.8+：堆
 
     元数据空间没有大小限制，受限于物理内存；存放 `Class` 信息JNI
 
-    > `MethodArea` : 方法区，逻辑概念（永久代、元数据）
+    > **`MethodArea`** : 
+    > 
+    > 方法区，逻辑概念（永久代、元数据）
+    > 所有线程共享；
+    > 
+    > 
 
 > `MinorGC`/`YGC`: 年轻代空间耗尽是触发的 GC ；
 > 
@@ -357,8 +362,122 @@ GC 日志解析：
 > * 科学计算：吞吐量优先；一般是： `PS + PO` ；（数据挖掘，任务处理）
 > * 用户交互类： 响应时间优先；JDK 1.8 一般是 `G1` ；（网站）
 
-### GC 调优范畴
+**GC 调优范畴**
 
-1. 根据需求进行 JVM 规划和预调优；
-2. 优化运行 JVM 环境；
-3. 解决 JVM 运行过程中出现的各种问题；
+1. JVM 规划和预调优；
+2. JVM 运行时优化；
+3. 解决 JVM 运行时问题；
+
+### JVM 规划和预调优
+
+* 调优，从**业务场景**开始；
+* 压力测试前后变化；
+* 调优步骤；
+    1. 熟悉业务场景（没有最好的垃圾回收器，只有最合适的垃圾回收器）
+       1. 响应时间：停顿时间[`CMS`、`G1`、`ZGC`]
+       2. 吞吐量：用户时间/(用户时间+GC时间) [PS]
+    2. 选择垃圾回收器组合
+    3. 计算内存需求（经验值 1.5G 16G）
+    4. 选定 CPU （越高越好）
+    5. 设定年代大小、升级年龄
+    6. 设定日志参数
+       1. `-Xloggc:/opt/xxx/logs/xx-xx-gc-%t.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=20M -XX:+PrintGCDetails -XX:+PrintGCDetailStramps -XX:+PrintGCGause`
+          1. `loggc` 日志文件名称（按系统时间）
+          1. `UseGCLogFileRotation` 循环使用
+          1. `NumberOfGCLogFiles` 5个日志文件
+          1. `GCLogFileSize` 日志文件大小
+          1. `PrintGCDetails` 打印日志文件详情
+          1. `PrintGCCause` 打印 GC Case
+       2. 或者每天生成一个日志文件
+
+> 案例1. 垂直电商，最高每日百万订单，处理订单系统需要什么样的服务器配置？
+> 
+> 问题比较业余，因为很多不同的服务器配置都能支撑（`1.5G` ~ `6G`）；
+> 找一个小时内的高峰期，假设 1000 订单/秒；
+> 经验值，做压测；
+> 
+> 计算：一个订单产生需要多少内存？（1~2M） `512K * 1000 = 500M` 内存
+> 
+> 要求响应时间在多少毫秒，经过压测计算；
+
+> 案例2. 12306 遭遇春节大规模抢票应该如何支撑？
+> 
+> 网上得知： 100W 最高。
+> 
+> CDN -> LVS -> NGINX -> 业务系统 -> 每台及其 1W 并发 100 台机器；
+> 
+> 12306 的一种可能模型：下单 -> 减库存 和 订单(redis kafka)同时异步进行 -> 等付款
+> 
+> 减库存最后还会把压力压到一台服务器。
+> 
+> 可以做分布式本地库存 + 单独服务器做库存均衡。
+
+> 大流量的处理方法：**分而治之**
+
+### JVM 运行时优化
+
+> 响应时间慢，卡顿。
+
+> 有一个 50 万PV的资料类网站（从磁盘提取文档到内存）原服务器 32位，1.5G的堆，用户返回网站比较慢，因此公司决定升级；
+> 新服务器 64位，16G 的堆内存，结果用户反馈卡顿十分严重，反而比以前效率更低了。
+> 
+> 1. 为什么原网站慢？
+> 
+>     很多用户浏览，需要加载到内存，内存不足，频繁 GC 响应时间慢；
+> 
+> 2. 为什么更卡顿？
+> 
+>     内存更大， FGC 时间 （STW） 更长；
+> 
+> 3. 如何优化？
+> 
+>     PS 换成 `PN + CMS` 或者 G1
+
+1. 系统 CPU 经常 100%，如何调优？
+
+    产生原因：有线程在占用系统资源：
+    1. 查找出占用高的进程(`top` `jps`)；
+    2. 定位该进程中的哪些线程占用高(`tp -Hp PID`)；
+    3. 导出该进程的堆栈(`jstack PID`, 当前进程下的所有线程堆栈信息，`nid`对应 PID 的十六进制)；
+   
+    `jstack`:
+        * `WAITING` 等待
+        * `BLOCKED` 阻塞
+
+        `waiting on <0xxxxx>(a java.lang.Object)` 等待锁释放；要找到是哪个线程持有这把锁，导致死锁；
+   
+    4. 查找那些方法（栈帧）占用高(`jstack`)；
+
+    > **工作线程** vs **垃圾回收线程**
+    > 
+    > 
+
+3. 系统内存飙高，如何查找问题？
+
+    1. 查找出占用高的进程(`top`)；
+    2. 定位该进程中的哪些线程占用高(`tp -Hp`)；
+    3. 导出该线程的堆栈(`jstack`)；
+    4. 导出堆内存(`jmap`)；
+    5. 分析(`jhat` `jvisualvm` `mat` `jprofiler`)
+
+4. 监控 JVM
+   
+    1. jstack
+    2. jvisualvm
+    3. jprofiler
+    4. arthas
+
+> 自定义**线程池名称**： 自定义 `ThreadFactory`
+
+
+> `JMX`(Java Management Extensions) Java 远程扩展
+> 
+> * 开启设定： `java -Djava.rmi.server.hostname= -Dcom.sun.mamagement.jmxremote -Dcom.sun.management.jmxremote.port= -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false application_name`
+> * 
+
+
+### 解决 JVM 运行时问题 (OOM)
+
+> `jinfo PID`: 列出进程详细信息
+> `jstat -gc PID` 打印进程 GC 信息
+
