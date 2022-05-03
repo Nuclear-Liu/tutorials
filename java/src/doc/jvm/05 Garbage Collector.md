@@ -473,7 +473,6 @@ GC 日志解析：
 > `JMX`(Java Management Extensions) Java 远程扩展
 > 
 > * 开启设定： `java -Djava.rmi.server.hostname= -Dcom.sun.mamagement.jmxremote -Dcom.sun.management.jmxremote.port= -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false application_name`
-> * 
 
 
 ### 解决 JVM 运行时问题 (OOM)
@@ -481,3 +480,129 @@ GC 日志解析：
 > `jinfo PID`: 列出进程详细信息
 > `jstat -gc PID` 打印进程 GC 信息
 
+#### 如何定位 OOM 问题的？
+
+1. 使用什么工具？ (cmdline arthas)
+
+    * `jmap`
+
+        添加运行配置参数： `-XX:+HeapDumpOnOutOfMemoryError`
+
+        查找内存有多少对象产生： `jmap -histo PID` / `jmap -histo PID | head -20` `jmap -dump:format=b,file=fileName PID` （ `jmap` 转储，轻易不用）
+
+        > * 在没有设置参数： `HeapDumpOnOutOfMemoryError` 时，线上系统，内存特别大， `jmap -dump:format=b,file=fileName PID` 执行期间会对进程产生很大影响，甚至卡顿；
+        > 
+        > * 设定了参数： `HeapDumpOnOutOfMemoryError` 在系统 OOM 时会自动产生转储文件；
+        > 
+        > * 如果服务间高可用，没有设置暂时 `HeapDumpOnOutOfMemoryError` 时，某个服务不可用对其他不会产生影响；
+    
+        查找相应的业务逻辑和代码位置；
+
+    * `arthas`
+
+        * 启动 arthas ： `./as.sh` / `java -jar arthas-boot.jar`
+        * 
+
+        * `help` 获取 arthas 帮助信息
+        * `jvm` 获取 JVM 详细信息（类似于 `jinfo` ），可以看到垃圾回收器类型
+        * `thread` 列出向前进程的所有线程，以及资源使用情况
+        * `thread ID` 查看线程内堆栈信息
+        * `dashboard` 类似于 Linux top 命令，观察系统情况
+        * `heapdump` 导出堆内存（类似于 `jmap` ）
+        * `jad` **反编译**
+      
+            `jad cleaa_name` 反编译类文件；
+            * 动态代理生成类的问题定位
+            * 第三方的类（观察代码）
+            * 版本问题（确定代码为对应提交版本）
+   
+        * `redefine` **热替换**
+      
+            目前有些限制条件：只能改方法实现（方法已经运行完成），不能改方法名和类属性；
+      
+            `redefine class_path.class_name.class` 热替换 class 文件
+      
+        * `sc` search class 搜索类
+        * `watch` watch method 观察方法信息
+
+3. 图形界面到底用在什么地方？
+
+    **测试**
+
+#### 分析堆文件：
+
+* 使用 `jhat` 分析 `heapdump` 文件
+
+    * `jhat -J-max512M dump_file_name.hprof`
+  
+        `-J-max512M` 指定内存大小；
+  
+    * 分析完毕启动一个 web 提供分析结果： `http://ip:port`
+    * Link `Instance Counts for All Classes (including platform)` 获取类似于 `jmap` 结果，对象数量
+    * Link `Object Query Langugage (OQL) query` 提供基于 `OQL` 对对象的查询；点击查询结果可以获取对象的详细信息（对象大小、实例对象数量，引用信息等）
+
+* 使用 `mat` 分析 `heapdump` 文件
+* 使用 jvisualvm 分析 `heapdump` 文件
+
+    * `文件` `装入` 选择转储文件载入
+    * 同样提供了 `OQL` 查询语句控制台
+
+#### OOM 案例汇总
+
+> OOM 产生的原因多种多样，有些程序未必产生 OOM 但是会不断 FGC （CPU 占用高，内存回收得到的回收内存少）。
+
+1. 硬件升级系统反而卡顿的问题。
+2. 线程池不当运用产生 OOM 问题。
+3. jira 特别卡顿问题。
+    
+    通过定位，系统再不断 FGC ，扩大内存， FGC 时间延长，没有排查出原因，换用 G1 。
+
+4. tomcat `http-header-size` 设置扩大
+
+    `server.max-http-header-size=10000000` 默认 `4096` ，每个请求占用设置大小的内存，通过 `jmap` 查看到 http 对象 `Http11OutputBuffer` 占用内存高。
+
+5. Lambda 表达式导致方法区 (`MethodArea`: `Pern` / `MetaSpace` ) 溢出问题。
+
+    Lambda 表达式：每个 Lambda 对象都会再内存(`methodarea`)之中生成一个新的 `class` 对象
+
+   `methodarea` 的清理，每个垃圾回收器都不同，有的甚至不会清理； `Class` 没有对应的对象才有可能被回收等条件；
+
+6. 直接内存溢出问题
+
+    《深入理解Java虚拟机》 p59 使用 `Unsafe` 分配直接内存，或者使用 NIO 的问题。
+
+7. 栈溢出问题
+
+    `-Xss` 设定太小。或者方法递归调用深度过深。
+
+8. 比较一下这两段程序的异同，分析哪一个更优的写法：
+
+    ```text
+    Object o = null;
+    for (int i = 0; i < 100; i++ ) {
+        o = new Object(); // God
+    }
+    ```
+    
+    ```text
+    for (int i = 0; i < 100; i++) {
+        Object o = new Object(); // Bad
+    }
+    ```
+
+    方式二：每次循环都会生成新的引用本身；循环没有结束对象和对应的引用不会被回收。涉及到 hotspot 优化是否再循环内释放垃圾。
+
+9. 重写 `finalize` 引发频繁 GC 
+
+    小米云， HBase 同步系统，系统通过 nginx 访问超时报警，最后排查， C++ 程序员（转 Java）重写 `finalize` 引发频繁 GC 问题。
+
+    C++ 需要从写 `finalize` 用于手动内存回收，
+
+    `finalize` 方法中做了耗时操作，导致频繁 GC 。
+
+10. 如果有一个系统，内存一直消耗不超过 10% 但是观察 GC 日志，发现 FGC 总是频繁产生，会是什么引起的？
+
+    有人显示调用了 `System.gc();` 。
+
+11. Disruptor 可以设置链的长度，如果过大，然后对象大，消费完不主动释放，会溢出。
+12. 用 JVM 都会溢出， MyCat 崩溃，临时版本解析 SQL 子查询算法有问题， 9 个 exit 的联合sql 导致生成了几百万的对象。
