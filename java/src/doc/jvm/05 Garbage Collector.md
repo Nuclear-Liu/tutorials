@@ -353,6 +353,66 @@ GC 日志解析：
 
 > `total = edon + survivor[from or to]`
 
+### CMS 日志分析
+
+`java -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UseConcMarkSweepGC application`
+
+`UseConcMarkSweepGC` 指定使用 CMS
+
+1. YGC （刚开始）：
+
+    `[GC(Allocation Failure)[ParNew:6144K->640K(6144K), 0.0265885 secs] 6585K->2770K(19840K), 0.0268035 secs][Times: user=0.02 sys=0.00,real=0.02 secs]`
+
+    * `ParNew` 年轻代垃圾回收器
+    * `6144K->640K` 收集前后内存空间变化
+    * `(6144K)` 整个年轻代容量
+    * `6585K->2770K` 整个堆的内存空间变化
+    * `(19840K)` 整个堆的空间大小
+
+2. FGC：
+
+    `[GC (CMS Initial Mark) [1 CMS-initial-mark: 8511K(13696K)] 9866K(19840K), 0.0040321 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]`
+
+    * `8511K(13696K)` : 老年代的使用（老年代的最大）
+    * `9866K(19840K)` : 整个堆使用（最大）
+   
+    `[CMS-concurrent-preclean-start]`
+    `[CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]`
+
+    * 这里的时间是近似值，因为是并发执行
+   
+    `[CMS-concurrent-preclean-start]`
+    `[CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]`
+
+    * 标记 `Card` 为 `dirty` ，也称为 `Card Marking`
+
+    `[GC (CMS Final Remark) [YG occupancy: 1597 K (6144 K)][Rescan (parallel) , 0.0008396 secs][weak refs processing, 0.0000138 secs][class unloading, 0.0005404 secs][scrub symbol table, 0.0006169 secs][scrub string table, 0.0004903 secs][1 CMS-remark: 8511K(13696K)] 10108K(19840K), 0.0039567 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]`
+
+    * `STW` 阶段 `YG occupancy` : 年轻代占用及容量
+    * `10108K(19840K)` 当前阶段过后堆占用及容量
+    * 分多个子阶段：
+        1. `Rescan (parallel)` : STW 下的存活对象标记
+        2. `weak refs processing` : 弱引用处理
+        3. `class unloading` : 卸载用不到的 `class`
+        4. `scrub symbol table` : 清理常量池中被卸载 `class` 引用的常量信息
+        5. `CMS-remark` : 阶段过后的老年代占用及容量
+
+    `[CMS-concurrent-sweep-start]`
+    `[CMS-concurrent-sweep: 0.005/0.005 secs] [Times: user=0.00 sys=0.00, real=0.01 secs]`
+
+    * 标记完成，进行并发清理
+
+    `[CMS-concurrent-reset-start]`
+    `[CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]`
+
+    * 重置内部结构，为下次 GC 做准备
+
+### G1 日志分析
+
+G1 可以用过 YGC 暂停时间动态调整年轻代老年代内存比例。
+
+
+
 ## GC tuning _GC 调优_
 
 > **概念：**

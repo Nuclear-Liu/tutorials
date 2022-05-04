@@ -234,11 +234,103 @@ printPersons(
 );
 ```
 
-See Syntax of Lambda Expressions for information about how to define lambda expressions.
+See [Syntax of Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax) for information about how to define lambda expressions.
+
+请参阅 [Lambda 表达式的语法](./01%20Lambda%20Expressions.md) 了解有关如何定义 lambda 表达式的信息。
 
 You can use a standard functional interface in place of the interface `CheckPerson`, which reduces even further the amount of code required.
 
+您可以使用标准函数接口代替 `CheckPerson` 接口，从而进一步减少所需的代码量。
+
 ## Approach 6: Use Standard Functional Interfaces with Lambda Expressions _将标准函数接口与 Lambda 表达式结合使用_
+
+Reconsider the `CheckPerson` interface:
+
+重新考虑 `CheckPerson` 接口：
+
+```java
+interface CheckPerson {
+    boolean test(Person p);
+}
+```
+
+This is a very simple interface. 
+It's a functional interface because it contains only one abstract method. 
+This method takes one parameter and returns a `boolean` value. 
+The method is so simple that it might not be worth it to define one in your application. 
+Consequently, the JDK defines several standard functional interfaces, which you can find in the package `java.util.function`.
+
+这是一个非常简单的接口。
+它是一个函数接口，因为它只包含一个抽象方法。
+此方法接收一个参数并返回 `boolean` 值。
+该方法非常简单，因此在应用程序中定义一个方法可能不值得。
+因此， JDK 定义了几个标准的功能接口，您可以在包 `java.util.function` 中找到这些接口。
+
+For example, you can use the `Predicate<T>` interface in place of `CheckPerson`. 
+This interface contains the method `boolean test(T t)`:
+
+例如，您可以使用 `Predicate<T>` 接口代替 `CheckPerson` 。
+此接口包含方法 `boolean test(T t)` ：
+
+```java
+interface Predicate<T> {
+    boolean test(T t);
+}
+```
+
+The interface `Predicate<T>` is an example of a generic interface. 
+(For more information about generics, see the `Generics (Updated)` lesson.) Generic types (such as generic interfaces) specify one or more type parameters within angle brackets (`<>`). 
+This interface contains only one type parameter, `T`. 
+When you declare or instantiate a generic type with actual type arguments, you have a parameterized type. 
+For example, the parameterized type `Predicate<Person>` is the following:
+
+接口 `Predicate<T>` 是通用接口的一个示例。
+（有关泛型的详细信息，请参阅 `Generics (Updated)` 课程。）泛型类型（如泛型接口）指定尖括号内的一个或多个类型参数（ `<>` ）。
+此接口仅包含一个类型参数 `T` 。
+使用实际类型参数声明或实例化泛型类型时，您具有参数化类型。
+例如，参数化类型 `Predicate<Person>` 如下所示：
+
+```java
+interface Predicate<Person> {
+    boolean test(Person t);
+}
+```
+
+This parameterized type contains a method that has the same return type and parameters as `CheckPerson.boolean test(Person p)`. 
+Consequently, you can use `Predicate<T>` in place of `CheckPerson` as the following method demonstrates:
+
+此参数化类型包含一个方法，该方法具有与 `CheckPerson.boolean test(Person p)` 相同的返回类型和参数。
+因此，您可以使用 `Predicate<T>` 代替 `CheckPerson`，如以下方法所示：
+
+```text
+public static void printPersonsWithPredicate(
+    List<Person> roster, Predicate<Person> tester) {
+    for (Person p : roster) {
+        if (tester.test(p)) {
+            p.printPerson();
+        }
+    }
+}
+```
+
+As a result, the following method invocation is the same as when you invoked `printPersons` in [Approach 3: Specify Search Criteria Code in a Local Class]() to obtain members who are eligible for Selective Service:
+
+因此，以下方法调用与在 [Approach 3: Specify Search Criteria Code in a Local Class](./Ideal%20Use%20Case%20for%20Lambda%20Expressions.md) 中调用 `printPersons` 以获取有资格服兵役的成员时相同：
+
+```text
+printPersonsWithPredicate(
+    roster,
+    p -> p.getGender() == Person.Sex.MALE
+        && p.getAge() >= 18
+        && p.getAge() <= 25
+);
+```
+
+This is not the only possible place in this method to use a lambda expression. 
+The following approach suggests other ways to use lambda expressions.
+
+这不是此方法中唯一可能使用 lambda 表达式的位置。
+以下方法建议使用 lambda 表达式的其他方法。
 
 ## Approach 7: Use Lambda Expressions Throughout Your Application _在整个应用程序中使用 Lambda 表达式_
 
