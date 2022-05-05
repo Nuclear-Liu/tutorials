@@ -410,8 +410,54 @@ GC 日志解析：
 ### G1 日志分析
 
 G1 可以用过 YGC 暂停时间动态调整年轻代老年代内存比例。
+可以设定期望暂停时间， G1 会向设定值努力。
 
+`java -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UseG1GC application`
 
+G1 中有三种类型 GC ： `YGC` `MixedGC` `FGC`
+
+`[GC pause (G1 Evacuation Pause) (young) (initial-mark), 0.0015790 secs]`
+
+* `Evacuation` 复制存活对象（从一个 Region 到另一个 Region
+* `young` 年轻代
+* `initial-mark` 混合回收的阶段，这里是 YGC 混合老年代回收，实际上是 `MixedGC`
+
+```log
+   [Parallel Time: 1.5 ms, GC Workers: 1] //一个GC线程
+      [GC Worker Start (ms):  92635.7]
+      [Ext Root Scanning (ms):  1.1]
+      [Update RS (ms):  0.0]
+         [Processed Buffers:  1]
+      [Scan RS (ms):  0.0]
+      [Code Root Scanning (ms):  0.0]
+      [Object Copy (ms):  0.1]
+      [Termination (ms):  0.0]
+         [Termination Attempts:  1]
+      [GC Worker Other (ms):  0.0]
+      [GC Worker Total (ms):  1.2]
+      [GC Worker End (ms):  92636.9]
+   [Code Root Fixup: 0.0 ms]
+   [Code Root Purge: 0.0 ms]
+   [Clear CT: 0.0 ms]
+   [Other: 0.1 ms]
+      [Choose CSet: 0.0 ms]
+      [Ref Proc: 0.0 ms]
+      [Ref Enq: 0.0 ms]
+      [Redirty Cards: 0.0 ms]
+      [Humongous Register: 0.0 ms]
+      [Humongous Reclaim: 0.0 ms]
+      [Free CSet: 0.0 ms]
+   [Eden: 0.0B(1024.0K)->0.0B(1024.0K) Survivors: 0.0B->0.0B Heap: 18.8M(20.0M)->18.8M(20.0M)]
+ [Times: user=0.00 sys=0.00, real=0.00 secs] 
+// 以下是混合回收其他阶段
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0000078 secs]
+[GC concurrent-mark-start]
+// 无法evacuation，进行FGC
+[Full GC (Allocation Failure)  18M->18M(20M), 0.0719656 secs]
+   [Eden: 0.0B(1024.0K)->0.0B(1024.0K) Survivors: 0.0B->0.0B Heap: 18.8M(20.0M)->18.8M(20.0M)], [Metaspace: 38
+76K->3876K(1056768K)] [Times: user=0.07 sys=0.00, real=0.07 secs]
+```
 
 ## GC tuning _GC 调优_
 
