@@ -62,7 +62,7 @@ Producer 只能向 Leader 推送数据；
 
     比最终一致性更加灵活；弹性更高；
 
-    Producer 客户端 `acks` 配置:
+    Producer 客户端 `acks` 配置 (`ProducerConfig.ACKS_CONFIG`) :
 
     * `-1` 分布式环境：备机同步完成(最严苛)
 
@@ -121,3 +121,25 @@ Kafka 可以做存储层，不是全量存储；可以动态配置多久的数�
 元数据：Topic 信息；
 
 ## Broker
+
+## 记录和索引
+
+`*.log` : 存放数据
+
+    使用的普通 IO 形式，此处没有使用 MMAP ，目的是通用性，数据存入磁盘的可靠性级别可以有系统配置管理。
+
+`*.index` : 数据索引
+
+    记录了 `offset` 和 `log` 文件偏移 `position`
+
+    JDK 提供了 `RandomAccessFile` 的 `seek()` 方法，返回数据的时候使用 JDK 的 `transferTO` (`sendfile` 零拷贝)。
+
+`*.timeindex` : 时间戳索引（是数据索引的二级索引）
+
+    使用 MMAP 内存映射 预分配 10 MB
+
+    记录内容： `timestamp: offset: `
+
+## Consumer
+
+可以根据时间戳进行消费： `offsetsForTimes()` ；
