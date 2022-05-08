@@ -68,15 +68,24 @@ Vim(Vi improved)
 
 当前用户的配置文件位置为： `$HOME/.vimrc`
 
+```text
+syntax on                   " 支持语法高亮显示
+filetype plugin indent on   " 启用根据文件类型自动缩进
 
+set autoindent              " 开始新行时处理缩进
+set expandtab               " 将制表符 Tab 展开为空格
+set tabstop=4               " 要计算的空格数
+set shiftwidth=4            " 用于自动缩进的空格数
+```
 
-## 工作模式
+## mode _工作模式_
 
-### 编辑模式
+### normal mode _正常模式_
+
+### insert mode _插入模式_
 
 ### 命令模式
 
-### 插入模式
 
 `:help feature-list`(cmd module) : Vim 可以支持的所有功能列表
 
