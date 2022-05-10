@@ -63,3 +63,10 @@
 > * `0` 的情况下，消息发送到 `ProducerBatch` 后即返回；
 > * `1` Leader 返回确认
 > * `-1` 分区所有可用分区返回确认；
+
+
+TCP 缓冲区大小：
+* `ProducerConfig.SEND_BUFFER_CONFIG` 默认 `32K` TCP 发送缓冲区大小
+    * `-1` 不限制大小，使用系统默认设置
+* `ProducerConfig.RECEIVE_BUFFER_CONFIG` 默认 `32K` TCP 接收缓冲区大小
+    * `-1` 不限制大小，使用系统默认设置
