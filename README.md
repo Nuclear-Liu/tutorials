@@ -131,6 +131,10 @@ My Tutorials
 * controller 层捕获异常，包装成状态码；
 * dto 抽象到公共层(common, 二方库)；
 
+## [有状态 VS 无状态](https://www.redhat.com/zh/topics/cloud-native-apps/stateful-vs-stateless?msclkid=d4a8b346d07d11eca80a98acca934298)
+
+
+
 ## My IDEA Plugins
 
 

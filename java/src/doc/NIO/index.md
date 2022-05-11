@@ -25,18 +25,41 @@
 * `position` 位置： 下一个被读或写的元素的索引；位置由缓冲区操作自动更新（`get()` `put()`）；
 * `mark` 标记：标记一个 `position` 位置； `mark()` 标记当前 `postion` 值， `reset()` 复位 `postion` 值；默认为**未定义**(undefined `-1`) ；
 
-`java.nio.Buffer` 扩展类提供的基本操作：
-* `get()` 数据读出缓冲区
-* `put()` 数据写入缓冲区
-
 `java.nio.Buffer` 创建**基本类型**的缓冲区：不能够直接实例化；通过静态工厂方法来创建响应类的新实例；
 * 通过 `allocation` 创建；
 * 通过 `wrapping` 将一个现有数据类型数组包装到缓存区中来为缓冲区内容分配空间，或者通过创建现有字节缓冲区的视图类创建
 
-堆缓冲区
-视图缓冲区
-复制缓冲区
-直接内存缓冲区
+缓存类型：
+* 堆缓冲区
+* 视图缓冲区
+* 复制缓冲区
+* 直接内存缓冲区
+
+`java.nio.Buffer` 类方法：
+* `int capacity()`
+* `int position()`
+* `Buffer position(int newPosition)`
+* `int limit()`
+* `Buffer limit(int newLimit)`
+* `Buffer mark()`
+* `Buffer reset()`
+* `Buffer clear()`
+* `Buffer flip()`
+* `Buffer rewind()`
+* `int remaining()`
+* `boolean hasRemaining()`
+* `boolean isReadOnly()`
+* `boolean hasArray()`
+* `Object array()`
+* `int arrayOffset()`
+* `boolean isDirect()`
+* `Buffer slice()`
+* `Buffer slice(int index, int length)`
+* `Buffer duplicate()`
+
+`java.nio.Buffer` 扩展类提供的基本操作：
+* `get()` 数据读出缓冲区
+* `put()` 数据写入缓冲区
 
 ## 通道 Channel
 
@@ -64,6 +87,12 @@ I/O 可以分为广义的两大类： `File I/O` 、 `Stream I/O` ；
 `java.nio.channels.Channel` 提供的操作：
 * `isOpen()`: 检查通道是否打开
 * `close()`: 关闭一个打开的通道；可能会导致关闭底层 I/O 服务时发生阻塞（与通道阻塞或非阻塞无关）；
+
+> 只有文件 `Channel` 支持 `map()` 做 `pagecache` 映射，通过 `MappedByteBuffer` 操作缓存页内容；
+> 
+> 基于 `mmap` 系统调用实现；将内核的 `pagecache` 内存**映射**， `dirty` 的处理基于内核；对文件的操作不再需要经过系统调用；
+
+> Java 没有 Direct I/O ，可以通过 JNI 调用基于 C 的 Direct IO 将对 `pagecache` 的操作交由应用控制；
 
 ### `java.nio.channels.FileChannel`
 

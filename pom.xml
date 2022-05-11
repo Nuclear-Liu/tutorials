@@ -15,6 +15,7 @@
         <module>tdd</module>
         <module>middleware</module>
         <module>middleware/mycat</module>
+        <module>middleware/fastdfs</module>
     </modules>
 
     <properties>

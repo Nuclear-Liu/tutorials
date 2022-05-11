@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 
 @Slf4j
 public class BufferTest {
     @Test
     public void testAllocate() {
-
         IntBuffer buff1 = IntBuffer.allocate(10);
 //        buff1.mark();
         buff1.put(1);
@@ -19,17 +20,26 @@ public class BufferTest {
         buff1.put(3);
 //        buff1.reset();
         buff1.flip();
-        for (int i = 0;i<buff1.limit();i++) {
+        for (int i = 0; i < buff1.limit(); i++) {
             System.out.println(buff1.get());
         }
+        buff1.compact();// 压缩 再次写入
     }
-    @Test public void testWrap() {
+
+    @Test
+    public void testDirAllocate() {
+        ByteBuffer.allocateDirect(1024);
+        Buffer buffer;
+    }
+
+    @Test
+    public void testWrap() {
         int[] arr = new int[]{3, 5, 1};
 
         IntBuffer buff = IntBuffer.wrap(arr);
         arr[1] = 10;
 
-        for (int i = 0;i<3;i++) {
+        for (int i = 0; i < 3; i++) {
             System.out.println(buff.get());
         }
         IntBuffer buff3 = IntBuffer.wrap(arr, 0, 2);
