@@ -22,7 +22,6 @@
         <module>netty</module>
         <module>eureka</module>
         <module>kafka</module>
-        <module>mongodb</module>
     </modules>
 
 </project>
