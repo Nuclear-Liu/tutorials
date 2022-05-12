@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui.middleware</groupId>
     <artifactId>lettuce</artifactId>
 
     <dependencies>
