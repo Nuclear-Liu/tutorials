@@ -134,10 +134,38 @@ I/O 可以分为广义的两大类： `File I/O` 、 `Stream I/O` ；
 
 ## 选择器 `Selector`
 
+> Java 的 `Selector` 是多路复用器多种具体实现(`select` `poll` `epoll` `kqueue` `event`)的抽象。
+> 
+> Linux 下优先选择 `epoll` （通过 `-D` 参数可以更改）；
+
 `java.nio.channels.Selector` 提供查询通道是否已已经准备好执行每个 I/O 操作的能力；
 选择器类管理一个被注册的通道集合的信息和它们的就绪状态；
 通道是和选择器一起被注册的，并且使用选择器来更新通道的就绪状态；
 
+`java.nio.channels.Selector` 提供的 API ：
+* `Selector open()` 创建 Selector 选择器
+    
+    `epoll` 模型时相当于： `epoll_create()`
+
+    `select` / `poll` 模型时在 JVM 内存中创建对应的 `epoll` 的红黑树结构和状态集
+
+* `Set<SelectionKey> keys()` 返回所有注册的 `SelectionKey` (fd)
+* `int select()` / `int select(long timeout)`
+
+    `epoll` 模型： `epoll_wait()`
+
+    `select` / `poll` 模型： `select()` / `poll`
+
+    可以选择是否带有超时时间 `timeout` ，如果设置为 `0` （或调用无参方法）阻塞；
+
+* `Set<SelectionKey> selectedKeys()` 返回有状态的 `SelectionKey` (fd)
+
+`java.nio.channels.ServerSocketChannel` 提供的API：
+* `SelectionKey register(Selector sel, int ops, Object att)`
+
+    `epoll` 模型相当于： `epoll_ctl()` 将 listen socket 放入内核红黑树中；
+
+    `select` / `poll` 模型时将 listen socket 放入 JVM 的集合中；
 
 ### 可选择器 `SelectableChannel`
 
