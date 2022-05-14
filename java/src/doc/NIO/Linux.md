@@ -109,3 +109,9 @@
     `options`
     * `-e`
     * `-f`
+* `tcpdump -nn -i eth0 port 9090` tcp 抓包
+* `strace -ff -o out [cmd]` 追踪 `cmd` 对内核的系统调用，线程独立输出
+* `tail -f [file_name]` 追踪文件 `file_name` 最新内容
+* `man` 参考手册，一共有8类文档
+    * `man bash`
+    * `man man` 
