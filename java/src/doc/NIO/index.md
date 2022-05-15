@@ -193,3 +193,15 @@ I/O 操作：
 1. 向 `Selector` 对象注册感兴趣的事件；
 2. 从 `Selector` 中获取感兴趣的事件；
 3. 根据不同的事件进行响应的处理；
+
+`SelectionKey` API:
+* `void cancel()` 请求取消该键的通道与其选择器的注册
+* `boolean isWritable()` 是否可写（只要 send-queue 是空就可以写入）
+* `boolean isReadable()` 是否可读
+
+## Java NIO 编程模型
+
+优化方式(`分治`)，将文件描述符分组为多个 `selector` ，每组由单一线程处理（避免 `SelectionKey::cancel()` (对应系统调用 `epoll_ctl()`) ；
+保证每个 `selector` 内线性执行；
+
+可以用一个线程的 `selector` 只关注 `accept` 动作，然后把接收的客户端 `fd` 分配给其他线程的 `selector` （与 Netty 模型接近）；

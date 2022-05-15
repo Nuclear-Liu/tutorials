@@ -6,12 +6,6 @@ package org.springframework.boot.autoconfigure;
 public class AutoConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware,
         ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
     
-    /**
-     * Return the {@link AutoConfigurationEntry} based on the {@link AnnotationMetadata}
-     * of the importing {@link Configuration @Configuration} class.
-     * @param annotationMetadata the annotation metadata of the configuration class
-     * @return the auto-configurations that should be imported
-     */
     protected AutoConfigurationEntry getAutoConfigurationEntry(AnnotationMetadata annotationMetadata) {
         if (!isEnabled(annotationMetadata)) {
             return EMPTY_ENTRY;
