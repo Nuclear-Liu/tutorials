@@ -8,6 +8,8 @@
     <artifactId>mongodb</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <description>MongoDB</description>
+
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
@@ -32,11 +34,6 @@
             <artifactId>mongodb-driver-sync</artifactId>
             <version>4.6.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba</groupId>-->
-<!--            <artifactId>fastjson</artifactId>-->
-<!--        </dependency>-->
-        <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

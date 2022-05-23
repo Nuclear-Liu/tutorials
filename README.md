@@ -137,6 +137,8 @@ My Tutorials
 
 `git checkout tags/<tag> -b <branch>`
 
+` git svn clone https://svn.apache.org/repos/asf/tomcat/trunk/ ./tomcat -s --prefix=svn/`
+
 ## My IDEA Plugins
 
 
