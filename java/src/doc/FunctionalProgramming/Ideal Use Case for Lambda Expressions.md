@@ -33,7 +33,25 @@ Suppose that members of this social networking application are represented by th
 假设此社交网络应用程序的成员由以下 `Person` 类表示：
 
 ```java
-//
+public class Person {
+
+    public enum Sex {
+        MALE, FEMALE
+    }
+
+    String name;
+    LocalDate birthday;
+    Sex gender;
+    String emailAddress;
+
+    public int getAge() {
+        // ...
+    }
+
+    public void printPerson() {
+        // ...
+    }
+}
 ```
 
 Suppose that the members of your social networking application are stored in a instance.
@@ -336,6 +354,8 @@ The following approach suggests other ways to use lambda expressions.
 
 Reconsider the method `printPersonsWithPredicate` to see where else you could use lambda expressions:
 
+重新考虑方法 `printPersonsWithPredicate` 看看还有什么地方可以使用 lambda 表达式：
+
 ```text
 public static void printPersonsWithPredicate(
     List<Person> roster, Predicate<Person> tester) {
@@ -350,13 +370,24 @@ public static void printPersonsWithPredicate(
 This method checks each `Person` instance contained in the `List` parameter `roster` whether it satisfies the criteria specified in the `Predicate` parameter `tester`. 
 If the `Person` instance does satisfy the criteria specified by `tester`, the method `printPerson` is invoked on the `Person` instance.
 
+此方法检查 `List` 参数 `roster` 中包含的每个 `Person` 实例是否满足 `Predicate` 参数 `tester` 中指定的条件。
+如果 `Person` 实例确实满足 `tester` 指定的条件，则在 `Person` 实例上调用方法 `printPerson` 。
+
 Instead of invoking the method `printPerson`, you can specify a different action to perform on those `Person` instances that satisfy the criteria specified by `tester`. 
 You can specify this action with a lambda expression. 
-Suppose you want a lambda expression similar to `printPerson`, one that takes one argument (an object of type `Person`) and returns void. 
+Suppose you want a lambda expression similar to `printPerson`, one that takes one argument (an object of type `Person`) and returns `void`. 
 Remember, to use a lambda expression, you need to implement a functional interface. 
-In this case, you need a functional interface that contains an abstract method that can take one argument of type `Person` and returns void. 
+In this case, you need a functional interface that contains an abstract method that can take one argument of type `Person` and returns `void`. 
 The `Consumer<T>` interface contains the method `void accept(T t)`, which has these characteristics. 
 The following method replaces the invocation `p.printPerson()` with an instance of `Consumer<Person>` that invokes the method `accept`:
+
+除了调用 `printPerson` 方法，您可以指定不同的操作来对那些满足 `tester` 指定条件的 `Person` 实例执行。
+您可以使用 lambda 表达式指定此操作。
+假设你想要一个类似于 `printPerson` 的 lambda 表达式，它接受一个参数（ `Person` 类型的对象）并返回 `void` 。
+请记住，要使用 lambda 表达式，您需要实现一个函数式接口。
+在这种情况下，您需要一个函数式接口，其中包含一个抽象方法，该方法可以接受一个 `Person` 类型的参数并返回 `void` 。
+`Consumer<T>` 接口包含方法 `void accept(T t)` ，它具有这些特性。
+以下方法将调用 `p.printPerson()` 替换为调用方法 `accept` 的 `Consumer<Person>` 实例：
 
 ```text
 public static void processPersons(
@@ -374,6 +405,9 @@ public static void processPersons(
 As a result, the following method invocation is the same as when you invoked `printPersons` in [Approach 3: Specify Search Criteria Code in a Local Class]() to obtain members who are eligible for Selective Service. 
 The lambda expression used to print members is highlighted:
 
+因此，以下方法调用与您在 [Approach 3: Specify Search Criteria Code in a Local Class]() 中调用 `printPersons` 以获取符合选择性服务资格的成员时相同。
+用于打印成员的 lambda 表达式被突出显示：
+
 ```text
 processPersons(
      roster,
@@ -385,9 +419,15 @@ processPersons(
 ```
 
 What if you want to do more with your members' profiles than printing them out. 
-Suppose that you want to validate the members' profiles or retrieve their contact information? In this case, you need a functional interface that contains an abstract method that returns a value. 
+Suppose that you want to validate the members' profiles or retrieve their contact information? 
+In this case, you need a functional interface that contains an abstract method that returns a value. 
 The `Function<T,R>` interface contains the method `R apply(T t)`. 
 The following method retrieves the data specified by the parameter `mapper`, and then performs an action on it specified by the parameter `block`:
+
+如果您想对会员的个人资料做更多的事情而不是打印出来怎么办。
+假设您要验证成员的个人资料或检索他们的联系信息？
+在这种情况下，您需要一个包含返回值的抽象方法的函数接口。
+`Function<T,R>` 接口包含方法 `R apply(T t)` 。
 
 ```text
 public static void processPersonsWithFunction(
@@ -406,6 +446,8 @@ public static void processPersonsWithFunction(
 
 The following method retrieves the email address from each member contained in `roster` who is eligible for Selective Service and then prints it:
 
+以下方法从 `roster` 中包含有资格参加选择性服务的每个成员中检索电子邮件地址，然后将其打印出来：
+
 ```text
 processPersonsWithFunction(
     roster,
@@ -421,6 +463,9 @@ processPersonsWithFunction(
 
 Reconsider the method `processPersonsWithFunction`. 
 The following is a generic version of it that accepts, as a parameter, a collection that contains elements of any data type:
+
+重新考虑方法 `processPersonsWithFunction` 。
+以下是它的通用版本，它接受包含任何数据类型元素的集合作为参数：
 
 ```text
 public static <X, Y> void processElements(
@@ -438,6 +483,8 @@ public static <X, Y> void processElements(
 ```
 
 To print the e-mail address of members who are eligible for Selective Service, invoke the `processElements` method as follows:
+
+要打印有资格参加选择性服务的成员的电子邮件地址，请调用 `processElements` 方法，如下所示：
 
 ```text
 processElements(
@@ -465,11 +512,30 @@ In this example, the `Function` object is a lambda expression that returns the e
 4. Performs an action on each mapped object as specified by the `Consumer` object `block`. 
 In this example, the `Consumer` object is a lambda expression that prints a string, which is the e-mail address returned by the `Function` object.
 
+此方法调用执行以下操作：
+
+1. 从集合 `source` 中获取对象的来源。
+在此示例中，它从集合 `roster` 中获取 `Person` 对象的来源。
+请注意，集合 `roster` 是一个 `List` 类型的集合，也是一个 `Iterable` 类型的对象。
+
+2. 过滤与 `Predicate` 对象 `tester` 匹配的对象。
+在此示例中， `Predicate` 对象是一个 lambda 表达式，用于指定哪些成员有资格获得选择性服务。
+
+3. 将每个过滤的对象映射到 `Function` 对象 `mapper` 指定的值。
+在这个例子中， `Function` 对象是一个返回成员电子邮件地址的 lambda 表达式。
+
+4. 根据 `Consumer` 对象 `block` 指定的每个映射对象执行操作。
+在本例中， `Consumer` 对象是一个打印字符串的 lambda 表达式，该字符串是 `Function` 对象返回的电子邮件地址。
+
 You can replace each of these actions with an aggregate operation.
+
+您可以将这些操作中的每一个替换为聚合操作。
 
 ## Approach 9: Use Aggregate Operations That Accept Lambda Expressions as Parameters _使用接受 Lambda 表达式作为参数的聚合操作_
 
 The following example uses aggregate operations to print the e-mail addresses of those members contained in the collection `roster` who are eligible for Selective Service:
+
+以下示例使用聚合操作来打印集合 `roster` 中符合选择性服务条件的成员的电子邮件地址：
 
 ```text
 roster
@@ -484,6 +550,8 @@ roster
 
 The following table maps each of the operations the method `processElements` performs with the corresponding aggregate operation:
 
+下表映射了方法 `processElements` 执行的每个操作与相应的聚合操作：
+
 | `processElements` Action                                         | Aggregate Operation                                         |
 |------------------------------------------------------------------|-------------------------------------------------------------|
 | Obtain a source of objects                                       | `Stream<E> stream()`                                        |
@@ -491,12 +559,30 @@ The following table maps each of the operations the method `processElements` per
 | Map objects to another value as specified by a `Function` object | `<R> Stream<R> map(Function<? super T,? extends R> mapper)` |
 | Perform an action as specified by a `Consumer` object            | `void forEach(Consumer<? super T> action)`                  |
 
+
+| `processElements` 动作         | 聚合操作                                                        |
+|------------------------------|-------------------------------------------------------------|
+| 获取对象的来源                      | `Stream<E> stream()`                                        |
+| 过滤与 `Predicate` 对象匹配的对象      | `Stream<T> filter(Predicate<? super T> predicate)`          |
+| 将对象映射到由 `Function` 对象指定的另一个值 | `<R> Stream<R> map(Function<? super T,? extends R> mapper)` |
+| 执行 `Consumer` 对象指定的操作        | `void forEach(Consumer<? super T> action)`                  |
+
 The operations `filter`, `map`, and `forEach` are _aggregate operations_. 
 Aggregate operations process elements from a stream, not directly from a collection (which is the reason why the first method invoked in this example is `stream`). 
 A stream is a sequence of elements. 
 Unlike a collection, it is not a data structure that stores elements. 
 Instead, a stream carries values from a source, such as collection, through a pipeline. 
-A _pipeline_ is a sequence of stream operations, which in this example is `filter`- `map`-`forEach`. 
+A _pipeline_ is a sequence of stream operations, which in this example is `filter`-`map`-`forEach`. 
 In addition, aggregate operations typically accept lambda expressions as parameters, enabling you to customize how they behave.
 
+操作 `filter` 、 `map` 和 `forEach` 是 _聚合操作_ 。
+聚合操作处理来自流的元素，而不是直接来自集合（这就是本例中调用的第一个方法是 `stream` 的原因）。
+流是一系列元素。
+与集合不同，它不是存储元素的数据结构。
+相反，流通过管道从源（例如集合）携带值。
+_pipeline_ 是一系列流操作，在本例中是 `filter`-`map`-`forEach` 。
+此外，聚合操作通常接受 lambda 表达式作为参数，使您能够自定义它们的行为方式。
+
 For a more thorough discussion of aggregate operations, see the [Aggregate Operations]() lesson.
+
+有关聚合操作的更全面讨论，请参阅 [聚合操作]() 课程。
