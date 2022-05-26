@@ -1,3 +1,3 @@
 # Java 
 
-* [The Java™ Tutorials](./javase/tutorial/The%20Java™%20Tutorials.md)
+* [The Java™ Tutorials](src/doc/tutorial/The%20Java™%20Tutorials.md)
