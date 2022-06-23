@@ -167,3 +167,4 @@ IDEA Keymap
 | `ctrl` + `I`             | Anonymous Classes                     |
 | `ctrl` + `shift` + `F12` | Hide All Windows                      |
 | `ctrl` + `alt` + `L`     | Reformat Code                         |
+| `ctrl` + `h`             | view interface implements             |
