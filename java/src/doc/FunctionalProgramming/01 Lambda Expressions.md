@@ -47,9 +47,10 @@ lambda 表达式由以下内容组成： `(parameter list) -> { Statement blocks
 > **注意**：
 > Lambda 表达式看上去像方法声明；可以将 Lambda 表达式视为匿名方法 —— 没有名称的方法；
 
-
-> * Lambda 表达式**参数类型**可以由编译器推断得出；不过最好根据**实际情况**决定是否明确写明参数类型；
-> * Lambda **表达式类型**（也称为**目标类型**）依赖于表达式上下文环境，由编译器推断出来；
+> **类型推断**：
+> 
+> 即可以省略 Lambda 表达式中的所有**参数**，并且可以检查**返回值**类型时候匹配；实际上是 Java 7 引入的目标类型推断的扩展(即 `<>` 运算符)； 
+> `javac` 根据 Lambda 表达式上下文信息推断出参数和返回值的正确类型。
 
 ##  Type Of `Lambda` : `FunctionInterface`
 
@@ -60,5 +61,14 @@ Lambda 表达式本身的类型： **函数接口**
 > * 函数接口支持接口继承，继承规则与普通接口一致；如果一个函数接口继承另一个函数接口，则子函数接口必须使用 `default` 修饰重写实现父函数接口中的方法。
 > * 函数接口中的单一方法的命名并不重要，只要**方法签名**和**返回值兼容**即可。
 
+### Java 内置函数接口
 
+> 泛型函数接口的在定义时不指定**类型**编译不通过；
+
+* `Predicate<T>` : `boolean test(T t)` 
+* `Consumer<T>` : `void accept(T t)`
+* `Function<T, R>` : `R apply(T t)`
+* `Supplier<T>` : `T get()`
+* `UnaryOperator<T> extends Function<T, T>` : 
+* `BinaryOperator<T> extends BiFunction<T,T,T> ` : 
 

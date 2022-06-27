@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hui.java.functionalprogramming.Calculator.IntegerMath;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.BinaryOperator;
+
 @Slf4j
 public class CalculatorTests {
     @Test
@@ -50,5 +52,11 @@ public class CalculatorTests {
         };
     }
 
+    @Test public void test22() {
+        BinaryOperator<Integer> op = (x, y) -> x + y;
+
+        int a = op.apply(4, 5);
+        System.out.println(a);
+    }
 
 }
