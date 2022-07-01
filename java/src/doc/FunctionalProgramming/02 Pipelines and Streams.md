@@ -1,4 +1,6 @@
-# Streams and Pipelines
+# Streams and Stream Pipelines _流与流管道_
+
+file:///C:/Program%20Files/Java/jdk-17.0.3.1/docs/api/java.base/java/util/stream/package-summary.html
 
 ## Streams _流_
 
@@ -42,5 +44,15 @@ JDK 提供的获取**流**的方式：
 6. 从 `Random.ints()` 获得随机数流；
 7. 其他流承载方法： `BitSet.stream()` `Pattern.splitAsStream(java.lang.CharSequence)` `JarFile.stream()`
 
-## Pipelines _管道_
+### Stream Operations _流操作类型_
+
+#### intermediate operations _中间操作_
+
+#### terminal operations _终端操作_
+
+### Parallelism _并行_
+
+## Stream Pipelines _流管道_
+
+流操作（中间操作与终端操作）构成流管道。
 
