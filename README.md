@@ -28,6 +28,10 @@ My Tutorials
 * [Understanding Java Records From Java 16](./tdd/lombok/Lombok/Understanding%20Java%20Records%20From%20Java%2016.md)
 * [Logging exceptions in Java](https://www.loggly.com/blog/logging-exceptions-in-java/)
 
+* https://xlinux.nist.gov/dads/HTML/zeroaryfunc.html#:~:text=Definition%3AA%20functionthat%20takes%20no%20arguments.%20Also%20known%20asnullary,with%20external%20variables%29%20must%20be%20a%20constant%20function.
+* https://xlinux.nist.gov/dads/HTML/function.html
+* https://xlinux.nist.gov/dads/
+* https://xlinux.nist.gov/
 
 * [用户系统设计:三户模型&三层身份模型](https://www.biaodianfu.com/customer-user-account-model.html)
 * [The Tripartite Identity Pattern](http://habitatchronicles.com/2008/10/the-tripartite-identity-pattern/)
