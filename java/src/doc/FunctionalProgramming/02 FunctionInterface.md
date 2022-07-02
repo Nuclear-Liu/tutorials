@@ -28,6 +28,17 @@ JDK 通用功能接口。
     * `Predicate<T>` (从 `T` 到 `boolean` 的一元函数)
     * `Supplier<T>` ( `R` 的零函数)
 * Function shapes have a natural arity based on how they are most commonly used.
+    * `BiFunction<T, U, R>` (从 `T` 与 `U` 到 `R` 的二元函数)
+* There are additional derived function shapes which extend the basic function shapes, including UnaryOperator (extends Function) and BinaryOperator (extends BiFunction).
+    * `UnaryOperator<T> extends Function<T, T>` (继承自 `Function` )
+    * `BinaryOperator<T> extends BiFunction<T,T,T>` (继承自 `BiFunction`)
+* Type parameters of functional interfaces can be specialized to primitives with additional type prefixes. To specialize the return type for a type that has both generic return type and generic arguments, we prefix ToXxx, as in ToIntFunction. Otherwise, type arguments are specialized left-to-right, as in DoubleConsumer or ObjIntConsumer. (The type prefix Obj is used to indicate that we don't want to specialize this parameter, but want to move on to the next parameter, as in ObjIntConsumer.) These schemes can be combined, as in IntToDoubleFunction.
+    * `ToIntFunction<T>`
+    * `DoubleConsumer`
+    * `ObjIntConsumer<T>`
+    * `IntToDoubleFunction`
+* If there are specialization prefixes for all arguments, the arity prefix may be left out (as in ObjIntConsumer).
+    * `ObjIntConsumer<T>`
 
 #### `Function<T, R>` : `R apply(T t)`
 
