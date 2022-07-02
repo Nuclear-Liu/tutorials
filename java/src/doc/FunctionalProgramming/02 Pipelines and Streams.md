@@ -4,7 +4,7 @@ file:///C:/Program%20Files/Java/jdk-17.0.3.1/docs/api/java.base/java/util/stream
 
 ## Streams _流_
 
-Streams 用于支持对集合元素的函数是操作
+Streams 用于支持对集合元素的函数式操作：
 
 * 普通对象元素集合流对象： `Stream`
 * `int` 元素集合流对象： `IntStream`
@@ -49,6 +49,10 @@ JDK 提供的获取**流**的方式：
 #### intermediate operations _中间操作_
 
 #### terminal operations _终端操作_
+
+> 也称为**及早求值操作**。
+
+``
 
 ### Parallelism _并行_
 

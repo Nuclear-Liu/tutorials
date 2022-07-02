@@ -57,17 +57,21 @@ lambda 表达式由以下内容组成： `(parameter list) -> { Statement blocks
 Lambda 表达式本身的类型： **函数接口**
 
 > **函数接口**：只有**一个**抽象方法的接口；可以使用 `@FunctionalInterface` 修饰（非必需）。
+> 无论接口声明中是否存在FunctionalInterface注释，编译器都会将满足功能接口定义的任何接口视为功能接口。
 > 
 > * 函数接口支持接口继承，继承规则与普通接口一致；如果一个函数接口继承另一个函数接口，则子函数接口必须使用 `default` 修饰重写实现父函数接口中的方法。
 > * 函数接口中的单一方法的命名并不重要，只要**方法签名**和**返回值兼容**即可。
 
-### Java 内置函数接口
+### Java 内置函数接口 [`java.util.function`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/package-summary.html)
 
 > 泛型函数接口的在定义时不指定**类型**编译不通过；
 
+#### `Function<T, R>` : `R apply(T t)`
+
+
+
 * `Predicate<T>` : `boolean test(T t)` 
 * `Consumer<T>` : `void accept(T t)`
-* `Function<T, R>` : `R apply(T t)`
 * `Supplier<T>` : `T get()`
 * `UnaryOperator<T> extends Function<T, T>` : 
 * `BinaryOperator<T> extends BiFunction<T,T,T> ` : 
