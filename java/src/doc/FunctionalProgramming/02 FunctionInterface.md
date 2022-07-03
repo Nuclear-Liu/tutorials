@@ -22,17 +22,22 @@
 JDK 通用功能接口。
 
 `java.util.function` 包中的函数接口遵循可扩展命名约定：
+* There are several basic function shapes, including Function (unary function from T to R), Consumer (unary function from T to void), Predicate (unary function from T to boolean), and Supplier (nullary function to R).
 * 基本函数接口； 
     * `Function<T, R>` (从 `T` 到 `R` 的一元函数)
     * `Consumer<T>` (从 `T` 到 `void` 的一元函数)
     * `Predicate<T>` (从 `T` 到 `boolean` 的一元函数)
-    * `Supplier<T>` ( `R` 的零函数)
-* Function shapes have a natural arity based on how they are most commonly used.
+    * `Supplier<T>` ( `T` 的零函数)
+* Function shapes have a natural arity based on how they are most commonly used. The basic shapes can be modified by an arity prefix to indicate a different arity, such as BiFunction (binary function from T and U to R).
     * `BiFunction<T, U, R>` (从 `T` 与 `U` 到 `R` 的二元函数)
 * There are additional derived function shapes which extend the basic function shapes, including UnaryOperator (extends Function) and BinaryOperator (extends BiFunction).
     * `UnaryOperator<T> extends Function<T, T>` (继承自 `Function` )
     * `BinaryOperator<T> extends BiFunction<T,T,T>` (继承自 `BiFunction`)
-* Type parameters of functional interfaces can be specialized to primitives with additional type prefixes. To specialize the return type for a type that has both generic return type and generic arguments, we prefix ToXxx, as in ToIntFunction. Otherwise, type arguments are specialized left-to-right, as in DoubleConsumer or ObjIntConsumer. (The type prefix Obj is used to indicate that we don't want to specialize this parameter, but want to move on to the next parameter, as in ObjIntConsumer.) These schemes can be combined, as in IntToDoubleFunction.
+* Type parameters of functional interfaces can be specialized to primitives with additional type prefixes. 
+  To specialize the return type for a type that has both generic return type and generic arguments, we prefix ToXxx, as in ToIntFunction. 
+  Otherwise, type arguments are specialized left-to-right, as in DoubleConsumer or ObjIntConsumer. 
+  (The type prefix Obj is used to indicate that we don't want to specialize this parameter, but want to move on to the next parameter, as in ObjIntConsumer.) 
+  These schemes can be combined, as in IntToDoubleFunction.
     * `ToIntFunction<T>`
     * `DoubleConsumer`
     * `ObjIntConsumer<T>`
