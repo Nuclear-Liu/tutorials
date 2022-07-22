@@ -163,14 +163,15 @@ My Tutorials
 
 IDEA Keymap
 
-| HotKey                   | -                                     |
-|:-------------------------|---------------------------------------|
-| `ctrl` + `ctrl`          | Run Anything                          |
-| `ctrl` + <code>`</code>  | VCS Operations                        |
-| `ctrl` + `shift` + `F10` | Run context configuration from editor |
-| `ctrl` + `shift` + `r`   | Run Maven Goal                        |
-| `ctrl` + `F12`           | Inherited members                     |
-| `ctrl` + `I`             | Anonymous Classes                     |
-| `ctrl` + `shift` + `F12` | Hide All Windows                      |
-| `ctrl` + `alt` + `L`     | Reformat Code                         |
-| `ctrl` + `h`             | view interface implements             |
+| HotKey                         | -                                     |
+|:-------------------------------|---------------------------------------|
+| `ctrl` + `ctrl`                | Run Anything                          |
+| `ctrl` + <code>`</code>        | VCS Operations                        |
+| `ctrl` + `shift` + `F10`       | Run context configuration from editor |
+| `ctrl` + `shift` + `r`         | Run Maven Goal                        |
+| `ctrl` + `F12`                 | Inherited members                     |
+| `ctrl` + `I`                   | Anonymous Classes                     |
+| `ctrl` + `shift` + `F12`       | Hide All Windows                      |
+| `ctrl` + `alt` + `L`           | Reformat Code                         |
+| `ctrl` + `h`                   | view interface implements             |
+| `ctrl` + `alt` + `shift` + `t` | Refactor This Windows                 |
