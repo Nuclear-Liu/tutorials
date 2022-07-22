@@ -3,6 +3,8 @@
 
 My Tutorials
 
+https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
+
 
 ## Make Software
 
