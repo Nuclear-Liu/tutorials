@@ -51,7 +51,33 @@ systemctl daemon-reload
 
 ## 常用中间件
 
-MySQL:
+设置容器的自启动：
 ```shell
-docker run -p 3306:3306 --name mysql -v /mydata/mysql/log:/var/log/mysql -v /mydata/mysql/data:/var/lib/mysql -v/mydata/mysql/conf/mysql.cnf:/etc/mysql/mysql.cnf -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7
+docker update --restart=always container_name
+```
+
+安装文档工具：
+```shell
+yum install -y lrzsz
+```
+
+登入容器：
+```shell
+docker exec -it container_name /bin/bash
+```
+
+MySQL:5.7
+```shell
+# set mysql.cnf to /mydata/mysql/conf/mysql.cnf
+cd /mydata/mysql/conf/
+rz -E
+docker run -p 3306:3306 --name mysql -v /mydata/mysql/log:/var/log/mysql -v /mydata/mysql/data:/var/lib/mysql -v /mydata/mysql/conf/mysql.cnf:/etc/mysql/mysql.cnf -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7
+```
+
+Redis:7.0.4
+```shell
+# set redis.conf to /mydata/redis/conf/redis.conf
+cd /mydata/redis/conf
+rz -E
+docker run -d -p 6379:6379 --name redis -v /mydata/redis/data:/data -v /mydata/redis/conf:/etc/redis  redis:7.0.4 redis-server /etc/redis/redis.conf
 ```

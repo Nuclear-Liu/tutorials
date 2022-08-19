@@ -16,13 +16,17 @@
 * 所有异步的方法在没有显式指定 `Executor` 参数时，都是复用 `ForkJoinPool.commonPool()` 线程池来执行。
 * 所有 `CompletionStage` 方法的实现都是互相独立的，以便一个方法的行为不会因为重载了其他方法而受影响。
 
-* `CompletionStage<U> thenApply(Function<? super T,? extends U> fn)`
-* `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn)`
-* `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn, Executor executor)`
+接口方法：
 
-* `CompletionStage<Void> thenAccept(Consumer<? super T> action)`
-* `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action)`
-* `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action, Executor executor)`
+* `thenApply`: 当此阶段正常完成时，该阶段的结果将作为所提供函数的参数执行（返回新的 `CompletionStage` ）。
+  * `CompletionStage<U> thenApply(Function<? super T,? extends U> fn)`
+  * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn)`
+  * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn, Executor executor)`
+
+* `thenAccept`: 
+  * `CompletionStage<Void> thenAccept(Consumer<? super T> action)`
+  * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action)`
+  * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action, Executor executor)`
 
 * `CompletionStage<Void> thenRun(Runnable action)`
 * `CompletionStage<Void> thenRunAsync(Runnable action)`
@@ -80,3 +84,7 @@
 当多个线程企图调用同一个 `CompletableFuture` 的 `complete` `cancel` 方式时只有一个线程会成功。
 
 `CompletableFuture` 除了包含有直接操作任务状态和结果的方法外，实现了 `CompletionStage` 接口。
+
+### 方法：
+* `public static CompletableFuture<Void> runAsync(Runnable runnable)`
+* `public static CompletableFuture<Void> runAsync(Runnable runnable, Executor executor)`
