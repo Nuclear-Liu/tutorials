@@ -28,53 +28,65 @@
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action)`
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action, Executor executor)`
 
-* `CompletionStage<Void> thenRun(Runnable action)`
-* `CompletionStage<Void> thenRunAsync(Runnable action)`
-* `CompletionStage<Void> thenRunAsync(Runnable action, Executor executor)`
+* `thenRun`:
+  * `CompletionStage<Void> thenRun(Runnable action)`
+  * `CompletionStage<Void> thenRunAsync(Runnable action)`
+  * `CompletionStage<Void> thenRunAsync(Runnable action, Executor executor)`
 
-* `CompletionStage<V> thenCombine(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
-* `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
-* `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn, Executor executor)`
+* `thenCombine`:
+  * `CompletionStage<V> thenCombine(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
+  * `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
+  * `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn, Executor executor)`
 
-* `CompletionStage<Void> thenAcceptBoth(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action)`
-* `CompletionStage<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action)`
-* `CompletionStage<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action, Executor executor)`
+* `thenAcceptBoth`:
+  * `CompletionStage<Void> thenAcceptBoth(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action)`
+  * `CompletionStage<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action)`
+  * `CompletionStage<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action, Executor executor)`
 
-* `CompletionStage<Void> runAfterBoth(CompletionStage<?> other, Runnable action)`
-* `CompletionStage<Void> runAfterBothAsync(CompletionStage<?> other, Runnable action)`
-* `CompletionStage<Void> runAfterBothAsync(CompletionStage<?> other, Runnable action, Executor executor)`
+* `runAfterBoth`:
+  * `CompletionStage<Void> runAfterBoth(CompletionStage<?> other, Runnable action)`
+  * `CompletionStage<Void> runAfterBothAsync(CompletionStage<?> other, Runnable action)`
+  * `CompletionStage<Void> runAfterBothAsync(CompletionStage<?> other, Runnable action, Executor executor)`
 
-* `CompletionStage<U> applyToEither(CompletionStage<? extends T> other, Function<? super T, U> fn)`
-* `CompletionStage<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn)`
-* `CompletionStage<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn, Executor executor)`
+* `applyToEither`:
+  * `CompletionStage<U> applyToEither(CompletionStage<? extends T> other, Function<? super T, U> fn)`
+  * `CompletionStage<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn)`
+  * `CompletionStage<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn, Executor executor)`
 
-* `CompletionStage<Void> acceptEither(CompletionStage<? extends T> other, Consumer<? super T> action)`
-* `CompletionStage<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action)`
-* `CompletionStage<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action, Executor executor)`
+* `acceptEither`:
+  * `CompletionStage<Void> acceptEither(CompletionStage<? extends T> other, Consumer<? super T> action)`
+  * `CompletionStage<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action)`
+  * `CompletionStage<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action, Executor executor)`
 
-* `CompletionStage<Void> runAfterEither(CompletionStage<?> other, Runnable action)`
-* `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action)`
-* `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action, Executor executor)`
+* `runAfterEither`:
+  * `CompletionStage<Void> runAfterEither(CompletionStage<?> other, Runnable action)`
+  * `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action)`
+  * `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action, Executor executor)`
 
-* `CompletionStage<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn)`
-* `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn)`
-* `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn, Executor executor)`
+* `thenCompose`:
+  * `CompletionStage<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn)`
+  * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn)`
+  * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn, Executor executor)`
 
-* `CompletionStage<U> handle(BiFunction<? super T, Throwable, ? extends U> fn)`
-* `CompletionStage<U> handleAsync(BiFunction<? super T, Throwable, ? extends U> fn)`
-* `CompletionStage<U> handleAsync(BiFunction<? super T, Throwable, ? extends U> fn, Executor executor)`
+* `handle`:
+  * `CompletionStage<U> handle(BiFunction<? super T, Throwable, ? extends U> fn)`
+  * `CompletionStage<U> handleAsync(BiFunction<? super T, Throwable, ? extends U> fn)`
+  * `CompletionStage<U> handleAsync(BiFunction<? super T, Throwable, ? extends U> fn, Executor executor)`
 
-* `CompletionStage<T> whenComplete(BiConsumer<? super T, ? super Throwable> action)`
-* `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action)`
-* `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action, Executor executor)`
+* `whenComplete`:
+  * `CompletionStage<T> whenComplete(BiConsumer<? super T, ? super Throwable> action)`
+  * `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action)`
+  * `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action, Executor executor)`
 
-* `CompletionStage<T> exceptionally(Function<Throwable, ? extends T> fn)`
-* `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn)`
-* `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor)`
+* `exceptionally`:
+  * `CompletionStage<T> exceptionally(Function<Throwable, ? extends T> fn)`
+  * `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn)`
+  * `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor)`
 
-* `CompletionStage<T> exceptionallyCompose(Function<Throwable, ? extends CompletionStage<T>> fn)`
-* `CompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn)`
-* `CompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn, Executor executor)`
+* `exceptionallyCompose`:
+  * `CompletionStage<T> exceptionallyCompose(Function<Throwable, ? extends CompletionStage<T>> fn)`
+  * `CompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn)`
+  * `CompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn, Executor executor)`
 
 * `CompletableFuture<T> toCompletableFuture()`
 
@@ -86,5 +98,20 @@
 `CompletableFuture` 除了包含有直接操作任务状态和结果的方法外，实现了 `CompletionStage` 接口。
 
 ### 方法：
-* `public static CompletableFuture<Void> runAsync(Runnable runnable)`
-* `public static CompletableFuture<Void> runAsync(Runnable runnable, Executor executor)`
+* `runAsync()`
+
+  实现无返回值的异步计算（异步日志打印、异步消息通知等）。
+  * `public static CompletableFuture<Void> runAsync(Runnable runnable)`
+
+    默认使用 `ForkJoinPool.commonPool()` 线程池执行。
+
+  * `public static CompletableFuture<Void> runAsync(Runnable runnable, Executor executor)`
+
+* `supplyAsync()`
+
+  实现有返回值的异步计算（对原始数据进行加工，并需要获取到被加工后的结果）。
+  * `public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier)`
+
+    默认使用 `ForkJoinPool.commonPool()` 线程池执行。
+
+  * `public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier, Executor executor)`
