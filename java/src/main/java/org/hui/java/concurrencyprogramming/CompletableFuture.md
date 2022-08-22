@@ -78,10 +78,10 @@
   * `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action)`
   * `CompletionStage<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action, Executor executor)`
 
-* `exceptionally`:
-  * `CompletionStage<T> exceptionally(Function<Throwable, ? extends T> fn)`
-  * `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn)`
-  * `CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor)`
+* `exceptionally`: 通过 `fn` 函数处理任务计算过程中传递出来的异常
+  * `public CompletionStage<T> exceptionally(Function<Throwable, ? extends T> fn)`
+  * `public CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn)`
+  * `public CompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor)`
 
 * `exceptionallyCompose`:
   * `CompletionStage<T> exceptionallyCompose(Function<Throwable, ? extends CompletionStage<T>> fn)`
@@ -125,3 +125,10 @@
 
   等待多个任务中的任意一个执行完成返回，返回值为 `CompletableFuture<Object>`（为执行成功 `cfs` 的结果）。
   * `public static CompletableFuture<Object> anyOf(CompletableFuture<?>... cfs)`
+
+* `completeExceptionally()`
+
+  传递任务中的异常到 `future` 内部， `get()` 时抛出异常（结合 `execptionally()` 使用，设置异常时的任务返回的默认值）。
+  * `public boolean completeExceptionally(Throwable ex)`
+
+* `exceptionally()`
