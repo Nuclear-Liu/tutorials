@@ -81,3 +81,11 @@ cd /mydata/redis/conf
 rz -E
 docker run -d -p 6379:6379 --name redis -v /mydata/redis/data:/data -v /mydata/redis/conf:/etc/redis  redis:7.0.4 redis-server /etc/redis/redis.conf
 ```
+
+Nacos:1.4.2
+```shell
+docker pull nacos/nacos-server:1.4.2
+cd /mydata/nacos/conf
+rz -E
+docker run -d -e MODE=standalone -v /mydata/nacos/conf:/home/nacos/conf --name nacos -p 8848:8848 nacos/nacos-server:1.4.2
+```

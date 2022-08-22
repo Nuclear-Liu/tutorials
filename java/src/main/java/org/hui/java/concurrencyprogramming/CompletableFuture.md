@@ -18,17 +18,17 @@
 
 接口方法：
 
-* `thenApply`: 当此阶段正常完成时，该阶段的结果将作为所提供函数的参数执行（返回新的 `CompletionStage` ）。
+* `thenApply`: 返回一个新阶段('U')，当前一个阶段任务正常完成时，将执行新阶段设定的操作返回执行结果（可以获取上一个阶段的任务执行结果，并且可以返回新的结果）。
   * `CompletionStage<U> thenApply(Function<? super T,? extends U> fn)`
   * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn)`
   * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn, Executor executor)`
 
-* `thenAccept`: 
+* `thenAccept`: 返回一个新阶段('Void')，当前一个阶段任务正常完成时，将执行新阶段设定的操作（可以获取到上一个阶段的任务执行结果）。
   * `CompletionStage<Void> thenAccept(Consumer<? super T> action)`
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action)`
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action, Executor executor)`
 
-* `thenRun`:
+* `thenRun`: 返回一个新阶段(`Void`)，当前一个阶段任务正常完成时，将执行新阶段设定的操作（获取不到上一个阶段的任务执行结果）。
   * `CompletionStage<Void> thenRun(Runnable action)`
   * `CompletionStage<Void> thenRunAsync(Runnable action)`
   * `CompletionStage<Void> thenRunAsync(Runnable action, Executor executor)`
@@ -64,7 +64,9 @@
   * `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action, Executor executor)`
 
 * `thenCompose`:
-  * `CompletionStage<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn)`
+  * `CompletionStage<U> thenCompose(Function<? super T, ? extends 
+  * 
+  * <U>> fn)`
   * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn)`
   * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn, Executor executor)`
 
