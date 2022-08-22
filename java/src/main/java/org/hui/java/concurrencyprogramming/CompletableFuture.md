@@ -33,7 +33,7 @@
   * `CompletionStage<Void> thenRunAsync(Runnable action)`
   * `CompletionStage<Void> thenRunAsync(Runnable action, Executor executor)`
 
-* `thenCombine`:
+* `thenCombine`: 返回一个新阶段(`Void`)，当前一个阶段执行完成后执行 `other` 阶段任务，最后执行 `fn` （前两个阶段的返回值作为参数）。
   * `CompletionStage<V> thenCombine(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
   * `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn)`
   * `CompletionStage<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T,? super U,? extends V> fn, Executor executor)`
@@ -63,10 +63,8 @@
   * `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action)`
   * `CompletionStage<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action, Executor executor)`
 
-* `thenCompose`:
-  * `CompletionStage<U> thenCompose(Function<? super T, ? extends 
-  * 
-  * <U>> fn)`
+* `thenCompose`: 返回一个新的阶段(`U`)，当前一个阶段完成时，执行新阶段设定的操作（可以获取前一个阶段的接口，返回值与上一个阶段类型一致）。
+  * `CompletionStage<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn)`
   * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn)`
   * `CompletionStage<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn, Executor executor)`
 
@@ -117,3 +115,13 @@
     默认使用 `ForkJoinPool.commonPool()` 线程池执行。
 
   * `public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier, Executor executor)`
+
+* `allOf()`
+
+  等待所有的多个 `CompletableFuture` 并行任务执行完毕（返回值 `void` ）。
+  * `public static CompletableFuture<Void> allOf(CompletableFuture<?>... cfs)`
+
+* `anyOf()`
+
+  等待多个任务中的任意一个执行完成返回，返回值为 `CompletableFuture<Object>`（为执行成功 `cfs` 的结果）。
+  * `public static CompletableFuture<Object> anyOf(CompletableFuture<?>... cfs)`
