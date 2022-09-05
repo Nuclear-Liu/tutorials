@@ -1,17 +1,22 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 import com.lmax.disruptor.RingBuffer;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Producer.
  */
-@Slf4j
 public class LongEventProducer {
+
+    private static final Logger log = LoggerFactory.getLogger(LongEventProducer.class);
+
     private final RingBuffer<LongEvent> ringBuffer;
+
     public LongEventProducer(RingBuffer<LongEvent> ringBuffer) {
         this.ringBuffer = ringBuffer;
     }
+
     public void onData(long bb) {
         long sequence = ringBuffer.next(); // 第一阶段获取序列号
         try {

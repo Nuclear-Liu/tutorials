@@ -1,4 +1,4 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 /**
  * Event Object.

@@ -1,14 +1,16 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 import com.lmax.disruptor.EventHandler;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Consumer.
  * 真正处理业务逻辑的消费者.
  */
-@Slf4j
 public class ApplicationConsumer implements EventHandler<LongEvent> {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationConsumer.class);
+
     @Override
     public void onEvent(LongEvent event, long sequence, boolean endOfBatch) throws Exception {
         log.info("Application Event:{}", event.getValue());

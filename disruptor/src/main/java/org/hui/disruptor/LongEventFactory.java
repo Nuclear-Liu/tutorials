@@ -1,4 +1,4 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 import com.lmax.disruptor.EventFactory;
 

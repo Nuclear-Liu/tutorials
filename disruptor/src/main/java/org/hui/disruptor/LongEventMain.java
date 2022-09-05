@@ -1,12 +1,17 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LongEventMain {
+
+    private static final Logger log = LoggerFactory.getLogger(LongEventMain.class);
+
     public static void main(String[] args) throws InterruptedException {
         // 1. 创建 Ring Buffer 中事件元素的工厂对象
         LongEventFactory factory = new LongEventFactory();
@@ -26,11 +31,13 @@ public class LongEventMain {
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
         // 7. 创建生产者
         LongEventProducer producer = new LongEventProducer(ringBuffer);
+        
         // 8. 生产元素，并放入 Ring Buffer
-        for (long l = 0; l < 100L; l++) {
+        for (long l = 0; l < 10000L; l++) {
             producer.onData(l);
-            Thread.sleep(1000);
+            // Thread.sleep(1000);
         }
+
         // 9. 挂起当前线程
         Thread.currentThread().join();
     }

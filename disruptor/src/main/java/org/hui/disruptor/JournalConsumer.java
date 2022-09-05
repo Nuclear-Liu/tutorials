@@ -1,14 +1,17 @@
-package org.hui.java.disruptor;
+package org.hui.disruptor;
 
 import com.lmax.disruptor.EventHandler;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * consumer.
  * 将输入数据写入持久性日志的消费者.
  */
-@Slf4j
 public class JournalConsumer implements EventHandler<LongEvent> {
+
+    private static final Logger log = LoggerFactory.getLogger(JournalConsumer.class);
+
     @Override
     public void onEvent(LongEvent event, long sequence, boolean endOfBatch) throws Exception {
         log.info("Persist Event:{}", event.getValue());
