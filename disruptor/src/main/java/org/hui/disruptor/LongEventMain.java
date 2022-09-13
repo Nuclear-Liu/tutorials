@@ -24,17 +24,19 @@ public class LongEventMain {
                 DaemonThreadFactory.INSTANCE,
                 ProducerType.SINGLE, new BlockingWaitStrategy());
         // 4. 注册消费者
-        disruptor.handleEventsWith(new JournalConsumer(), new ReplicationConsumer()).then(new ApplicationConsumer());
+        disruptor.handleEventsWith(new JournalConsumer(), new ReplicationConsumer())
+                .then(new ApplicationConsumer());
         // 5. 启动 Disruptor 启动线程运行
         disruptor.start();
         // 6. 从 Disruptor 中获取 Ring Buffer
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
         // 7. 创建生产者
         LongEventProducer producer = new LongEventProducer(ringBuffer);
-        
+
         // 8. 生产元素，并放入 Ring Buffer
         for (long l = 0; l < 10000L; l++) {
             producer.onData(l);
+            log.error("timestamp:{}", System.currentTimeMillis());
             // Thread.sleep(1000);
         }
 
