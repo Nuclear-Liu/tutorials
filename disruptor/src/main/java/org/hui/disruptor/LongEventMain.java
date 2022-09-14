@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class LongEventMain {
 
-    private static final Logger log = LoggerFactory.getLogger(LongEventMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LongEventMain.class);
 
     public static void main(String[] args) throws InterruptedException {
         // 1. 创建 Ring Buffer 中事件元素的工厂对象
@@ -36,7 +36,7 @@ public class LongEventMain {
         // 8. 生产元素，并放入 Ring Buffer
         for (long l = 0; l < 10000L; l++) {
             producer.onData(l);
-            log.error("timestamp:{}", System.currentTimeMillis());
+            LOGGER.error("timestamp:{}", System.currentTimeMillis());
             // Thread.sleep(1000);
         }
 

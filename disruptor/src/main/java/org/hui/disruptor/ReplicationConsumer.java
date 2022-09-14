@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ReplicationConsumer implements EventHandler<LongEvent> {
 
-    private static final Logger log = LoggerFactory.getLogger(ReplicationConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationConsumer.class);
 
     @Override
     public void onEvent(LongEvent event, long sequence, boolean endOfBatch) throws Exception {
-        log.info("Replication Event:{}", event.getValue());
+        LOGGER.info("Replication Event:{}", event.getValue());
     }
 }

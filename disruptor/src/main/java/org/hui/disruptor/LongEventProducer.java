@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LongEventProducer {
 
-    private static final Logger log = LoggerFactory.getLogger(LongEventProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LongEventProducer.class);
 
     private final RingBuffer<LongEvent> ringBuffer;
 

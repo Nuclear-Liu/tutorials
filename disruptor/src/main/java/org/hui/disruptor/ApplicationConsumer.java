@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
  * 真正处理业务逻辑的消费者.
  */
 public class ApplicationConsumer implements EventHandler<LongEvent> {
-    private static final Logger log = LoggerFactory.getLogger(ApplicationConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConsumer.class);
 
     @Override
     public void onEvent(LongEvent event, long sequence, boolean endOfBatch) throws Exception {
-        log.info("Application Event:{}", event.getValue());
+        LOGGER.info("Application Event:{}", event.getValue());
     }
 }
