@@ -1,4 +1,4 @@
-package org.hui.disruptor;
+package org.hui.disruptor.longevent;
 
 /**
  * Event Object.

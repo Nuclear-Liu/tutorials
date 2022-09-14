@@ -1,4 +1,4 @@
-package org.hui.disruptor;
+package org.hui.disruptor.longevent;
 
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;

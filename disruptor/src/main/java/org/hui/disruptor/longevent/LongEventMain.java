@@ -1,4 +1,4 @@
-package org.hui.disruptor;
+package org.hui.disruptor.longevent;
 
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
@@ -19,7 +19,7 @@ public class LongEventMain {
         int bufferSize = 1024;
         // 3. 构造 Disruptor
         Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(
-                factory,
+                factory, // LongEvent::new,
                 bufferSize,
                 DaemonThreadFactory.INSTANCE,
                 ProducerType.SINGLE, new BlockingWaitStrategy());

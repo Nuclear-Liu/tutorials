@@ -4,6 +4,8 @@
 
 * Disruptor 中的同一个消息会向所有消费者发送，即**多播能力(Multicast Event)**。
 
+  与队列的最大行为差异，队列只能单个使用者发送单个事件。
+
 * 为**事件预分配内存(Event Preallocation)**，避免运行时因频繁**回收垃圾**与**内存分配**增加开销。
 
 * **可选择无锁(Optionally)**，使用两阶段协议，让多个线程可以同时修改不同元素。
@@ -49,6 +51,75 @@
 > * `Producer` 向 Disruptor 的 `Ring Buffer` 中写入事件；
 > * 消费者 `JournalConsumer` 和 `ReplicationConsumer` 使用多播方式同时消费 `Ring Buffer` 中的每一个元素，两者都有各自的 `SequenceBarrier` 用来控制当前 `Ring Buffer` 消费进度，并且当不存在可消费事件时如何处理(`Wait Strategy` 等待策略)；
 > * 消费者 `ApplicationConsumer` 则是等 `JournalComsumer` 和 `ReplicationConsumer` 对用一个元素消费后，在处理该元素。
+
+## Consumer Dependency Graph 消费者依赖图
+
+为了支持并行处理任务行为在现实世界中的应用，有必要支持消费者之间的协调，通过 `Gating`(闸) 实现。
+
+
+`Gating` 发生的两个地方：
+
+1. 确保生产者 `Producer` 不会超过消费者 `Consumer` ：
+  通过调用 `RingBuffer.addGatingConsumer()` 将相关消费者 `Consumer` 添加到 Disruptor 来处理。
+
+2. 消费者 `Consumer` 之间的协调：
+  通过构造一个 `SequenceBarrier` 来实现，它包含来自必须首先完成其处理的组件的序列。
+
+
+注意： `Sequencer` 与下游消费者的关系。
+
+在消费者之间存在协调是， `Sequencer` 只需要知道作为依赖树(`SequenceBarrier`)的叶节点的使用者的序列。
+
+## Event Pre-allocation 事件预分配
+
+在基于 Java 的系统中，目的是减少由于垃圾回收导致的停顿，为了支持这一点，预先分配 Disruptor 中事件所需的存储空间。
+在构建时， `EventFactory` 提供事件对象被 Disruptor 中 `Ring Buffer` 的每个条目调用，提前填充。
+在向 Disruptor 发布数据时，API 允许用户获取构造的对象，调用该存储对象上的方法或更新字段。
+Disruptor 保证，只要正确实现这些操作，它们就是并发安全的。
+
+## Optionally Lock-free 可选择不加锁
+
+另一个低延迟需求推动的关键实现细节： 使用无锁算法来实现 Disruptor 。
+
+> 所有内存可见性和正确性保证：通过**内存屏障**和**比较交换操作**来实现。
+
+> 在 `BlockingWaitStrategy` 中，只有一个用例需要一个实际的锁。
+> 
+> 为了以便使用线程可以在等待新事件到达时暂停（许多低延迟系统会使用忙等待来避免因使用锁而引起的抖动，在 CPU 资源受限的情况下忙等待会导致系统性能显著下降）。
+
+## 使用 Disruptor
+
+### 1. 依赖
+
+```xml
+<dependency>
+  <groupId>com.lmax</groupId>
+  <artifactId>disruptor</artifactId>
+  <version>4.0.0.RC1</version>
+</dependency>
+```
+
+### 2. Event Object
+
+事件对象没有具体的约束，满足业务逻辑场景即可。
+
+### 3. Event Factory
+
+用于 Disruptor 预先分配事件对象，事件工厂需要实现 `EventFactory<T>` 接口，重写 `T newInstance()` 方法：
+
+* 使用方法引用： `EventObject::new` ；
+* `EventFactory<T>` 接口的显示实现类；
+
+### 4. Consumer
+
+消费者消费事件，需要实现 `EventHandler<T>` 接口，重写 `void onEvent(T event, long sequence, boolean endOfBatch) throws Exception`。
+
+* 使用 lambda 表达式；
+* `EventHandler<T>` 接口的显示实现类；
+
+多个消费者之间可以协调配合构成消费链，`Disruptor.handleEventsWith(final EventHandler<? super T>... handlers)` 注册一级消费者，返回 `EventHandlerGroup<T>` 对象，可以继续调用 `EventHandlerGroup` 的 `then(final EventHandler<? super T>... handlers)` 继续注册依赖的消费者。
+
+### 5. Producer
 
 ## 参考资料
 
