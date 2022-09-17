@@ -14,7 +14,7 @@
 
 ## Disruptor 中的 DDD(Domain-Driven Design) 域对象：
 
-* `Ring Buffer` : 环形缓冲区，通常被认为是 Disruptor 的核心，从 3.0 版本开始， `Ring Buffer` 负责存储和更新 Disruptor 中的数据（**事件**）。 
+* `Ring Buffer` : 环形缓冲区（必须是2的幂次），通常被认为是 Disruptor 的核心，从 3.0 版本开始， `Ring Buffer` 负责存储和更新 Disruptor 中的数据（**事件**）。 
 
   对于某些高级用例，它甚至可以完全由用户替换
 
@@ -120,6 +120,82 @@ Disruptor 保证，只要正确实现这些操作，它们就是并发安全的�
 多个消费者之间可以协调配合构成消费链，`Disruptor.handleEventsWith(final EventHandler<? super T>... handlers)` 注册一级消费者，返回 `EventHandlerGroup<T>` 对象，可以继续调用 `EventHandlerGroup` 的 `then(final EventHandler<? super T>... handlers)` 继续注册依赖的消费者。
 
 ### 5. Producer
+
+`final class RingBuffer<E> extends RingBufferFields<E> implements Cursored, EventSequencer<E>, EventSink<E>` 发布事件：
+
+* (**不推荐**)`Sequenced` 接口的 `void publish(long sequence)` / `void publish(long lo, long hi)` 发布事件；
+
+  1. 首先通过 `Sequenced` 接口的 `long next()` 获取下一个可以发布的槽位；
+  2. 通过 `DataProvider<T>` 接口的 `T get(long sequence)` 获取当前槽位已分配的事件对象；
+  3. 设置事件对象属性；
+  4. 调用 `Sequenced` 接口的 `void publish(long sequence)` 发布事件；
+
+  > 事件发布比使用简单队列更加复杂。
+  > 由于需要事件预分配，需要一个两阶段消息发布方法：在环形缓冲区中声明槽位，然后发布可用数据。
+  > * 需要将发布动作包装在 `try`/`finally` 块中；
+  > * 如果声明了一个槽(调用 `RingBuffer#next()`)，那么必须发布这个序列；否则会导致 Disruptor 状态损坏；在多生产者环境将导致消费者停止，建议使用 Lambda 表达式或 转换器方式；
+
+* (**推荐的方式**)通过 `RingBuffer` 的写接口 `EventSink<E>` 的 `publishEvent()` `publishEvents()` `tryPublishEvent()` `tryPublishEvents()` 方法使用转换器**EventTranslator**发布事件，支持 Lambda 表达式形式；
+
+  EventTranslator : `EventTranslator<T>` `EventTranslatorOneArg<T, A>` `EventTranslatorTwoArg<T, A, B>` `EventTranslatorThreeArg<E, A, B, C>` `EventTranslatorVararg<E>`
+
+### 6. Clearing Objects From the Ring Buffer 环形缓冲区中对象的清理
+
+当通过 Disruptor 传递数据时，对象的存活事件可能超过预期。
+为了避免这种情况的发生，可能有必要在处理事情之后清除它。
+
+实现一个清理程序(`EventHandler`)放置在消费者消费链路的末端清理环形缓冲区内预分配数据的值。
+
+## Dealing With Large Batches 处理大批量
+
+## Batch Rewind
+
+### The Feature
+
+当使用 `BatchEventProcessor` 句柄将事件作为批次处理时，有一个特性可用于从名为 **Batch Rewind** 的异常中恢复。
+
+如果处理可恢复的事件时出现错误，用户可以抛出 `RewindableException` 。
+将调用 `BatchRewindStrategy` (而不是通常的 `ExceptionHandler` )来决定序列号是应该回退到重新尝试的批处理的开头，还是重新抛出并委托给 `ExceptionHandler` 。
+
+`BatchRewindStrategy` 默认是 `SimpleBatchRewindStrategy` ，可以通过向 `BatchEventProcessor` 提供不同的策略： `batchEventProcessor.setRewindStrategy(batchRewindStrategy);`
+
+* `BatchRewindStrategy`
+  * `NanosecondPauseBatchRewindStrategy` : 该异常将暂停指定数量的 nanos
+  * `SimpleBatchRewindStrategy` : 总是倒带的批量倒带策略
+  * `EventuallyGiveUpBatchRewindStrategy` : 处理 `rewindableException` 的策略，在进行了指定次数的尝试后，最终将异常委托给 `ExceptionHandler` 
+
+## Tuning Options 调优选项
+
+优化选项主要从：**生产者类型**（单个生产者/多个生产者）与**等待策略**两方面；这两个选项都是在**构建** Disruptor 时设置。
+
+### 生产者类型 `ProducerType`
+
+> Disruptor 提高并发系统性能的最佳方法：**坚持单一写入原则**
+
+`ProducerType.SINGLE`: 为 Disruptor 创建单一事件生产者的 `RingBuffer`
+`ProducerType.MULTI`: (默认值) 为 Disruptor 创建支持多个事件生产者的 `RingBuffer`
+
+### 等待策略 `WaitStrategy`
+
+* `WaitStrategy`:
+  * `BlockingWaitStrategy` : (默认) 阻塞等待
+    
+    是可用的等待策略中最慢的，在 CPU 使用方面最保守的
+  
+  * `SleepingWaitStrategy` : 睡眠等待策略  常用于异步日志记录
+  * `YieldingWaitStrategy` : (适用于低延迟系统)谦让等待策略 需要高性能时推荐的等待策略（`EventHandler`(Consumer) 数量低于逻辑处理器总数，例如启用了超线程）
+  * `BusySpinWaitStrategy` : (适用于低延迟系统)忙自旋等待策略  延迟表现最好的策略，对部署环境约束最大；
+
+    只有当 `EventHandler` 线程数量低于物理核心数量时，才应该使用这种等待策略（禁用超线程）；
+  
+  * `PhasedBackoffWaitStrategy` : 
+  * `LiteBlockingWaitStrategy` : 
+  * `LiteTimeoutBlockingWaitStrategy` : 
+  * `TimeoutBlockingWaitStrategy` : 
+
+> 超线程技术： 每个核心分配两套寄存器；
+> 
+> 如果需要运行两个处理器持续关注的程序，超线程技术开启时，其中一个或两个程序实际看起来会稍微满意一些；
 
 ## 参考资料
 

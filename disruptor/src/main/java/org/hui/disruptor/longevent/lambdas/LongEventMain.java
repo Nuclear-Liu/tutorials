@@ -32,8 +32,8 @@ public class LongEventMain {
         for (long l = 0; true; l++) {
             byteBuffer.putLong(0, l);
 
-            ringBuffer.publishEvent((event, sequence) -> event.set(byteBuffer.getLong(0)));
-            // ringBuffer.publishEvent((event, sequence, buffer) -> event.set(buffer.getLong(0)), byteBuffer);
+            // ringBuffer.publishEvent((event, sequence) -> event.set(byteBuffer.getLong(0)));
+            ringBuffer.publishEvent((event, sequence, buffer) -> event.set(buffer.getLong(0)), byteBuffer);
 
             // Thread.sleep(1000);
         }
