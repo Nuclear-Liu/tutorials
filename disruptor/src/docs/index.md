@@ -206,7 +206,7 @@ Disruptor 保证，只要正确实现这些操作，它们就是并发安全的�
 
 
 * [Disruptor Google Group](https://groups.google.com/g/lmax-disruptor)
-* [Disruptor Paper](https://lmax-exchange.github.io/disruptor/disruptor.html) [Disruptor 论文](./disruptor.md)
+* [Disruptor Paper](https://lmax-exchange.github.io/disruptor/disruptor.html) [Disruptor 论文](./paper/disruptor.md)
 * [Martin Fowler's Technical Review](https://martinfowler.com/articles/lmax.html)
 * [Mechanical Sympathy(Martin Thompson)](https://mechanical-sympathy.blogspot.com/)
 * [Bad Concurrency(Michael Barker)](https://bad-concurrency.blogspot.com/)
