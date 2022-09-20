@@ -1,11 +1,14 @@
 package org.hui.java.concurrencyprogramming.c001ordering;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 
-@Slf4j
 public class T01Disorder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(T01Disorder.class);
+
     private static int x = 0, y = 0;
     private static int a = 0, b = 0;
 
@@ -33,8 +36,8 @@ public class T01Disorder {
             other.start();
             latch.await();
             String result = "第" + i + "次（" + x + "," + y + "）";
-            if (x == 0 && y ==0) {
-                log.info(result);
+            if (x == 0 && y == 0) {
+                LOGGER.info(result);
                 break;
             }
         }

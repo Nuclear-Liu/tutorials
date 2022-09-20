@@ -1,10 +1,11 @@
 package org.hui.java.concurrencyprogramming.c001threadend;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class T03VolatileFlag {
+    private static final Logger LOGGER = LoggerFactory.getLogger(T03VolatileFlag.class);
 
     private static volatile boolean running = true;
 
@@ -15,7 +16,7 @@ public class T03VolatileFlag {
                 // wait recv accept
                 i++;
             }
-            log.info("end and i = {}", i);
+            LOGGER.info("end and i = {}", i);
         });
 
         t.start();

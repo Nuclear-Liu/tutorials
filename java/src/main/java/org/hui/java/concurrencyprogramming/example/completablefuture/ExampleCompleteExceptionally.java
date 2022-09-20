@@ -1,12 +1,14 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
 public class ExampleCompleteExceptionally {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleCompleteExceptionally.class);
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         // 1. create one CompletableFuture
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -21,9 +23,9 @@ public class ExampleCompleteExceptionally {
             } catch (Exception e) {
                 future.completeExceptionally(e);
             }
-            log.info("------ {} ------", Thread.currentThread().getName());
+            LOGGER.info("------ {} ------", Thread.currentThread().getName());
         }, "thread-1").start();
 
-        log.info("{}", future.exceptionally(t -> "default").get());
+        LOGGER.info("{}", future.exceptionally(t -> "default").get());
     }
 }

@@ -1,11 +1,16 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class ExampleThenAccept {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleThenAccept.class);
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor POOL_EXECUTOR = new ThreadPoolExecutor(
             AVAILABLE_PROCESSORS,
@@ -14,6 +19,7 @@ public class ExampleThenAccept {
             TimeUnit.MINUTES,
             new LinkedBlockingQueue<>(5),
             new ThreadPoolExecutor.CallerRunsPolicy());
+
     public static void thenAccept() throws ExecutionException, InterruptedException {
         CompletableFuture<String> oneFuture = CompletableFuture.supplyAsync(() -> {
             try {
@@ -21,7 +27,7 @@ public class ExampleThenAccept {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task over");
+            LOGGER.info("one task over");
             return "hello world";
         });
         CompletableFuture<Void> twoFuture = oneFuture.thenAccept((str) -> {
@@ -30,10 +36,11 @@ public class ExampleThenAccept {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("after oneFuture over doSomething {}", str);
+            LOGGER.info("after oneFuture over doSomething {}", str);
         });
-        log.info("{}", twoFuture.get());
+        LOGGER.info("{}", twoFuture.get());
     }
+
     public static void thenAcceptAsync() throws ExecutionException, InterruptedException {
         CompletableFuture<String> oneFuture = CompletableFuture.supplyAsync(() -> {
             try {
@@ -41,7 +48,7 @@ public class ExampleThenAccept {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task over");
+            LOGGER.info("one task over");
             return "hello world";
         }, POOL_EXECUTOR);
         CompletableFuture<Void> twoFuture = oneFuture.thenAcceptAsync((str) -> {
@@ -50,9 +57,9 @@ public class ExampleThenAccept {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            log.info("after oneFuture over doSomething {}", str);
+            LOGGER.info("after oneFuture over doSomething {}", str);
         }, POOL_EXECUTOR);
-        log.info("{}", twoFuture.get());
+        LOGGER.info("{}", twoFuture.get());
     }
 
     public static void main(String[] agrs) throws ExecutionException, InterruptedException {

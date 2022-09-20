@@ -1,13 +1,14 @@
 package org.hui.java.concurrencyprogramming.juc.c2001interview;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Slf4j
 public class T04NotifyFreeLock {
+    public static final Logger LOGGER = LoggerFactory.getLogger(T04NotifyFreeLock.class);
     volatile List list = new LinkedList<>();
 
     public void add(Object o) {
@@ -24,16 +25,16 @@ public class T04NotifyFreeLock {
         final Object lock = new Object();
 
         new Thread(() -> {
-            log.info("t2 start.");
+            LOGGER.info("t2 start.");
             synchronized (lock) {
                 if (c.size() != 5) {
                     try {
                         lock.wait();
                     } catch (InterruptedException e) {
-                        log.info("t2 interrupted.", e);
+                        LOGGER.info("t2 interrupted.", e);
                     }
                 }
-                log.info("t2 end.");
+                LOGGER.info("t2 end.");
                 lock.notify();
             }
         }, "t2").start();
@@ -41,17 +42,17 @@ public class T04NotifyFreeLock {
         SleepHelper.sleepSeconds(1);
 
         new Thread(() -> {
-            log.info("t1 start.");
+            LOGGER.info("t1 start.");
             synchronized (lock) {
                 for (int i = 0; i < 10; i++) {
                     c.add(new Object());
-                    log.info("add {}", i);
+                    LOGGER.info("add {}", i);
                     if (c.size() == 5) {
                         lock.notify();
                         try {
                             lock.wait();
                         } catch (InterruptedException e) {
-                            log.info("t1 interrupted.", e);
+                            LOGGER.info("t1 interrupted.", e);
                         }
                     }
                     SleepHelper.sleepSeconds(1);

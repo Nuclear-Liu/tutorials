@@ -1,17 +1,19 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
 public class ExampleAllOf {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleAllOf.class);
+
     public static CompletableFuture<String> doSomethingOne(String encodedCompanyId) {
         return CompletableFuture.supplyAsync(() -> {
-            log.info("one task: {}", encodedCompanyId);
+            LOGGER.info("one task: {}", encodedCompanyId);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -20,6 +22,7 @@ public class ExampleAllOf {
             return encodedCompanyId;
         });
     }
+
     public static CompletableFuture<String> doSomethingTwo(String companyId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -28,7 +31,7 @@ public class ExampleAllOf {
                 e.printStackTrace();
             }
             String result = companyId + ":java";
-            log.info("two task: {}", result);
+            LOGGER.info("two task: {}", result);
             return result;
         });
     }
@@ -44,7 +47,7 @@ public class ExampleAllOf {
         CompletableFuture<Void> future = CompletableFuture.allOf(
                 futures.toArray(new CompletableFuture[futures.size()]));
 
-        log.info("{}", future.get());
+        LOGGER.info("{}", future.get());
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {

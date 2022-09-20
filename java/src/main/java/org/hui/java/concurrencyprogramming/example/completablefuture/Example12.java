@@ -1,11 +1,16 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class Example12 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example12.class);
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor POOL_EXECUTOR = new ThreadPoolExecutor(
             AVAILABLE_PROCESSORS,
@@ -23,7 +28,7 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task exec over");
+            LOGGER.info("one task exec over");
             return "hello world";
         });
         // 2. get new future by oneFuture
@@ -33,10 +38,11 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("after oneFuture over doSomething");
+            LOGGER.info("after oneFuture over doSomething");
         });
-        log.info("{}",twoFuture.get());
+        LOGGER.info("{}", twoFuture.get());
     }
+
     public static void thenRunAsync() throws ExecutionException, InterruptedException {
         CompletableFuture<String> oneFuture = CompletableFuture.supplyAsync(() -> {
             try {
@@ -44,7 +50,7 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task exec over 01");
+            LOGGER.info("one task exec over 01");
             return "hello world";
         });
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
@@ -53,7 +59,7 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task exec over 02");
+            LOGGER.info("one task exec over 02");
             return "hello world";
         });
         CompletableFuture<Void> nextFuture = future.thenRunAsync(() -> {
@@ -62,7 +68,7 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("after oneFuture over doSomething 02");
+            LOGGER.info("after oneFuture over doSomething 02");
         });
         CompletableFuture<Void> twoFuture = oneFuture.thenRunAsync(() -> {
             try {
@@ -70,10 +76,10 @@ public class Example12 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("after oneFuture over doSomething 01");
+            LOGGER.info("after oneFuture over doSomething 01");
         });
         nextFuture.get();
-        log.info("{}",twoFuture.get());
+        LOGGER.info("{}", twoFuture.get());
     }
 
     public static void main(String[] ages) throws ExecutionException, InterruptedException {

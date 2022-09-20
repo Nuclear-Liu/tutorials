@@ -509,26 +509,45 @@ On most processors there is a very high cost for the remainder calculation on th
 This cost can be greatly reduced by making the ring size a power of 2. 
 A bit mask of size minus one can be used to perform the remainder operation efficiently.
 
+在大多数处理器上，序列号的余数计算成本非常高，序列号决定了环中的槽位。
+通过将环尺寸设为 2 的幂，可以大大降低此成本
+可以使用大小减 1 的位掩码有效地执行余数运算。
+
 
 As we described earlier bounded queues suffer from contention at the head and tail of the queue. 
 The ring buffer data structure is free from this contention and concurrency primitives because these concerns have been teased out into producer and consumer barriers through which the ring buffer must be accessed. 
 The logic for these barriers is described below.
 
+正如我们前面所描述的，有界队列会在队列的头部和尾部发生争用。
+环缓冲区数据结构不受这种争用和并发原语的限制，因为这些关注点已经被分解为生产者和消费者屏障，必须通过这些屏障访问环缓冲区。
+这些障碍的逻辑如下所述。
+
 
 In most common usages of the Disruptor there is usually only one producer. 
 Typical producers are file readers or network listeners. 
-In cases where there is a single producer there is no contention on sequence/entry allocation. 
-In more unusual usages where there are multiple producers, producers will race one another to claim the next entry in the ring-buffer. 
-Contention on claiming the next available entry can be managed with a simple CAS operation on the sequence number for that slot.
+In cases where there is a single producer there is no contention on `sequence`/`entry` allocation. 
+In more unusual usages where there are multiple producers, producers will race one another to claim the next `entry` in the ring-buffer. 
+Contention on claiming the next available `entry` can be managed with a simple CAS operation on the sequence number for that slot.
+
+在 Disruptor 的最常见用法中，通常只有一个生产者。
+典型的生产者是文件阅读器或网络侦听器。
+在只有一个生产者的情况下， `sequence`/`entry` 分配不存在争用。
+在有多个生产者的更不寻常的用法中，生产者将相互竞争以获得环形缓冲区中的下一个 `entry` 。
+关于声明下一个可用 `entry` 的争用可以通过对该插槽的序列号执行简单的 CAS 操作来管理。
 
 
-Once a producer has copied the relevant data to the claimed entry it can make it public to consumers by committing the sequence. 
+Once a producer has copied the relevant data to the claimed `entry` it can make it public to consumers by committing the sequence. 
 This can be done without CAS by a simple busy spin until the other producers have reached this sequence in their own commit. 
-Then this producer can advance the cursor signifying the next available entry for consumption. 
+Then this producer can advance the cursor signifying the next available `entry` for consumption. 
 Producers can avoid wrapping the ring by tracking the sequence of consumers as a simple read operation before they write to the ring buffer.
 
+一旦生产者将相关数据复制到声称的 `entry` 中，就可以通过提交序列将其公开给消费者。
+在其他生产者在自己的提交中到达这个序列之前，可以通过一个简单的繁忙的自旋操作在不使用 CAS 的情况下完成这项工作。
+然后，这个生成器可以提前指示下一个可用 `entry` 以供消费的光标。
+生产者可以通过在写入环缓冲区之前将消费者序列作为一个简单的读操作进行跟踪，从而避免包装环。
 
-Consumers wait for a sequence to become available in the ring buffer before they read the entry. 
+
+Consumers wait for a sequence to become available in the ring buffer before they read the `entry`. 
 Various strategies can be employed while waiting. 
 If CPU resource is precious they can wait on a condition variable within a lock that gets signalled by the producers. 
 This obviously is a point of contention and only to be used when CPU resource is more important than latency or throughput. 
@@ -538,21 +557,39 @@ This scales very well as we have broken the contended dependency between the pro
 Lock free multi-producer – multi-consumer queues do exist but they require multiple CAS operations on the head, tail, size counters. 
 The Disruptor does not suffer this CAS contention.
 
+消费者在读取 `entry` 之前等待序列在环形缓冲区中可用。
+在等待的过程中可以采用多种策略。
+如果 CPU 资源是宝贵的，它们可以在锁中等待生产者发出信号的条件变量。
+这显然是一个争用点，只有当 CPU 资源比延迟或吞吐量更重要时才会使用。
+消费者还可以循环检查代表环形缓冲区中当前可用序列的游标。
+这可以通过交换 CPU 资源和延迟来实现，不管有没有线程收益。
+如果我们不使用锁和条件变量，那么我们已经打破了生产者和消费者之间的依赖关系。
+无锁多生产者 —— 多消费者队列确实存在，但它们需要对头部、尾部、大小计数器进行多次 CAS 操作。
+Disruptor 不会遇到这种 CAS 争用。
 
-### 3.3. Sequencing
+
+### 3.3. `Sequencing` 序列
 
 
-Sequencing is the core concept to how the concurrency is managed in the Disruptor. 
-Each producer and consumer works off a strict sequencing concept for how it interacts with the ring buffer. 
-Producers claim the next slot in sequence when claiming an entry in the ring. 
+`Sequencing` is the core concept to how the concurrency is managed in the Disruptor. 
+Each producer and consumer works off a strict `sequencing` concept for how it interacts with the ring buffer. 
+Producers claim the next slot in `sequence` when claiming an entry in the ring. 
 This sequence of the next available slot can be a simple counter in the case of only one producer or an atomic counter updated using CAS operations in the case of multiple producers. 
 Once a sequence value is claimed, this entry in the ring buffer is now available to be written to by the claiming producer. 
 When the producer has finished updating the entry it can commit the changes by updating a separate counter which represents the cursor on the ring buffer for the latest entry available to consumers. 
 The ring buffer cursor can be read and written in a busy spin by the producers using memory barrier without requiring a CAS operation as below.
 
+`Sequencing` 是在 Disruptor 中如何管理并发的核心概念。
+每个生产者和消费者都对如何与环形缓冲区交互有一个严格的 `sequencing` 概念。
+生产者在要求进入环时要求 `sequencing` 中的下一个插槽。
+对于只有一个生产者的情况，下一个可用槽的序列可以是一个简单的计数器，对于多个生产者的情况，可以是使用 CAS 操作更新的原子计数器。
+一旦声明了一个序列值，环缓冲区中的这个条目现在可以被声明生产者写入。
+当生产者完成更新条目后，它可以通过更新一个单独的计数器来提交更改，该计数器表示消费者可用的最新条目的环形缓冲区上的游标。
+生产者可以使用内存屏障以繁忙的旋转方式读取和写入环形缓冲区游标，而不需要如下所示的 CAS 操作。
+
 
 ```jshelllanguage
-long expectedSequence = claimedSequence – 1;
+long expectedSequence = claimedSequence - 1;
 while (cursor != expectedSequence)
 {
   // busy spin
@@ -565,19 +602,27 @@ cursor = claimedSequence;
 Consumers wait for a given sequence to become available by using a memory barrier to read the cursor. 
 Once the cursor has been updated the memory barriers ensure the changes to the entries in the ring buffer are visible to the consumers who have waited on the cursor advancing.
 
-
+消费者通过使用内存屏障读取游标来等待给定的序列变为可用。
+一旦游标被更新，内存屏障确保环形缓冲区中条目的更改对等待游标前进的消费者可见。
 
 
 Consumers each contain their own sequence which they update as they process entries from the ring buffer. 
 These consumer sequences allow the producers to track consumers to prevent the ring from wrapping. 
 Consumer sequences also allow consumers to coordinate work on the same entry in an ordered manner
 
+每个消费者都包含它们自己的序列，当他们处理来自环形缓冲区的条目时，它们会更新这些序列。
+这些消费者序列允许生产者跟踪消费者以防止环回卷。
+消费者序列还允许消费者以有序的方式协调同一条目上的工作
+
 
 In the case of having only one producer, and regardless of the complexity of the consumer graph, no locks or CAS operations are required. 
 The whole concurrency coordination can be achieved with just memory barriers on the discussed sequences.
 
+在只有一个生产者的情况下，无论消费者图的复杂程度如何，都不需要锁或 CAS 操作。
+整个并发协调可以通过讨论序列上的内存屏障来实现。
 
-### 3.4. Batching Effect
+
+### 3.4. Batching Effect 有效的批处理
 
 
 When consumers are waiting on an advancing cursor sequence in the ring buffer an interesting opportunity arises that is not possible with queues. 
@@ -585,10 +630,17 @@ If the consumer finds the ring buffer cursor has advanced a number of steps sinc
 This results in the lagging consumer quickly regaining pace with the producers when the producers burst ahead thus balancing the system. 
 This type of batching increases throughput while reducing and smoothing latency at the same time. 
 Based on our observations, this effect results in a close to constant time for latency regardless of load, up until the memory sub-system is saturated, and then the profile is linear following Little’s Law [6]. 
-This is very different to the “J” curve effect on latency we have observed with queues as load increases.
+This is very different to the "J" curve effect on latency we have observed with queues as load increases.
+
+当使用者在循环缓冲区中等待一个提前的游标序列时，会出现一个有趣的机会，这是队列所不能提供的。
+如果消费者发现环形缓冲区游标自上次检查以来已经提前了许多步骤，那么它可以处理到该序列，而不必参与并发机制。
+这导致当生产者突然领先时，落后的消费者迅速恢复了与生产者的步伐，从而平衡了系统。
+这种类型的批处理增加了吞吐量，同时减少和平滑了延迟。
+根据我们的观察，这种效应导致无论负载如何，延迟时间接近于恒定时间，直到内存子系统饱和，然后根据 Little’s Law [6] ，轮廓是线性的。
+这与我们在队列中观察到的随着负载增加的 "J" 曲线对延迟的影响截然不同。
 
 
-### 3.5. Dependency Graphs
+### 3.5. Dependency Graphs （消费者）依赖关系图
 
 
 A queue represents the simple one step pipeline dependency between producers and consumers. 
@@ -596,16 +648,27 @@ If the consumers form a chain or graph-like structure of dependencies then queue
 This incurs the fixed costs of queues many times within the graph of dependent stages. 
 When designing the LMAX financial exchange our profiling showed that taking a queue based approach resulted in queuing costs dominating the total execution costs for processing a transaction.
 
+队列表示生产者和消费者之间简单的一步管道依赖关系。
+如果消费者形成依赖关系的链或类似图的结构，则图的每个阶段之间都需要队列。
+这会在图中的相关阶段多次产生队列的固定成本。
+在设计 LMAX 金融交换所时，我们的分析表明，采用基于队列的方法会导致队列成本主导处理事务的总执行成本。
+
 
 Because the producer and consumer concerns are separated with the Disruptor pattern, it is possible to represent a complex graph of dependencies between consumers while only using a single ring buffer at the core. 
 This results in greatly reduced fixed costs of execution thus increasing throughput while reducing latency.
+
+因为生产者和消费者关注点通过 Disruptor 模式分离，所以可以在核心仅使用单个环形缓冲区时表示消费者之间的复杂依赖关系图。
+这会大大降低执行的固定成本，从而在减少延迟的同时提高吞吐量。
 
 
 A single ring buffer can be used to store entries with a complex structure representing the whole workflow in a cohesive place. 
 Care must be taken in the design of such a structure so that the state written by independent consumers does not result in false sharing of cache lines.
 
+可以使用单个环形缓冲区存储具有复杂结构的条目，该结构在一个内聚的位置表示整个工作流。
+在设计这种结构时必须小心，以使独立消费者写入的状态不会导致缓存行的错误共享。
 
-### 3.6. Disruptor Class Diagram
+
+### 3.6. Disruptor Class Diagram Disruptor 类图
 
 
 The core relationships in the Disruptor framework are depicted in the class diagram below. 
@@ -614,6 +677,13 @@ After the dependency graph is constructed the programming model is simple.
 Producers claim entries in sequence via a `ProducerBarrier`, write their changes into the claimed entry, then commit that entry back via the `ProducerBarrier` making them available for consumption. 
 As a consumer all one needs do is provide a `BatchHandler` implementation that receives call backs when a new entry is available. 
 This resulting programming model is event based having a lot of similarities to the Actor Model.
+
+Disruptor 框架中的核心关系在下面的类图中描述。
+此图省略了可用于简化编程模型的便利类。
+在构建了依赖图之后，编程模型变得简单。
+生产者通过 `ProducerBarrier` 按顺序声明条目，将它们的更改写入声明的条目，然后通过 `ProducerBarrier` 提交该条目，使其可供消费。
+作为消费者，所有需要做的就是提供一个在有新条目可用时接收回调的 `BatchHandler` 实现。
+由此产生的编程模型是基于事件的，与 Actor 模型有很多相似之处。
 
 
 Separating the concerns normally conflated in queue implementations allows for a more flexible design. 

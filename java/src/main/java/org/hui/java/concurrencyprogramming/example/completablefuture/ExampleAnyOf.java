@@ -1,17 +1,19 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
 public class ExampleAnyOf {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleAnyOf.class);
+
     public static CompletableFuture<String> doSomethingOne(String encodedCompanyId) {
         return CompletableFuture.supplyAsync(() -> {
-            log.info("one task: {}", encodedCompanyId);
+            LOGGER.info("one task: {}", encodedCompanyId);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -20,10 +22,11 @@ public class ExampleAnyOf {
             return encodedCompanyId;
         });
     }
+
     public static CompletableFuture<String> doSomethingTwo(String companyId) {
         return CompletableFuture.supplyAsync(() -> {
             String result = companyId + ":java";
-            log.info("two task: {}", result);
+            LOGGER.info("two task: {}", result);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -32,6 +35,7 @@ public class ExampleAnyOf {
             return result;
         });
     }
+
     public static void anyOf() throws ExecutionException, InterruptedException {
         List<CompletableFuture<String>> futures = new ArrayList<>();
 
@@ -41,9 +45,9 @@ public class ExampleAnyOf {
 
         CompletableFuture<Object> result = CompletableFuture.anyOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-        log.info("result class: {}", result.getClass());
-        log.info("result.get() class: {}", result.get().getClass());
-        log.info("{}", result.get());
+        LOGGER.info("result class: {}", result.getClass());
+        LOGGER.info("result.get() class: {}", result.get().getClass());
+        LOGGER.info("{}", result.get());
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {

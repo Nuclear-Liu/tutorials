@@ -1,18 +1,19 @@
 package org.hui.java.concurrencyprogramming.c001syncbasics;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class T01WhatIsLock {
+    private static final Logger LOGGER = LoggerFactory.getLogger(T01WhatIsLock.class);
     private static Object o = new Object();
 
     public static void main(String[] args) {
         Runnable r = () -> {
             synchronized (o) {
-                log.info("{} start.", Thread.currentThread().getName());
+                LOGGER.info("{} start.", Thread.currentThread().getName());
                 SleepHelper.sleepSeconds(2);
-                log.info("{} end.", Thread.currentThread().getName());
+                LOGGER.info("{} end.", Thread.currentThread().getName());
             }
         };
 

@@ -1,9 +1,12 @@
 package org.hui.java.concurrencyprogramming.c001ordering;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class T02NoVisibility {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(T02NoVisibility.class);
+
     private static volatile boolean ready = false;
     private static int number;
 
@@ -13,7 +16,7 @@ public class T02NoVisibility {
             while (!ready) {
                 Thread.yield();
             }
-            log.info(String.valueOf(number));
+            LOGGER.info(String.valueOf(number));
         }
     }
 

@@ -1,13 +1,14 @@
 package org.hui.java.concurrencyprogramming.juc.c2001interview;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Slf4j
 public class T01WithoutVolatile {
+    public static final Logger LOGGER = LoggerFactory.getLogger(T01WithoutVolatile.class);
     List list = new LinkedList();
 
     public void add(Object o) {
@@ -24,7 +25,7 @@ public class T01WithoutVolatile {
         new Thread(() -> {
             for (int i = 0; i < 10; i++) {
                 c.add(new Object());
-                log.info("add {}.",i);
+                LOGGER.info("add {}.", i);
                 SleepHelper.sleepSeconds(1);
             }
         }, "t1").start();
@@ -35,7 +36,7 @@ public class T01WithoutVolatile {
                     break;
                 }
             }
-            log.info("t2 end.");
+            LOGGER.info("t2 end.");
         }, "t2").start();
     }
 }

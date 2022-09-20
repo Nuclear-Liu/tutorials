@@ -1,18 +1,24 @@
 package org.hui.java.concurrencyprogramming.example.threadpool;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class Example05 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example05.class);
+
     public static String doSomethingA() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log.info("------ doSomethingA ------");
+        LOGGER.info("------ doSomethingA ------");
         return "A Task Done";
     }
 
@@ -22,7 +28,7 @@ public class Example05 {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log.info("------ doSomethingB ------");
+        LOGGER.info("------ doSomethingB ------");
         return "B Task Done";
     }
 
@@ -36,10 +42,10 @@ public class Example05 {
             new ThreadPoolExecutor.CallerRunsPolicy());
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        long start= System.currentTimeMillis();
+        long start = System.currentTimeMillis();
 
         Future<String> taskA = POOL_EXECUTOR.submit(() -> doSomethingA());
         // Future<String> taskB = POOL_EXECUTOR.submit(() -> doSomethingB());
-        log.info(taskA.get());
+        LOGGER.info(taskA.get());
     }
 }

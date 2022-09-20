@@ -1,21 +1,23 @@
 package org.hui.java.concurrencyprogramming.example.threadpool;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class Example03 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example03.class);
+
     public static void doSomethingA() throws InterruptedException {
         Thread.sleep(3000);
-        log.info("------ doSomethingA ------");
+        LOGGER.info("------ doSomethingA ------");
     }
 
     public static void doSomethingB() throws InterruptedException {
         Thread.sleep(2000);
-        log.info("------ doSomethingB ------");
+        LOGGER.info("------ doSomethingB ------");
     }
 
     private final static int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
@@ -35,14 +37,14 @@ public class Example03 {
             try {
                 doSomethingA();
             } catch (InterruptedException e) {
-                log.error("exec interrupted.", e);
+                LOGGER.error("exec interrupted.", e);
             }
         });
 
         // 2. exec doSomethingB
         doSomethingB();
 
-        log.info("exec time: {}", System.currentTimeMillis() - start);
+        LOGGER.info("exec time: {}", System.currentTimeMillis() - start);
 
         Thread.currentThread().join();
     }

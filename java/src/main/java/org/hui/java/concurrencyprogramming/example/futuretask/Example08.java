@@ -1,20 +1,26 @@
 package org.hui.java.concurrencyprogramming.example.futuretask;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class Example08 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example08.class);
+
     public static String doSomethingA() throws InterruptedException {
         Thread.sleep(2000);
-        log.info("------ doSomethingA ------");
+        LOGGER.info("------ doSomethingA ------");
         return "TaskAResult";
     }
 
     public static String doSomethingB() throws InterruptedException {
         Thread.sleep(2000);
-        log.info("------ doSomethingB ------");
+        LOGGER.info("------ doSomethingB ------");
         return "TaskBResult";
     }
 
@@ -48,7 +54,7 @@ public class Example08 {
         String taskAResult = futureTask.get();
 
         // 4. print exec result.
-        log.info("{} {}", taskAResult, taskBResult);
-        log.info("exec time: {}", System.currentTimeMillis() - start);
+        LOGGER.info("{} {}", taskAResult, taskBResult);
+        LOGGER.info("exec time: {}", System.currentTimeMillis() - start);
     }
 }

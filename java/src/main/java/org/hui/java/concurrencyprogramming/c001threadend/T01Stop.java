@@ -1,14 +1,16 @@
 package org.hui.java.concurrencyprogramming.c001threadend;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class T01Stop {
+    private static final Logger LOGGER = LoggerFactory.getLogger(T01Stop.class);
+
     public static void main(String[] args) {
         Thread t = new Thread(() -> {
             while (true) {
-                log.info("go on.");
+                LOGGER.info("go on.");
                 SleepHelper.sleepSeconds(1);
             }
         });

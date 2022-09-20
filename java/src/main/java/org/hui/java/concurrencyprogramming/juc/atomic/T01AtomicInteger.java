@@ -1,13 +1,14 @@
 package org.hui.java.concurrencyprogramming.juc.atomic;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Slf4j
 public class T01AtomicInteger {
+    public static final Logger LOGGER = LoggerFactory.getLogger(T01AtomicInteger.class);
     private AtomicInteger count = new AtomicInteger(0);
 
     void m() {
@@ -31,11 +32,11 @@ public class T01AtomicInteger {
             try {
                 o.join();
             } catch (InterruptedException e) {
-                log.info("{} join exception.", o.getName());
+                LOGGER.info("{} join exception.", o.getName());
             }
         });
 
-        log.info("count: {}", t.count);
+        LOGGER.info("count: {}", t.count);
     }
 
 }

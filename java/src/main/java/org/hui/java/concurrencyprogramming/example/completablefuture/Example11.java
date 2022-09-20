@@ -1,12 +1,18 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-@Slf4j
 public class Example11 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example11.class);
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor POOL_EXECUTOR = new ThreadPoolExecutor(
             AVAILABLE_PROCESSORS,
@@ -26,12 +32,12 @@ public class Example11 {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                log.info("over");
+                LOGGER.info("over");
                 // return task result
                 return "hello world";
             }
         });
-        log.info("{}", future.get());
+        LOGGER.info("{}", future.get());
     }
 
     public static void supplyAsync(Executor executor) throws ExecutionException, InterruptedException {
@@ -41,10 +47,10 @@ public class Example11 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("over");
+            LOGGER.info("over");
             return "hello world";
         }, executor);
-        log.info("{}", future.get());
+        LOGGER.info("{}", future.get());
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {

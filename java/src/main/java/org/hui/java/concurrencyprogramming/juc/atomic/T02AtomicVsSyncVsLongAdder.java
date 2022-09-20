@@ -1,12 +1,13 @@
 package org.hui.java.concurrencyprogramming.juc.atomic;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
-@Slf4j
 public class T02AtomicVsSyncVsLongAdder {
+    public static final Logger LOGGER = LoggerFactory.getLogger(T02AtomicVsSyncVsLongAdder.class);
     static AtomicLong count1 = new AtomicLong(0L);
     static long count2 = 0L;
     static LongAdder count3 = new LongAdder();
@@ -31,7 +32,7 @@ public class T02AtomicVsSyncVsLongAdder {
 
         long end = System.currentTimeMillis();
 
-        log.info("Atomic: {} time {}", count1.get(), (end - start));
+        LOGGER.info("Atomic: {} time {}", count1.get(), (end - start));
         // -----
         Object lock = new Object();
 
@@ -55,7 +56,7 @@ public class T02AtomicVsSyncVsLongAdder {
 
         end = System.currentTimeMillis();
 
-        log.info("Sync: {} time {}", count2, (end - start));
+        LOGGER.info("Sync: {} time {}", count2, (end - start));
         // ----
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new Thread(() -> {
@@ -74,6 +75,6 @@ public class T02AtomicVsSyncVsLongAdder {
 
         end = System.currentTimeMillis();
 
-        log.info("LongAdder: {} time {}", count3, (end - start));
+        LOGGER.info("LongAdder: {} time {}", count3, (end - start));
     }
 }

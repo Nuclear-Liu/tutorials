@@ -1,10 +1,12 @@
 package org.hui.java.concurrencyprogramming.c001volatile;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hui.java.concurrencyprogramming.SleepHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class T02VolatileReference {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(T02VolatileReference.class);
 
     private static volatile A a = new A();
 
@@ -16,12 +18,13 @@ public class T02VolatileReference {
 
     private static class A {
         boolean running = true;
+
         void m() {
-            log.info("m start.");
+            LOGGER.info("m start.");
             while (running) {
 
             }
-            log.info("m end.");
+            LOGGER.info("m end.");
         }
     }
 }

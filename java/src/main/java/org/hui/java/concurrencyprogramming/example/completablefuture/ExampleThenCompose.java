@@ -1,14 +1,16 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-@Slf4j
 public class ExampleThenCompose {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleThenCompose.class);
+
     // 1. async task return future.
     public static CompletableFuture<String> doSomethingOne(String encodedCompanyId) {
         // 1.1 create sync task.
@@ -18,10 +20,11 @@ public class ExampleThenCompose {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task: {}", encodedCompanyId);
+            LOGGER.info("one task: {}", encodedCompanyId);
             return encodedCompanyId;
         });
     }
+
     // 2. open async task return future.
     public static CompletableFuture<String> doSomethingTwo(String companyId) {
         return CompletableFuture.supplyAsync(() -> {
@@ -31,7 +34,7 @@ public class ExampleThenCompose {
                 e.printStackTrace();
             }
             String result = companyId + ":java";
-            log.info("two task: {}", result);
+            LOGGER.info("two task: {}", result);
             return result;
         });
     }
@@ -40,6 +43,6 @@ public class ExampleThenCompose {
         Function<String, CompletionStage<String>> stringCompletionStageFunction = id -> doSomethingTwo(id);
         CompletableFuture<String> result = doSomethingOne("123").thenCompose(stringCompletionStageFunction);
 
-        log.info("{}", result.get());
+        LOGGER.info("{}", result.get());
     }
 }

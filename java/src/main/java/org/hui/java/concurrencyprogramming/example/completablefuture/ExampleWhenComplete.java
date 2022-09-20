@@ -1,11 +1,16 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class ExampleWhenComplete {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleWhenComplete.class);
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor POOL_EXECUTOR = new ThreadPoolExecutor(
             AVAILABLE_PROCESSORS,
@@ -24,19 +29,20 @@ public class ExampleWhenComplete {
                 e.printStackTrace();
             }
 
-            log.info("one task is over");
+            LOGGER.info("one task is over");
             return "hello world";
         });
         CompletableFuture<String> future = oneFuture.whenComplete((str, e) -> {
             if (null == e) {
-                log.info("{}", str);
+                LOGGER.info("{}", str);
             } else {
-                log.error("one task exec expression:", e);
+                LOGGER.error("one task exec expression:", e);
 
             }
         });
-        log.info("{}", future.get());
+        LOGGER.info("{}", future.get());
     }
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         whenComplete();
     }

@@ -1,14 +1,15 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class StreamSync {
+    public static final Logger LOGGER = LoggerFactory.getLogger(StreamSync.class);
     public static String rpcCall(String ip, String param) {
-        log.info("{} rpcCall:{}", ip, param);
+        LOGGER.info("{} rpcCall:{}", ip, param);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -32,7 +33,7 @@ public class StreamSync {
         }
 
         // 3. 输出
-        results.stream().forEach(log::info);
-        log.info("cost: {}", (System.currentTimeMillis() - start));
+        results.stream().forEach(LOGGER::info);
+        LOGGER.info("cost: {}", (System.currentTimeMillis() - start));
     }
 }

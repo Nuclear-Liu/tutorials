@@ -1,16 +1,17 @@
 package org.hui.java.concurrencyprogramming.c001ordering;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@Slf4j
 public class T03ThisEscape {
+    private static final Logger LOGGER = LoggerFactory.getLogger(T03ThisEscape.class);
     private int num = 8;
 
     public T03ThisEscape() {
         new Thread(() -> {
-            log.info(String.valueOf(this.num));
+            LOGGER.info(String.valueOf(this.num));
         }).start();
     }
 

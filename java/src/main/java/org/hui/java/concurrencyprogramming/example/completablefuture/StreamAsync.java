@@ -1,16 +1,17 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class StreamAsync {
+    public static final Logger LOGGER = LoggerFactory.getLogger(StreamAsync.class);
     public static String rpcCall(String ip, String param) {
-        log.info("{} rpcCall:{}", ip, param);
+        LOGGER.info("{} rpcCall:{}", ip, param);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -32,6 +33,6 @@ public class StreamAsync {
         List<String> results = futures.stream().map(future -> future.join()).collect(Collectors.toList());
         results.forEach(System.out::println);
 
-        log.info("cost:{}",(System.currentTimeMillis()-start));
+        LOGGER.info("cost:{}",(System.currentTimeMillis()-start));
     }
 }

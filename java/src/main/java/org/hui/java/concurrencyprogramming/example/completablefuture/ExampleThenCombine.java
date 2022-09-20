@@ -1,12 +1,14 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
 public class ExampleThenCombine {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExampleThenCombine.class);
+
     public static CompletableFuture<String> doSomethingOne(String encodedCompanyId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -14,10 +16,11 @@ public class ExampleThenCombine {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("one task: {}", encodedCompanyId);
+            LOGGER.info("one task: {}", encodedCompanyId);
             return encodedCompanyId;
         });
     }
+
     public static CompletableFuture<String> doSomethingTwo(String companyId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -26,7 +29,7 @@ public class ExampleThenCombine {
                 e.printStackTrace();
             }
             String result = companyId + ":java";
-            log.info("two task: {}", result);
+            LOGGER.info("two task: {}", result);
             return result;
         });
     }
@@ -35,6 +38,6 @@ public class ExampleThenCombine {
         CompletableFuture<String> future = doSomethingOne("123")
                 .thenCombine(doSomethingTwo("456"),
                         (one, two) -> one + two);
-        log.info("{}", future.get());
+        LOGGER.info("{}", future.get());
     }
 }

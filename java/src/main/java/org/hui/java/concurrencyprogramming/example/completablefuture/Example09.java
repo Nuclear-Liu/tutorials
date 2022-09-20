@@ -1,11 +1,16 @@
 package org.hui.java.concurrencyprogramming.example.completablefuture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class Example09 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example09.class);
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor POOL_EXECUTOR = new ThreadPoolExecutor(
             AVAILABLE_PROCESSORS,
@@ -28,13 +33,13 @@ public class Example09 {
                 e.printStackTrace();
             }
             // 设置计算结果到 future
-            log.info("------ {} set future task ------", Thread.currentThread().getName() );
+            LOGGER.info("------ {} set future task ------", Thread.currentThread().getName());
             future.complete("hello word");
         });
 
         // 3. wait result
-        log.info("------ main thread wait future result ------");
-        log.info(future.get());
-        log.info("------ main thread got future result ------");
+        LOGGER.info("------ main thread wait future result ------");
+        LOGGER.info(future.get());
+        LOGGER.info("------ main thread got future result ------");
     }
 }

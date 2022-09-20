@@ -1,25 +1,26 @@
 package org.hui.java.concurrencyprogramming.example;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class Example02 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Example02.class);
     public static void doSomethingA() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            log.error("sleep exception.", e);
+            LOGGER.error("sleep exception.", e);
         }
-        log.info("------ doSomethingA ------");
+        LOGGER.info("------ doSomethingA ------");
     }
 
     public static void doSomethingB() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            log.error("sleep exception.", e);
+            LOGGER.error("sleep exception.", e);
         }
-        log.info("------ doSomethingB ------");
+        LOGGER.info("------ doSomethingB ------");
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -40,6 +41,6 @@ public class Example02 {
         doSomethingB();
 
         threadA.join();
-        log.info("exec time: {}", System.currentTimeMillis() - start);
+        LOGGER.info("exec time: {}", System.currentTimeMillis() - start);
     }
 }
