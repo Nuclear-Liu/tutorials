@@ -1,4 +1,4 @@
-package org.hui.netty.echo;
+package org.hui.netty.echo.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

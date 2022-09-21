@@ -1,4 +1,4 @@
-package org.hui.netty.echo;
+package org.hui.netty.echo.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;

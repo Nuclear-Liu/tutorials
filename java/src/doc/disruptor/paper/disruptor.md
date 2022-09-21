@@ -692,13 +692,25 @@ The concurrency concerns are separated out for the producers and consumers inter
 The `ProducerBarrier` manages any concurrency concerns associated with claiming slots in the ring buffer, while tracking dependant consumers to prevent the ring from wrapping. 
 The `ConsumerBarrier` notifies consumers when new entries are available, and Consumers can be constructed into a graph of dependencies representing multiple stages in a processing pipeline.
 
+分离通常在队列实现中混为一谈的关注点可以实现更灵活的设计。
+`RingBuffer` 存在于 Disruptor 模式的核心，为无争用的数据交换提供存储。
+对于与 `RingBuffer` 交互的生产者和消费者，并发问题是分开的。
+`ProducerBarrier` 管理与在环缓冲区中声明槽相关的任何并发问题，同时跟踪依赖消费者以防止环回绕。
+当有新条目可用时，`ConsumerBarrier` 会通知消费者，消费者可以构建成一个依赖关系图，表示处理管道中的多个阶段。
+
+
 ![class diagram](classdiagram.png)
 
-### 3.7. Code Example
+
+### 3.7. Code Example 代码示例
 
 
-The code below is an example of a single producer and single consumer using the convenience interface BatchHandler for implementing a consumer. 
+The code below is an example of a single producer and single consumer using the convenience interface `BatchHandler` for implementing a consumer. 
 The consumer runs on a separate thread receiving entries as they become available.
+
+下面的代码是单个生产者和单个使用者使用方便接口 `BatchHandler` 实现使用者的示例。
+消费者在单独的线程上运行，接收可用的条目。
+
 
 ```jshelllanguage
 // Callback handler which can be implemented by consumers
@@ -741,14 +753,21 @@ ValueEntry entry = producerBarrier.nextEntry();
 producerBarrier.commit(entry);
 ```
 
-## 4. Throughput Performance Testing
+## 4. Throughput Performance Testing 吞吐量性能测试
 
 
 As a reference we choose Doug Lea’s excellent `java.util.concurrent.ArrayBlockingQueue`[7] which has the highest performance of any bounded queue based on our testing. 
 The tests are conducted in a blocking programming style to match that of the Disruptor. 
 The tests cases detailed below are available in the Disruptor open source project.
 
+作为参考，我们选择 Doug Lea 的优秀 `java.util.concurrent.ArrayBlockingQueue`[7] 根据我们的测试，它在所有有界队列中具有最高性能。
+测试以阻塞编程风格进行，以匹配 Disruptor 。
+Disruptor 开源项目中提供了下面详述的测试用例。
+
+
 > running the tests requires a system capable of executing at least 4 threads in parallel.
+> 
+> 运行测试需要一个能够并行执行至少 4 个线程的系统。
 
 
 ![unicast:1p-1c](unicast1p1c.png)
@@ -771,23 +790,28 @@ _Figure 4. Multicast: 1P - 3C_
 _Figure 5. Diamond: 1P - 3C_
 
 
-For the above configurations an ArrayBlockingQueue was applied for each arc of data flow compared to barrier configuration with the Disruptor. 
-The following table shows the performance results in operations per second using a Java 1.6.0_25 64-bit Sun JVM, Windows 7, Intel Core i7 860 @ 2.8 GHz without HT and Intel Core i7-2720QM, Ubuntu 11.04, and taking the best of 3 runs when processing 500 million messages. 
+For the above configurations an `ArrayBlockingQueue` was applied for each arc of data flow compared to barrier configuration with the Disruptor. 
+The following table shows the performance results in operations per second using a Java 1.6.0_25 64-bit Sun JVM, Windows 7, Intel Core i7 860 @2.8 GHz without HT and Intel Core i7-2720QM, Ubuntu 11.04, and taking the best of 3 runs when processing 500 million messages. 
 Results can vary substantially across different JVM executions and the figures below are not the highest we have observed.
 
+对于上述配置，与使用 Disruptor 的屏障配置相比，每个数据流弧都应用了 `ArrayBlockingQueue` 。
+下表显示了使用 Java 1.6.0_25 64-bit Sun JVM 、 Windows 7、不带 HT 的  Intel Core i7 860 @2.8 GHz 和 Intel Core i7-2720QM、 Ubuntu 11.04、的每秒运行性能结果，并且在处理5亿条消息时取得了3次运行中的最好成绩。
+在不同的 JVM 执行中，结果可能会有很大的差异，下面的图并不是我们观察到的最高值。
 
-_Table 2. Comparative throughput (in ops per sec)_
+
+_Table 2. Comparative throughput (in ops per sec)_  _比较吞吐量（每秒操作数）_
 
 |                    | Nehalem 2.8Ghz - Windows 7 SP1 64-bit |            | Sandy Bridge 2.2Ghz - Linux 2.6.38 64-bit |            |
 |--------------------|---------------------------------------|------------|-------------------------------------------|------------|
 |                    | ABQ                                   | Disruptor  | ABQ                                       | Disruptor  |
 | Unicast: 1P - 1C   | 5,339,256                             | 25,998,336 | 4,057,453                                 | 22,381,378 |
 | Pipeline: 1P - 3C  | 2,128,918                             | 16,806,157 | 2,006,903                                 | 15,857,913 |
-| Sequencer: 3P - 1C |                                       |            |                                           |            |
-|                    |                                       |            |                                           |            |
-|                    |                                       |            |                                           |            |
+| Sequencer: 3P - 1C | 5,539,531                             | 13,403,268 | 2,056,118                                 | 14,540,519 |
+| Multicast: 1P - 3C | 1,077,384                             | 9,377,871  | 260,733                                   | 10,860,121 |
+| Diamond: 1P - 3C   | 2,113,941                             | 16,143,613 | 2,082,725                                 | 15,295,197 |
 
-## 5. Latency Performance Testing
+
+## 5. Latency Performance Testing 延迟性能测试
 
 
 To measure latency we take the three stage pipeline and generate events at less than saturation. 
@@ -799,18 +823,31 @@ No CPU binding has been employed for this test.
 For comparison we use the ArrayBlockingQueue once again. 
 We could have used ConcurrentLinkedQueueviii which is likely to give better results but we want to use a bounded queue implementation to ensure producers do not outpace consumers by creating back pressure. 
 The results below are for 2.2Ghz Core i7-2720QM running Java 1.6.0_25 64-bit on Ubuntu 11.04. 
-Mean latency per hop for the Disruptor comes out at 52 nanoseconds compared to 32,757 nanoseconds for ArrayBlockingQueue. 
-Profiling shows the use of locks and signalling via a condition variable are the main cause of latency for the ArrayBlockingQueue.
+Mean latency per hop for the Disruptor comes out at 52 nanoseconds compared to 32,757 nanoseconds for `ArrayBlockingQueue`. 
+Profiling shows the use of locks and signalling via a condition variable are the main cause of latency for the `ArrayBlockingQueue`.
 
-_Table 3. Comparative Latency in three stage pipeline_
+为了测量延迟，我们采用三阶段流水线，并在低于饱和的情况下生成事件。
+这是通过在注入一个事件后等待 1 微秒，然后再注入下一个事件并重复 5000 万次来实现的。
+为了达到这个精度级别的计时，有必要使用来自 CPU 的时间戳计数器。
+我们选择具有不变 TSC 的 CPU，因为较老的处理器由于节省电能和睡眠状态而遭受频率变化的影响。
+Intel Nehalem 和更高版本的处理器使用一个不变的 TSC，它可以由在 Ubuntu 11.04 上运行的最新 Oracle JVM 访问。
+此测试未使用 CPU 绑定。
+为了比较，我们再次使用 `ArrayBlockingQueue` 。
+我们本可以使用 ConcurrentLinkedQueueviii ，它可能会提供更好的结果，但我们希望使用有界队列实现来确保生产者不会因产生背压而超过消费者。
+以下结果适用于在 Ubuntu 11.04 上运行 Java 1.6.0_25 64-bit 的 2.2Ghz Core i7-2720QM。
+Disruptor 的平均每跳延迟为 52 纳秒，而 `ArrayBlockingQueue` 为 32,757 纳秒。
+分析显示，使用锁和通过条件变量发出信号是 `ArrayBlockingQueue` 延迟的主要原因。
 
-|              | Array Blocking Queue (ns) | Disruptor (ns) |
-|--------------|---------------------------|----------------|
-| Min Latency  | 145                       | 29             |
-| Mean Latency |                           |                |
-|              |                           |                |
-|              |                           |                |
-|              |                           |                |
+
+_Table 3. Comparative Latency in three stage pipeline_ _三阶段管道中的比较延迟_
+
+|                               | Array Blocking Queue (ns) | Disruptor (ns) |
+|-------------------------------|---------------------------|----------------|
+| Min Latency                   | 145                       | 29             |
+| Mean Latency                  | 32,757                    | 52             |
+| 99% observations less than    | 2,097,152                 | 128            |
+| 99.99% observations less than | 4,194,304                 | 8,192          |
+| Max Latency                   | 5,069,086                 | 175,567        |
 
 ## 6. Conclusion
 
@@ -820,23 +857,36 @@ Our testing shows that it out-performs comparable approaches for exchanging data
 We believe that this is the highest performance mechanism for such data exchange. 
 By concentrating on a clean separation of the concerns involved in cross-thread data exchange, by eliminating write contention, minimizing read contention and ensuring that the code worked well with the caching employed by modern processors, we have created a highly efficient mechanism for exchanging data between threads in any application.
 
+Disruptor 是提高吞吐量、减少并发执行上下文之间的延迟和确保可预测延迟的重要一步，这在许多应用程序中都是一个重要的考虑因素。
+我们的测试表明，它在线程之间交换数据方面优于同类方法。
+通过专注于跨线程数据交换中涉及的关注点的清晰分离，通过消除写入争用，最大限度地减少读取争用并确保代码与现代处理器使用的缓存良好配合，我们创建了一种高效的数据交换机制任何应用程序中的线程之间。
+
 
 The batching effect that allows consumers to process entries up to a given threshold, without any contention, introduces a new characteristic in high performance systems. 
-For most systems, as load and contention increase there is an exponential increase in latency, the characteristic “J” curve. 
+For most systems, as load and contention increase there is an exponential increase in latency, the characteristic "J" curve. 
 As load increases on the Disruptor, latency remains almost flat until saturation occurs of the memory sub-system.
+
+允许消费者处理达到给定阈值的条目而没有任何争用的批处理效应在高性能系统中引入了一个新特性。
+对于大多数系统，随着负载和争用的增加，延迟会呈指数增长，即特征 "J" 曲线。
+当 Disruptor 上的负载增加时，延迟几乎保持平稳，直到内存子系统出现饱和。
 
 
 We believe that the Disruptor establishes a new benchmark for high-performance computing and is very well placed to continue to take advantage of current trends in processor and computer design.
 
+我们相信 Disruptor 为高性能计算建立了一个新的基准，并且非常适合继续利用处理器和计算机设计的当前趋势。
 
-View the original PDF of this paper here.
+
+View the original PDF of this paper [here](https://lmax-exchange.github.io/disruptor/files/Disruptor-1.0.pdf).
+
+点击[这里](./Disruptor-1.0.pdf)查看本文的原始 PDF。
+
 
 ---
 
-1. Staged Event-Driven Architecture – https://en.wikipedia.org/wiki/Staged_event-driven_architecture
-2. Actor model – http://dspace.mit.edu/handle/1721.1/6952
-3. Java Memory Model - https://jcp.org/en/jsr/detail?id=133
-4. Phasers - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Phaser.html
-5. Value Types - https://blogs.oracle.com/jrose/tuples-in-the-vm
-6. Little’s Law - https://en.wikipedia.org/wiki/Little%27s_law
-7. ArrayBlockingQueue - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ArrayBlockingQueue.html 
+1. Staged Event-Driven Architecture – [https://en.wikipedia.org/wiki/Staged_event-driven_architecture](https://en.wikipedia.org/wiki/Staged_event-driven_architecture)
+2. Actor model – [http://dspace.mit.edu/handle/1721.1/6952](http://dspace.mit.edu/handle/1721.1/6952)
+3. Java Memory Model - [https://jcp.org/en/jsr/detail?id=133](https://jcp.org/en/jsr/detail?id=133)
+4. Phasers - [https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Phaser.html](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Phaser.html)
+5. Value Types - [https://blogs.oracle.com/jrose/tuples-in-the-vm](https://blogs.oracle.com/jrose/tuples-in-the-vm)
+6. Little’s Law - [https://en.wikipedia.org/wiki/Little%27s_law](https://en.wikipedia.org/wiki/Little%27s_law)
+7. ArrayBlockingQueue - [https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ArrayBlockingQueue.html](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ArrayBlockingQueue.html)
