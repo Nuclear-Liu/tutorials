@@ -2,6 +2,7 @@ package org.hui.netty.tinygame.cmdhandler;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.hui.netty.tinygame.GameMsgEncoder;
+import org.hui.netty.tinygame.model.MoveState;
 import org.hui.netty.tinygame.model.User;
 import org.hui.netty.tinygame.model.UserManager;
 import org.hui.netty.tinygame.msg.GameMsgProtocol;
@@ -22,11 +23,22 @@ public class WhoElseIsHereCmdHandler implements CmdHandler<GameMsgProtocol.WhoEl
             GameMsgProtocol.WhoElseIsHereResult.UserInfo.Builder userBuilder = GameMsgProtocol.WhoElseIsHereResult.UserInfo.newBuilder();
             userBuilder.setUserId(user.getUserId());
             userBuilder.setHeroAvatar(user.getHeroAvatar());
-            resultBuilder.addUserInfo(userBuilder);
+
+            MoveState moveState = user.getMoveState();
+            GameMsgProtocol.WhoElseIsHereResult.UserInfo.MoveState.Builder
+                    moveStateBuilder = GameMsgProtocol.WhoElseIsHereResult.UserInfo.MoveState.newBuilder();
+            moveStateBuilder.setFromPosX(moveState.getFromPosX());
+            moveStateBuilder.setFromPosY(moveState.getFromPosY());
+            moveStateBuilder.setToPosX(moveState.getToPosX());
+            moveStateBuilder.setToPosY(moveState.getToPosY());
+            moveStateBuilder.setStartTime(moveState.getStartTime());
+
+            userBuilder.setMoveState(moveStateBuilder);
+
+        resultBuilder.addUserInfo(userBuilder);
         }
 
         GameMsgProtocol.WhoElseIsHereResult result = resultBuilder.build();
-
         ctx.writeAndFlush(result);
     }
 }
