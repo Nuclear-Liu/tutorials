@@ -12,3 +12,10 @@ git config --global core.longpaths true
 git config user.name "<user-name>"
 git config user.email "<user-email>"
 ```
+
+## 合并提交请求
+
+```shell
+# 合并到 HEAD 的最近 <number> 个请求
+git rebase -i HEAD~<number>
+```
