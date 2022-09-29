@@ -36,7 +36,7 @@ public final class UserManager {
      *
      * @param userId user's id
      */
-    static public void removeUserById(int userId) {
+    static public void removeUser(int userId) {
         USER_MAP.remove(userId);
     }
 
@@ -45,7 +45,7 @@ public final class UserManager {
     }
 
     /**
-     * 根据 userId 获取用户.
+     * By userId get user.
      * @param userId 用户id
      * @return 用户对象
      */

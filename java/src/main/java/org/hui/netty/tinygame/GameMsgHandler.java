@@ -57,7 +57,7 @@ public class GameMsgHandler extends SimpleChannelInboundHandler<Object> {
         if (null == userId) {
             return;
         }
-        UserManager.removeUserById(userId);
+        UserManager.removeUser(userId);
 
         GameMsgProtocol.UserQuitResult.Builder resultBuilder = GameMsgProtocol.UserQuitResult.newBuilder();
         resultBuilder.setQuitUserId(userId);

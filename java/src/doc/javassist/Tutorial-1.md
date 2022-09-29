@@ -9,9 +9,17 @@ Javassist is a class library for dealing with Java bytecode.
 Java bytecode is stored in a binary file called a class file.
 Each class file contains one Java class or interface.
 
+Javassist 是一个用于处理 Java 字节码的类库。
+Java 字节码存储在称为类文件的二进制文档中。
+每个类文件都包含一个 Java 类或接口。
+
 The class `Javassist.CtClass` is an abstract representation of a class file.  
 A `CtClass` (compile-time class) object is a handle for dealing with a class file.  
 The following program is a very simple example:
+
+`Javassist.CtClass` 类是类文档的抽象表示形式。
+`CtClass` (compile-time class) 对象是用于处理类文档的句柄。
+以下进程是一个非常简单的示例：
 
 ```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
@@ -24,94 +32,102 @@ This program first obtains a `ClassPool` object, which controls bytecode modific
 The `ClassPool` object is a container of `CtClass` object representing a class file.  
 It reads a class file on demand for constructing a `CtClass` object and records the constructed object for responding later accesses.
 
-To modify the definition of a class, the users must first obtain a reference to a <code>CtClass</code> object representing that class from a <code>ClassPool</code> object.
-<code>get()</code> in <code>ClassPool</code> is used for this purpose.
-In the case of the program shown above, the
-<code>CtClass</code> object representing a class
-<code>test.Rectangle</code> is obtained from the
-<code>ClassPool</code> object and it is assigned to a variable
-<code>cc</code>.
-The <code>ClassPool</code> object returned by <code>getDefault()</code>
-searches the default system search path.
+进程首先获取一个 `ClassPool` 对象，它用 Javassist 控制字节码修改。
+`ClassPool` 对象是表示类文档的 `CtClass` 对象的容器。
+它按需读取类文档以构造 `CtClass` 对象，并记录构造的对象以响应以后的访问。
 
-<p>From the implementation viewpoint, <code>ClassPool</code> is a hash
-table of <code>CtClass</code> objects, which uses the class names as
-keys.  <code>get()</code> in <code>ClassPool</code> searches this hash
-table to find a <code>CtClass</code> object associated with the
-specified key.  If such a <code>CtClass</code> object is not found,
-<code>get()</code> reads a class file to construct a new
-<code>CtClass</code> object, which is recorded in the hash table and
-then returned as the resulting value of <code>get()</code>.
+To modify the definition of a class, the users must first obtain a reference to a `CtClass` object representing that class from a `ClassPool` object.
+`get()` in `ClassPool` is used for this purpose.
+In the case of the program shown above, the `CtClass` object representing a class `test.Rectangle` is obtained from the `ClassPool` object and it is assigned to a variable `cc`.
+The `ClassPool` object returned by `getDefault()` searches the default system search path.
 
-<p>The <code>CtClass</code> object obtained from a <code>ClassPool</code>
-object can be modified
-(<a href="Tutorial-2">details of how to modify
-a <code>CtClass</code></a> will be presented later).
-In the example above, it is modified so that the superclass of
-<code>test.Rectangle</code> is changed into a class
-<code>test.Point</code>.  This change is reflected on the original
-class file when <code>writeFile()</code> in <code>CtClass()</code> is
-finally called.
+要修改类的定义，用户必须首先从 `ClassPool` 对象中获取对表示该类的 `CtClass` 对象的引用。
+`ClassPool` 中的 `get()` 用于此目的。
+在上面显示的进程的情况下，代表类 `test.Rectangle` 的 `CtClass` 对象是从 `ClassPool` 对象中获取的，并分配给变量 `cc` 。
+`getDefault()` 返回的 `ClassPool` 对象搜索默认的系统搜索路径。
 
-<p><code>writeFile()</code> translates the <code>CtClass</code> object
-into a class file and writes it on a local disk.
-Javassist also provides a method for directly obtaining the
-modified bytecode.  To obtain the bytecode, call <code>toBytecode()</code>:
+From the implementation viewpoint, `ClassPool` is a hash table of `CtClass` objects, which uses the class names as keys.  
+`get()` in `ClassPool` searches this hash table to find a `CtClass` object associated with the specified key.  
+If such a `CtClass` object is not found, `get()` reads a class file to construct a new `CtClass` object, which is recorded in the hash table and then returned as the resulting value of `get()`.
 
-```java
+从实现的角度来看， `ClassPool` 是 `CtClass` 对象的哈希表，它使用类名作为键。
+`ClassPool` 中的 `get()` 搜索此哈希表以查找与指定键关联的 `CtClass` 对象。
+如果找不到 `CtClass` 对象，则 `get()` 将读取一个类文档来构造一个新的 `CtClass` 对象，该对象记录的哈希表中，然后作为 `get()` 的结果值返回。
+
+The `CtClass` object obtained from a `ClassPool` object can be modified ([details of how to modify a `CtClass`](./Tutorial-2.md) will be presented later).
+In the example above, it is modified so that the superclass of `test.Rectangle` is changed into a class `test.Point`.  
+This change is reflected on the original class file when `writeFile()` in `CtClass` is finally called.
+
+从 `ClassPool` 对象中获取的 `CtClass` 对象可以被修改（稍后将提供[如何修改 `CtClass` 的详细信息](./Tutorial-2.md)）。
+在上面的示例中，对其进行了修改，以便将 `test.Rectangle` 的超类更改为类 `test.Point` 。
+当最终调用 `CtClass` 中的 `writeFile()` 时，此更改将反应在原始类文件中。
+
+`writeFile()` translates the `CtClass` object into a class file and writes it on a local disk.
+Javassist also provides a method for directly obtaining the modified bytecode.  
+To obtain the bytecode, call `toBytecode()`:
+
+`writeFile()` 将 `CtClass` 对象转换为类文档，并将其写入本地磁盘。
+Javassist 还提供了一种直接获取修改的字节码的方法。
+要获取字节码，请调用 `toBytecode()` ：
+
+```jshelllanguage
 byte[] b = cc.toBytecode();
 ```
 
-<p>You can directly load the <code>CtClass</code> as well:
+You can directly load the `CtClass` as well:
 
-```java
+你也可以直接加载 `CtClass` ：
+
+```jshelllanguage
 Class clazz = cc.toClass();
 ```
 
-<p><code>toClass()</code> requests the context class loader for the current
-thread to load the class file represented by the <code>CtClass</code>.  It
-returns a <code>java.lang.Class</code> object representing the loaded class.
-For more details, please see <a href="#toclass">this section below</a>.
+`toClass()` requests the context class loader for the current thread to load the class file represented by the `CtClass`.  
+It returns a `java.lang.Class` object representing the loaded class.
+For more details, please see [this section below](./Tutorial-1.md#3.1%20).
 
-<a name="def">
-<h4>Defining a new class</h4>
+`toClass()` 请求当前线程的上下文类加载器，以载入由 `CtClass` 表示的类文件。
+它返回要给表示已加载类的 `java.lang.Class` 对象。
+有关更多细节，请参阅[下面的此部分]()
 
-<p>To define a new class from scratch, <code>makeClass()</code>
-must be called on a <code>ClassPool</code>.
+#### Defining a new class
 
-```java
+To define a new class from scratch, `makeClass()` must be called on a `ClassPool`.
+
+要从头开始定义新类，必须在 `ClassPool` 上调用 `makeClass()` 。
+
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 CtClass cc = pool.makeClass("Point");
 ```
 
-<p>This program defines a class <code>Point</code>
-including no members.
-Member methods of <code>Point</code> can be created with
-factory methods declared in <code>CtNewMethod</code> and
-appended to <code>Point</code> with <code>addMethod()</code>
-in <code>CtClass</code>.
+This program defines a class `Point` including no members.
+Member methods of `Point` can be created with factory methods declared in `CtNewMethod` and appended to `Point` with `addMethod()` in `CtClass`.
 
-<p><code>makeClass()</code> cannot create a new interface;
-<code>makeInterface()</code> in <code>ClassPool</code> can do.
-Member methods in an interface can be created with
-<code>abstractMethod()</code> in <code>CtNewMethod</code>.
+该程序定义一个不含任何成员的类 `Point` 。
+`Point` 的成员方法可以使用 `CtNewMethod` 中声明的工厂方法创建，并在 `CtClass` 中使用 `addMethod()` 附加到 `Point` 。
+
+`makeClass()` cannot create a new interface;
+`makeInterface()` in `ClassPool` can do.
+Member methods in an interface can be created with `abstractMethod()` in `CtNewMethod`.
 Note that an interface method is an abstract method.
 
-<a name="frozenclasses">
-<h4>Frozen classes</h4></a>
+`makeClass()` 不能创建一个新的接口；
+`ClassPool` 中的 `makeInterface()` 可以。
+使用 `CtNewMethod` 的 `abstractMethod()` 可以创建接口中的成员方法。
+注意，一个接口方法是一个抽象方法。
 
-<p>If a <code>CtClass</code> object is converted into a class file by
-<code>writeFile()</code>, <code>toClass()</code>, or
-<code>toBytecode()</code>, Javassist freezes that <code>CtClass</code>
-object.  Further modifications of that <code>CtClass</code> object are
-not permitted.  This is for warning the developers when they attempt
-to modify a class file that has been already loaded since the JVM does
-not allow reloading a class.
 
-<p>A frozen <code>CtClass</code> can be defrost so that
-modifications of the class definition will be permitted.  For example,
+#### Frozen classes
 
-```java
+If a `CtClass` object is converted into a class file by `writeFile()`, `toClass()`, or `toBytecode()`, Javassist freezes that `CtClass` object.  
+Further modifications of that `CtClass` object are not permitted.  
+This is for warning the developers when they attempt to modify a class file that has been already loaded since the JVM does not allow reloading a class.
+
+A frozen `CtClass` can be defrost so that modifications of the class definition will be permitted.  
+For example,
+
+```jshelllanguage
 CtClasss cc = ...;
     :
 cc.writeFile();
@@ -119,28 +135,18 @@ cc.defrost();
 cc.setSuperclass(...);    // OK since the class is not frozen.
 ```
 
-<p>After <code>defrost()</code> is called, the <code>CtClass</code>
-object can be modified again.
+After `defrost()` is called, the `CtClass` object can be modified again.
 
-<p>If <code>ClassPool.doPruning</code> is set to <code>true</code>,
-then Javassist prunes the data structure contained
-in a <code>CtClass</code> object
-when Javassist freezes that object.
-To reduce memory
-consumption, pruning discards unnecessary attributes
-(<code>attribute_info</code> structures) in that object.
-For example, <code>Code_attribute</code> structures (method bodies)
-are discarded.
-Thus, after a
-<code>CtClass</code> object is pruned, the bytecode of a method is not
-accessible except method names, signatures, and annotations.
-The pruned <code>CtClass</code> object cannot be defrost again.
-The default value of <code>ClassPool.doPruning</code> is <code>false</code>.
+If `ClassPool.doPruning` is set to `true`, then Javassist prunes the data structure contained in a `CtClass` object when Javassist freezes that object.
+To reduce memory consumption, pruning discards unnecessary attributes (`attribute_info` structures) in that object.
+For example, `Code_attribute` structures (method bodies) are discarded.
+Thus, after a `CtClass` object is pruned, the bytecode of a method is not accessible except method names, signatures, and annotations.
+The pruned `CtClass` object cannot be defrost again.
+The default value of `ClassPool.doPruning` is `false`.
 
-<p>To disallow pruning a particular <code>CtClass</code>,
-<code>stopPruning()</code> must be called on that object in advance:
+To disallow pruning a particular `CtClass`, `stopPruning()` must be called on that object in advance:
 
-```java
+```jshelllanguage
 CtClasss cc = ...;
 cc.stopPruning(true);
     :
@@ -148,57 +154,41 @@ cc.writeFile();    // convert to a class file.
 // cc is not pruned.
 ```
 
-<p>The <code>CtClass</code> object <code>cc</code> is not pruned.
-Thus it can be defrost after <code>writeFile()</code> is called.
+The `CtClass` object `cc` is not pruned.
+Thus it can be defrost after `writeFile()` is called.
 
-<ul><b>Note:</b>
-While debugging, you might want to temporarily stop pruning and freezing
-and write a modified class file to a disk drive.
-<code>debugWriteFile()</code> is a convenient method
-for that purpose.  It stops pruning, writes a class file, defrosts it,
-and turns pruning on again (if it was initially on).
-</ul>
+> **Note:**
+> 
+> While debugging, you might want to temporarily stop pruning and freezing and write a modified class file to a disk drive.
+> `debugWriteFile()` is a convenient method for that purpose.  
+> It stops pruning, writes a class file, defrosts it, and turns pruning on again (if it was initially on).
 
+#### Class search path
 
+The default `ClassPool` returned by a static method `ClassPool.getDefault()` searches the same path that the underlying JVM (Java virtual machine) has.
+If a program is running on a web application server such as JBoss and Tomcat, the `ClassPool` object may not be able to find user classes since such a web application server uses multiple class loaders as well as the system class loader.  
+In that case, an additional class path must be registered to the `ClassPool`.  
+Suppose that `pool` refers to a ClassPool object:
 
-<h4>Class search path</h4>
-
-<p>The default <code>ClassPool</code> returned
-by a static method <code>ClassPool.getDefault()</code>
-searches the same path that the underlying JVM (Java virtual machine) has.
-<em>If a program is running on a web application server such as JBoss and Tomcat,
-the <code>ClassPool</code> object may not be able to find user classes</em>
-since such a web application server uses multiple class loaders as well as
-the system class loader.  In that case, an additional class path must be
-registered to the <code>ClassPool</code>.  Suppose that <code>pool</code>
-refers to a <code>ClassPool</code> object:
-
-```java
+```jshelllanguage
 pool.insertClassPath(new ClassClassPath(this.getClass()));
 ```
 
-<p>
-This statement registers the class path that was used for loading
-the class of the object that <code>this</code> refers to.
-You can use any <code>Class</code> object as an argument instead of
-<code>this.getClass()</code>.  The class path used for loading the
-class represented by that <code>Class</code> object is registered.
+This statement registers the class path that was used for loading the class of the object that `this` refers to.
+You can use any `Class` object as an argument instead of `this.getClass()`.  
+The class path used for loading the class represented by that `Class` object is registered.
 
-<p>
 You can register a directory name as the class search path.
-For example, the following code adds a directory
-<code>/usr/local/javalib</code>
-to the search path:
+For example, the following code adds a directory `/usr/local/javalib` to the search path:
 
-```java
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 pool.insertClassPath("/usr/local/javalib");
 ```
 
-<p>The search path that the users can add is not only a directory but also
-a URL:
+The search path that the users can add is not only a directory but also a URL:
 
-```java
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 ClassPath cp = new URLClassPath("www.javassist.org", 80, "/java/", "org.javassist.");
 pool.insertClassPath(cp);

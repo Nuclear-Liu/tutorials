@@ -14,6 +14,9 @@ public class UserEntryCmdHandler implements CmdHandler<GameMsgProtocol.UserEntry
 
     @Override
     public void handle(ChannelHandlerContext ctx, GameMsgProtocol.UserEntryCmd msg) {
+        if (null == ctx || null == msg) {
+            return;
+        }
         // 从指令对象中获取 userId 与 heroAvatar
         GameMsgProtocol.UserEntryCmd cmd = msg;
         int userId = cmd.getUserId();
@@ -23,6 +26,7 @@ public class UserEntryCmdHandler implements CmdHandler<GameMsgProtocol.UserEntry
         User user = new User();
         user.setUserId(userId);
         user.setHeroAvatar(heroAvatar);
+        user.setCurrHp(100);
         UserManager.addUser(user);
 
         // 将 userId 附着到 Channel

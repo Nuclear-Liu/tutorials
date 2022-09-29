@@ -30,6 +30,7 @@ public class UserMoveToCmdHandler implements CmdHandler<GameMsgProtocol.UserMove
             return;
         }
 
+        // 获取移动状态
         MoveState moveState = movedUser.getMoveState();
         moveState.setFromPosX(msg.getMoveFromPosX());
         moveState.setFromPosY(msg.getMoveFromPosY());

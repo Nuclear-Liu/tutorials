@@ -1,7 +1,6 @@
 package org.hui.netty.tinygame.cmdhandler;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.hui.netty.tinygame.GameMsgEncoder;
 import org.hui.netty.tinygame.model.MoveState;
 import org.hui.netty.tinygame.model.User;
 import org.hui.netty.tinygame.model.UserManager;
@@ -20,10 +19,12 @@ public class WhoElseIsHereCmdHandler implements CmdHandler<GameMsgProtocol.WhoEl
             if (null == user) {
                 continue;
             }
+
             GameMsgProtocol.WhoElseIsHereResult.UserInfo.Builder userBuilder = GameMsgProtocol.WhoElseIsHereResult.UserInfo.newBuilder();
             userBuilder.setUserId(user.getUserId());
             userBuilder.setHeroAvatar(user.getHeroAvatar());
 
+            // 获取移动用户状态
             MoveState moveState = user.getMoveState();
             GameMsgProtocol.WhoElseIsHereResult.UserInfo.MoveState.Builder
                     moveStateBuilder = GameMsgProtocol.WhoElseIsHereResult.UserInfo.MoveState.newBuilder();
@@ -32,10 +33,10 @@ public class WhoElseIsHereCmdHandler implements CmdHandler<GameMsgProtocol.WhoEl
             moveStateBuilder.setToPosX(moveState.getToPosX());
             moveStateBuilder.setToPosY(moveState.getToPosY());
             moveStateBuilder.setStartTime(moveState.getStartTime());
-
+            // 将移动状态设置到用户返回信息
             userBuilder.setMoveState(moveStateBuilder);
 
-        resultBuilder.addUserInfo(userBuilder);
+            resultBuilder.addUserInfo(userBuilder);
         }
 
         GameMsgProtocol.WhoElseIsHereResult result = resultBuilder.build();

@@ -5,6 +5,11 @@ public class User {
     private String heroAvatar;
 
     /**
+     * 当前血量
+     */
+    private int currHp;
+
+    /**
      * 移动状态
      */
     private final MoveState moveState = new MoveState();
@@ -23,6 +28,14 @@ public class User {
 
     public void setHeroAvatar(String heroAvatar) {
         this.heroAvatar = heroAvatar;
+    }
+
+    public int getCurrHp() {
+        return currHp;
+    }
+
+    public void setCurrHp(int currHp) {
+        this.currHp = currHp;
     }
 
     public MoveState getMoveState() {
