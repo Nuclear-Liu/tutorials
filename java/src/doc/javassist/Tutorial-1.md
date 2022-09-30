@@ -194,21 +194,19 @@ ClassPath cp = new URLClassPath("www.javassist.org", 80, "/java/", "org.javassis
 pool.insertClassPath(cp);
 ```
 
-<p>This program adds "http://www.javassist.org:80/java/" to the class search
-path.  This URL is used only for searching classes belonging to a
-package <code>org.javassist</code>.  For example, to load a class
-<code>org.javassist.test.Main</code>, its class file will be obtained from:
+This program adds "http://www.javassist.org:80/java/" to the class search path.  
+This URL is used only for searching classes belonging to a package `org.javassist`.  
+For example, to load a class `org.javassist.test.Main`, its class file will be obtained from:
 
 ```text
 http://www.javassist.org:80/java/org/javassist/test/Main.class
 ```
 
-<p>Furthermore, you can directly give a byte array
-to a <code>ClassPool</code> object
-and construct a <code>CtClass</code> object from that array.  To do this,
-use <code>ByteArrayClassPath</code>.  For example,
+Furthermore, you can directly give a byte array to a `ClassPool` object and construct a `CtClass` object from that array.  
+To do this, use `ByteArrayClassPath`.  
+For example,
 
-```java
+```jshelllanguage
 ClassPool cp = ClassPool.getDefault();
 byte[] b = <em>a byte array</em>;
 String name = <em>class name</em>;
@@ -216,187 +214,125 @@ cp.insertClassPath(new ByteArrayClassPath(name, b));
 CtClass cc = cp.get(name);
 ```
 
-<p>The obtained <code>CtClass</code> object represents
-a class defined by the class file specified by <code>b</code>.
-The <code>ClassPool</code> reads a class file from the given
-<code>ByteArrayClassPath</code> if <code>get()</code> is called
-and the class name given to <code>get()</code> is equal to
-one specified by <code>name</code>.
+The obtained `CtClass` object represents a class defined by the class file specified by `b`.
+The `ClassPool` reads a class file from the given `ByteArrayClassPath` if `get()` is called and the class name given to `get()` is equal to one specified by `name`.
 
-<p>If you do not know the fully-qualified name of the class, then you
-can use <code>makeClass()</code> in <code>ClassPool</code>:
+If you do not know the fully-qualified name of the class, then you can use `makeClass()` in `ClassPool`:
 
-```java
+```jshelllanguage
 ClassPool cp = ClassPool.getDefault();
 InputStream ins = <em>an input stream for reading a class file</em>;
 CtClass cc = cp.makeClass(ins);
 ```
 
-<p><code>makeClass()</code> returns the <code>CtClass</code> object
-constructed from the given input stream.  You can use
-<code>makeClass()</code> for eagerly feeding class files to 
-the <code>ClassPool</code> object.  This might improve performance
-if the search path includes a large jar file.  Since 
-a <code>ClassPool</code> object reads a class file on demand,
-it might repeatedly search the whole jar file for every class file.
-<code>makeClass()</code> can be used for optimizing this search.
-The <code>CtClass</code> constructed by <code>makeClass()</code>
-is kept in the <code>ClassPool</code> object and the class file is never
-read again.
+`makeClass()` returns the `CtClass` object constructed from the given input stream.  
+You can use `makeClass()` for eagerly feeding class files to the `ClassPool` object.  
+This might improve performance if the search path includes a large jar file.  
+Since a `ClassPool` object reads a class file on demand, it might repeatedly search the whole jar file for every class file.
+`makeClass()` can be used for optimizing this search.
+The `CtClass` constructed by `makeClass()` is kept in the `ClassPool` object and the class file is never read again.
 
-<p>The users can extend the class search path.  They can define a new
-class implementing <code>ClassPath</code> interface and give an
-instance of that class to <code>insertClassPath()</code> in
-<code>ClassPool</code>.  This allows a non-standard resource to be
-included in the search path.
+The users can extend the class search path.  
+They can define a new class implementing `ClassPath` interface and give an instance of that class to `insertClassPath()` in `ClassPool`.  
+This allows a non-standard resource to be included in the search path.
 
-<p><br>
+----
 
-<a name="pool">
-<h2>2. ClassPool</h2>
+## 2. ClassPool
 
-<p>
-A <code>ClassPool</code> object is a container of <code>CtClass</code>
-objects.  Once a <code>CtClass</code> object is created, it is
-recorded in a <code>ClassPool</code> for ever.  This is because a
-compiler may need to access the <code>CtClass</code> object later when
-it compiles source code that refers to the class represented by that
-<code>CtClass</code>.
+A `ClassPool` object is a container of `CtClass` objects.  
+Once a `CtClass` object is created, it is recorded in a `ClassPool` for ever.  
+This is because a compiler may need to access the `CtClass` object later when it compiles source code that refers to the class represented by that `CtClass`.
 
-<p>
-For example, suppose that a new method <code>getter()</code> is added
-to a <code>CtClass</code> object representing <code>Point</code>
-class.  Later, the program attempts to compile source code including a
-method call to <code>getter()</code> in <code>Point</code> and use the
-compiled code as the body of a method, which will be added to another
-class <code>Line</code>.  If the <code>CtClass</code> object representing
-<code>Point</code> is lost, the compiler cannot compile the method call
-to <code>getter()</code>.  Note that the original class definition does
-not include <code>getter()</code>.  Therefore, to correctly compile
-such a method call, the <code>ClassPool</code>
-must contain all the instances of <code>CtClass</code> all the time of
-program execution.
+For example, suppose that a new method `getter()` is added to a `CtClass` object representing `Point` class.  
+Later, the program attempts to compile source code including a method call to `getter()` in `Point` and use the compiled code as the body of a method, which will be added to another class `Line`.  
+If the `CtClass` object representing `Point` is lost, the compiler cannot compile the method call to `getter()`.  
+Note that the original class definition does not include `getter()`.  
+Therefore, to correctly compile such a method call, the `ClassPool` must contain all the instances of `CtClass` all the time of program execution.
 
-<a name="avoidmemory">
-<h4>Avoid out of memory</h4>
-</a>
+#### Avoid out of memory
 
-<p>
-This specification of <code>ClassPool</code> may cause huge memory
-consumption if the number of <code>CtClass</code> objects becomes
-amazingly large (this rarely happens since Javassist tries to reduce
-memory consumption in <a href="#frozenclasses">various ways</a>).
-To avoid this problem, you
-can explicitly remove an unnecessary <code>CtClass</code> object from
-the <code>ClassPool</code>.  If you call <code>detach()</code> on a
-<code>CtClass</code> object, then that <code>CtClass</code> object is
-removed from the <code>ClassPool</code>.  For example,
+This specification of `ClassPool` may cause huge memory consumption if the number of `CtClass` objects becomes amazingly large (this rarely happens since Javassist tries to reduce memory consumption in [various ways]()).
+To avoid this problem, you can explicitly remove an unnecessary `CtClass` object from the `ClassPool`.  
+If you call `detach()` on a `CtClass` object, then that `CtClass` object is removed from the `ClassPool`.  
+For example,
 
-```java
+```jshelllanguage
 CtClass cc = ... ;
 cc.writeFile();
 cc.detach();
 ```
 
-<p>You must not call any method on that
-<code>CtClass</code> object after <code>detach()</code> is called.
-However, you can call <code>get()</code> on <code>ClassPool</code>
-to make a new instance of <code>CtClass</code> representing
-the same class.  If you call <code>get()</code>, the <code>ClassPool</code>
-reads a class file again and newly creates a <code>CtClass</code>
-object, which is returned by <code>get()</code>.
+You must not call any method on that `CtClass` object after `detach()` is called.
+However, you can call `get()` on `ClassPool` to make a new instance of `CtClass` representing the same class.  
+If you call `get()`, the `ClassPool` reads a class file again and newly creates a `CtClass` object, which is returned by `get()`.
 
-<p>
-Another idea is to occasionally replace a <code>ClassPool</code> with
-a new one and discard the old one.  If an old <code>ClassPool</code>
-is garbage collected, the <code>CtClass</code> objects included in
-that <code>ClassPool</code> are also garbage collected.
-To create a new instance of <code>ClassPool</code>, execute the following
-code snippet:
+Another idea is to occasionally replace a `ClassPool` with a new one and discard the old one.  
+If an old `ClassPool` is garbage collected, the `CtClass` objects included in that `ClassPool` are also garbage collected.
+To create a new instance of `ClassPool`, execute the following code snippet:
 
-```java
+```jshelllanguage
 ClassPool cp = new ClassPool(true);
 // if needed, append an extra search path by appendClassPath()
 ```
 
-<p>This creates a <code>ClassPool</code> object that behaves as the
-default <code>ClassPool</code> returned by
-<code>ClassPool.getDefault()</code> does.
-Note that <code>ClassPool.getDefault()</code> is a singleton factory method
-provided for convenience.  It creates a <code>ClassPool</code> object in
-the same way shown above although it keeps a single instance of
-<code>ClassPool</code> and reuses it.
-A <code>ClassPool</code> object returned by <code>getDefault()</code>
-does not have a special role.  <code>getDefault()</code> is a convenience
-method.
+This creates a `ClassPool` object that behaves as the default `ClassPool` returned by `ClassPool.getDefault()` does.
+Note that `ClassPool.getDefault()` is a singleton factory method provided for convenience.  
+It creates a `ClassPool` object in the same way shown above although it keeps a single instance of `ClassPool` and reuses it.
+A `ClassPool` object returned by `getDefault()` does not have a special role.  
+`getDefault()` is a convenience method.
 
-<p>Note that <code>new ClassPool(true)</code> is a convenient constructor,
-which constructs a <code>ClassPool</code> object and appends the system
-search path to it.  Calling that constructor is
-equivalent to the following code:
+Note that `new ClassPool(true)` is a convenient constructor, which constructs a `ClassPool` object and appends the system search path to it.  
+Calling that constructor is equivalent to the following code:
 
-```java
+```jshelllanguage
 ClassPool cp = new ClassPool();
 cp.appendSystemPath();  // or append another path by appendClassPath()
 ```
 
-<h4>Cascaded ClassPools</h4>
+#### Cascaded ClassPools
 
-<p>
-<em>If a program is running on a web application server,</em>
-creating multiple instances of <code>ClassPool</code> might be necessary;
-an instance of <code>ClassPool</code> should be created
-for each class loader (i.e. container).
-The program should create a <code>ClassPool</code> object by not calling
-<code>getDefault()</code> but a constructor of <code>ClassPool</code>.
+_If a program is running on a web application server, creating multiple instances of `ClassPool` might be necessary;
+an instance of `ClassPool` should be created for each class loader (i.e. container).
+The program should create a `ClassPool` object by not calling `getDefault()` but a constructor of `ClassPool`.
 
-<p>
-Multiple <code>ClassPool</code> objects can be cascaded like
-<code>java.lang.ClassLoader</code>.  For example,
+Multiple `ClassPool` objects can be cascaded like `java.lang.ClassLoader`.  
+For example,
 
-```java
+```jshelllanguage
 ClassPool parent = ClassPool.getDefault();
 ClassPool child = new ClassPool(parent);
 child.insertClassPath("./classes");
 ```
 
-<p>
-If <code>child.get()</code> is called, the child <code>ClassPool</code>
-first delegates to the parent <code>ClassPool</code>.  If the parent
-<code>ClassPool</code> fails to find a class file, then the child
-<code>ClassPool</code> attempts to find a class file
-under the <code>./classes</code> directory.
+If `child.get()` is called, the child `ClassPool` first delegates to the parent `ClassPool`.  
+If the parent `ClassPool` fails to find a class file, then the child `ClassPool` attempts to find a class file under the `./classes` directory.
 
-<p>
-If <code>child.childFirstLookup</code> is true, the child
-<code>ClassPool</code> attempts to find a class file before delegating
-to the parent <code>ClassPool</code>.  For example,
+If `child.childFirstLookup` is true, the child `ClassPool` attempts to find a class file before delegating to the parent `ClassPool`.  
+For example,
 
-```java
+```jshelllanguage
 ClassPool parent = ClassPool.getDefault();
 ClassPool child = new ClassPool(parent);
 child.appendSystemPath();         // the same class path as the default one.
 child.childFirstLookup = true;    // changes the behavior of the child.
 ```
 
-<h4>Changing a class name for defining a new class</h4>
+#### Changing a class name for defining a new class
 
-<p>A new class can be defined as a copy of an existing class.
+A new class can be defined as a copy of an existing class.
 The program below does that:
 
-```java
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 CtClass cc = pool.get("Point");
 cc.setName("Pair");
 ```
 
-<p>This program first obtains the <code>CtClass</code> object for
-class <code>Point</code>.  Then it calls <code>setName()</code> to
-give a new name <code>Pair</code> to that <code>CtClass</code> object.
-After this call, all occurrences of the class name in the class
-definition represented by that <code>CtClass</code> object are changed
-from <code>Point</code> to <code>Pair</code>.  The other part of the
-class definition does not change.
+This program first obtains the `CtClass` object for class `Point`.  
+Then it calls `setName()` to give a new name `Pair` to that `CtClass` object.
+After this call, all occurrences of the class name in the class definition represented by that `CtClass` object are changed from `Point` to `Pair`.  
+The other part of the class definition does not change.
 
 <p>Note that <code>setName()</code> in <code>CtClass</code> changes a
 record in the <code>ClassPool</code> object.  From the implementation
