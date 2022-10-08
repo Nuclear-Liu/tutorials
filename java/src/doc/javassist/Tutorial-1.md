@@ -334,26 +334,17 @@ Then it calls `setName()` to give a new name `Pair` to that `CtClass` object.
 After this call, all occurrences of the class name in the class definition represented by that `CtClass` object are changed from `Point` to `Pair`.  
 The other part of the class definition does not change.
 
-<p>Note that <code>setName()</code> in <code>CtClass</code> changes a
-record in the <code>ClassPool</code> object.  From the implementation
-viewpoint, a <code>ClassPool</code> object is a hash table of
-<code>CtClass</code> objects.  <code>setName()</code> changes
-the key associated to the <code>CtClass</code> object in the hash
-table.  The key is changed from the original class name to the new
-class name.
+Note that `setName()` in `CtClass` changes a record in the `ClassPool` object.  
+From the implementation viewpoint, a `ClassPool` object is a hash table of `CtClass` objects.  
+`setName()` changes the key associated to the `CtClass` object in the hash table.  
+The key is changed from the original class name to the new class name.
 
-<p>Therefore, if <code>get("Point")</code> is later called on the
-<code>ClassPool</code> object again, then it never returns the
-<code>CtClass</code> object that the variable <code>cc</code> refers to.
-The <code>ClassPool</code> object reads
-a class file
-<code>Point.class</code> again and it constructs a new <code>CtClass</code>
-object for class <code>Point</code>.
-This is because the <code>CtClass</code> object associated with the name
-<code>Point</code> does not exist any more.
+Therefore, if `get("Point")` is later called on the `ClassPool` object again, then it never returns the `CtClass` object that the variable `cc` refers to.
+The `ClassPool` object reads a class file `Point.class` again and it constructs a new `CtClass` object for class `Point`.
+This is because the `CtClass` object associated with the name `Point` does not exist any more.
 See the followings:
 
-```java
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 CtClass cc = pool.get("Point");
 CtClass cc1 = pool.get("Point");   // cc1 is identical to cc.
@@ -362,47 +353,29 @@ CtClass cc2 = pool.get("Pair");    // cc2 is identical to cc.
 CtClass cc3 = pool.get("Point");   // cc3 is not identical to cc.
 ```
 
-<p><code>cc1</code> and <code>cc2</code> refer to the same instance of
-<code>CtClass</code> that <code>cc</code> does whereas
-<code>cc3</code> does not.  Note that, after
-<code>cc.setName("Pair")</code> is executed, the <code>CtClass</code>
-object that <code>cc</code> and <code>cc1</code> refer to represents
-the <code>Pair</code> class.
+`cc1` and `cc2` refer to the same instance of `CtClass` that `cc` does whereas `cc3` does not.  
+Note that, after `cc.setName("Pair")` is executed, the `CtClass` object that `cc` and `cc1` refer to represents the `Pair` class.
 
-<p>The <code>ClassPool</code> object is used to maintain one-to-one
-mapping between classes and <code>CtClass</code> objects.  Javassist
-never allows two distinct <code>CtClass</code> objects to represent
-the same class unless two independent <code>ClassPool</code> are created.
-This is a significant feature for consistent program
-transformation.
+The `ClassPool` object is used to maintain one-to-one mapping between classes and `CtClass` objects. 
+Javassist never allows two distinct `CtClass` objects to represent the same class unless two independent `ClassPool` are created.
+This is a significant feature for consistent program transformation.
 
-<p>To create another copy of the default instance of
-<code>ClassPool</code>, which is returned by
-<code>ClassPool.getDefault()</code>, execute the following code
-snippet (this code was already <a href="#avoidmemory">shown above</a>):
+To create another copy of the default instance of `ClassPool`, which is returned by `ClassPool.getDefault()`, execute the following code snippet (this code was already [shown above]()):
 
-```java
+```jshelllanguage
 ClassPool cp = new ClassPool(true);
 ```
 
-<p>If you have two <code>ClassPool</code> objects, then you can
-obtain, from each <code>ClassPool</code>, a distinct
-<code>CtClass</code> object representing the same class file.  You can
-differently modify these <code>CtClass</code> objects to generate
-different versions of the class.
+If you have two `ClassPool` objects, then you can obtain, from each `ClassPool`, a distinct `CtClass` object representing the same class file.  
+You can differently modify these `CtClass` objects to generate different versions of the class.
 
-<h4>Renaming a frozen class for defining a new class</h4>
+#### Renaming a frozen class for defining a new class
 
-<p>Once a <code>CtClass</code> object is converted into a class file
-by <code>writeFile()</code> or <code>toBytecode()</code>, Javassist
-rejects further modifications of that <code>CtClass</code> object.
-Hence, after the <code>CtClass</code> object representing <code>Point</code>
-class is converted into a class file, you cannot define <code>Pair</code>
-class as a copy of <code>Point</code> since executing <code>setName()</code>
-on <code>Point</code> is rejected.
+Once a `CtClass` object is converted into a class file by `writeFile()` or `toBytecode()`, Javassist rejects further modifications of that `CtClass` object.
+Hence, after the `CtClass` object representing `Point` class is converted into a class file, you cannot define <code>`Pair`</code> class as a copy of <code>`Point`</code> since executing <code>`setName()`</code> on <code>`Point`</code> is rejected.
 The following code snippet is wrong:
 
-```java
+```jshelllanguage
 ClassPool pool = ClassPool.getDefault();
 CtClass cc = pool.get("Point");
 cc.writeFile();
