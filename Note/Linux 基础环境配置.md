@@ -150,6 +150,8 @@ systemctl list-unit-files | grep ntpd
 
 ### rpm 方式
 
+> 会自动创建 `/usr/java/default` 链接，一些应用依赖于此路径下的链接
+
 #### 上传文件组件：
 ```shell
 yum install lrzsz -y
@@ -183,5 +185,28 @@ source /etc/profile
 或者：
 ```shell
 . /etc/profile
+```
+
+## SSH 免密登陆
+
+验证是否需要密码（如果需要密码说明并没有实现 ssh 免密登录，同时会自动生成用户目录下的 `.ssh` 目录）：
+```shell
+ssh localhost
+```
+
+被登录主机生成 ssh 密钥对：
+```shell
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+```
+
+分发公钥到免密主机：`scp`
+
+免密主机将公钥放置到 `~/.ssh/authorized_keys` 文件中
+```ssh
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+```shell
+chmod 0600 ~/.ssh/authorized_keys
 ```
 
