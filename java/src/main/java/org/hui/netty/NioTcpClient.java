@@ -32,10 +32,11 @@ public class NioTcpClient {
                     @Override
                     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
                         LOGGER.info("Received data");
+                        ctx.writeAndFlush(Unpooled.copiedBuffer("hello",StandardCharsets.UTF_8));
                     }
                 });
-        // ChannelFuture future = bootstrap.connect(new InetSocketAddress("127.0.0.1", 8080));
-        ChannelFuture future = bootstrap.connect(new InetSocketAddress("www.manning.com", 80));
+        ChannelFuture future = bootstrap.connect(new InetSocketAddress("127.0.0.1", 8080));
+        // ChannelFuture future = bootstrap.connect(new InetSocketAddress("www.manning.com", 80));
         future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {

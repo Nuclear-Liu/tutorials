@@ -8,16 +8,16 @@ import org.junit.jupiter.api.Test;
  */
 public class RectangleTest {
 
-    @Test
-    public void testRecord() {
-        Rectangle rectangle = new Rectangle(2, 3);
-        System.out.println(rectangle.length());
-        System.out.println(rectangle.goldenRation);
-    }
-
-    @Test
-    public void testInnerRecord() {
-        Rectangle rectangle = new Rectangle(3, 3);
-    }
+    // @Test
+    // public void testRecord() {
+    //     Rectangle rectangle = new Rectangle(2, 3);
+    //     System.out.println(rectangle.length());
+    //     System.out.println(rectangle.goldenRation);
+    // }
+    //
+    // @Test
+    // public void testInnerRecord() {
+    //     Rectangle rectangle = new Rectangle(3, 3);
+    // }
 
 }
