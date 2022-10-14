@@ -189,6 +189,8 @@ source /etc/profile
 
 ## SSH 免密登陆
 
+> 公钥给谁，就可以免密登录谁。
+
 验证是否需要密码（如果需要密码说明并没有实现 ssh 免密登录，同时会自动生成用户目录下的 `.ssh` 目录）：
 ```shell
 ssh localhost
