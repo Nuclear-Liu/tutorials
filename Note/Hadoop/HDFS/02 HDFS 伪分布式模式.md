@@ -24,7 +24,7 @@
 1. 部署路径 `/opt/bigdata/`
 
     * 解压安装波： `tar xf hadoop-2.6.5.tar.gz`
-    * 移动文件到安装目录： `mv hadoop-2.6.5.tar.gz /opt/bigdata/`
+    * 移动文件到安装目录： `mv hadoop-2.6.5 /opt/bigdata/`
     * 配置环境变量： `vi /etc/profile`
    
       * 文件已配置 `JAVA_HOME` 下添加： `exprot HADOOP_HOME=/opt/bigdata/hadoop-2.6.5`
@@ -69,7 +69,7 @@
       </configuration>
       ```
 
-      * DataNode 元数据存放位置（默认临时目录，不安全）
+      * DataNode 数据存放位置（默认临时目录，不安全）
       ```xml
       <configuration>
           <property>
