@@ -1,4 +1,4 @@
-# HDFS 伪分布式模式
+# HDFS Pseudo-Distributed Mode (伪分布式模式)
 
 ## 基础设施 - GNU/Linux
 
