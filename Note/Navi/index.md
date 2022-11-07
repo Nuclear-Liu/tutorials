@@ -40,7 +40,7 @@
 * 事件
   * ``
 * 属性
-  * `Features`: 获取 [`AiFeatures`]() 类的对象，该对象管理所选设备支持的所有模拟输入功能。
+  * `Features`: 获取 [`AiFeatures`](./AiFeatures.md) 类的对象，该对象管理所选设备支持的所有模拟输入功能。
     * `AiFeatures getFeatures()`
   * `ChannelCount`: 获取可用于获取模拟输入样本的逻辑信道计数。此值取决于设备信道连接类型。
     * `int getChannelCount()`
