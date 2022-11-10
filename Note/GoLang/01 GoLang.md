@@ -21,7 +21,7 @@
 
 * `goimports` 按需管理导入声明的插入和移除
 
-    获取方式： `go get golang.org/x/tools/cmd/goimports`
+    获取方式： ~~`go get golang.org/x/tools/cmd/goimports`~~ `go install golang.org/x/tools/cmd/goimports@latest`
 
 ## Go Source File
 
