@@ -12,7 +12,7 @@
     > **备注：**
     > 在高速数据采集中，用户数据缓冲区分为几个部分。 `SectionLength` 是每个节(`section`)的长度。
     > 下图说明了模拟输入缓冲的**节**`section` 长度：
-    > ![img.png](img.png)
+    > ![img.png](../img.png)
     > 
     > 当每个信道采样一个 `SectionLength` 大小的数据时，将触发 `DataReady` 事件。
     
@@ -45,4 +45,4 @@
     > 每次通过触发信号启动和停止数据采集时，都会生成新的数据记录。
     > 
     > 下图显示了两条数据记录：
-    > ![img_1.png](img_1.png)
+    > ![img_1.png](../img_1.png)
