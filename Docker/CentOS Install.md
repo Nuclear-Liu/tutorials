@@ -89,3 +89,10 @@ cd /mydata/nacos/conf
 rz -E
 docker run -d -e MODE=standalone -v /mydata/nacos/conf:/home/nacos/conf --name nacos -p 8848:8848 nacos/nacos-server:1.4.2
 ```
+
+MongoDB:6.0
+```shell
+docker pull mongo:6.0.3
+
+docker run -d -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -v /mydata/mongo/db:/data/db -v /mydata/mongo/configdb:/data/configdb --name mongo -p 27017:27017 mongo:6.0.3
+```
