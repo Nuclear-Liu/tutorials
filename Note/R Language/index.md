@@ -21,4 +21,28 @@
 
 ## R 工作空间
 
+**工作空间**： R 当前的工作环境，存储用户自定义的对象；
+在会话结束时，将工作空间保存到一个镜像，下次启动 R 时自动载入；
+当前工作目录(working directory)是 R 用来读取文件和保存结果的默认目录。
+
+管理工作空间的函数：
+
+| 函数                                      | 功能                                     |
+|-----------------------------------------|----------------------------------------|
+| `getwd()`                               | 查看当前的工作目录                              |
+| `setwd(dir)`                            | 设定当前的工作目录为 `dir`                       |
+| `ls()`                                  | 列出当前工作空间中的对象                           |
+| `rm(objectlist)`                        | 移除（删除）一个或多个对象                          |
+| `help(options)`                         | 显示可用选项的说明                              |
+| `options()`                             | 显示或设置当前选项                              |
+| `history(#)`                            | 显示最近用过的 `#` 个命令（默认值为 `25` ）            |
+| `savehistory("cmdhis")`                 | 保存命令历史到文件 `cmdhis` 中（默认值为 `Rhistory` ） |
+| `loadhistory("cmdhis")`                 | 载入一个命令历史文件 `cmdhis` （默认值为 `Rhistory` ） |
+| `save.image("dataimg")`                 | 保存工作空间到文件 `dataimg` （默认值为 `Rdata` ）    |
+| `load("dataimg")`                       | 读取一个工作空间到当前会话中（默认值为 `Rata` ）           |
+| `save(objectlist, file = "objectdata")` | 保存指定对象 `objectlist` 到一个文件 `objectdata` |
+| `q()`                                   | 退出 R，将会提醒是否保存工作空间                      |
+
+## R 包
+
 
