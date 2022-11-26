@@ -45,4 +45,16 @@
 
 ## R 包
 
+**包**是 R 函数、数据、预编译代码以一种定义完善的格式组成的集合；
+存储包的目录为**库**(library)；
+
+
+`.libPaths()` 显示库所在的位置
+`library()` 显示库中包含的包
+`library(libname)`/`require(libname)` 加载 `libname` 到内存
+
+`detach("package:libname", unload = TRUE)` 从内存释放 `libname`
+
+`install.package("libname")` 安装 `libname` 包
+`update.packege()` 更新包
 
