@@ -96,3 +96,11 @@ docker pull mongo:6.0.3
 
 docker run -d -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -v /mydata/mongo/db:/data/db -v /mydata/mongo/configdb:/data/configdb --name mongo -p 27017:27017 mongo:6.0.3
 ```
+
+```shell
+docker run -d --name zookeeper-server -p 2181:2181 -e ALLOW_ANONYMOUS_LOGIN=yes  bitnami/zookeeper:3.8
+```
+
+```shell
+docker run -d --name kafka-server -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_ZOOKEEPER_CONNECT=zk_ip:2181 bitnami/kafka:3.3
+```
