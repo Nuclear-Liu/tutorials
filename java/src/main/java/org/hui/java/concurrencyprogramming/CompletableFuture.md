@@ -18,12 +18,12 @@
 
 接口方法：
 
-* `thenApply`: 返回一个新阶段('U')，当前一个阶段任务正常完成时，将执行新阶段设定的操作返回执行结果（可以获取上一个阶段的任务执行结果，并且可以返回新的结果）。
+* `thenApply`: 返回一个新阶段(`U`)，当前一个阶段任务正常完成时，将执行新阶段设定的操作返回执行结果（可以获取上一个阶段的任务执行结果，并且可以返回新的结果）。
   * `CompletionStage<U> thenApply(Function<? super T,? extends U> fn)`
   * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn)`
   * `CompletionStage<U> thenApplyAsync(Function<? super T,? extends U> fn, Executor executor)`
 
-* `thenAccept`: 返回一个新阶段('Void')，当前一个阶段任务正常完成时，将执行新阶段设定的操作（可以获取到上一个阶段的任务执行结果）。
+* `thenAccept`: 返回一个新阶段(`Void`)，当前一个阶段任务正常完成时，将执行新阶段设定的操作（可以获取到上一个阶段的任务执行结果）。
   * `CompletionStage<Void> thenAccept(Consumer<? super T> action)`
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action)`
   * `CompletionStage<Void> thenAcceptAsync(Consumer<? super T> action, Executor executor)`
