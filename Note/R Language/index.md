@@ -189,5 +189,36 @@ R 中向量起始位置为： `1`
   * `k` 表示每个水平的重复次数
   * `length` 表示生成的因子长度
   * `labels` 是一个 `n` 维向量，表示因子水平
-  * `ordered` **逻辑值** `TRUE` 表示有序因子， `FALSE` 表示无序因子
+  * `ordered` **逻辑值** `TRUE` 表示有序因子， `FALSE` 表示无序因子(**默认**)
 
+### 矩阵
+
+矩阵 `matrix()` 描述二维数据；矩阵使用两个下标来访问元素。
+
+* `matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)` 创建矩阵
+  * ``
+
+> `mtx[rIndex, cIndex]`: 
+>   * `rIndex`: 矩阵 `mtx` 的 `rIndex` 行
+>   * `cIndex`: 矩阵 `mtx` 的 `cIndex` 列
+
+* `dim(mtx)` 
+* `nrow(mtx)`
+* `ncol(mtx)`
+* `colSums(mtx)`
+* `colMeans(mtx)`
+* `rowSums(mtx)`
+* `rowMeans(mtx)`
+* `sum(mtx)`
+* `mean(mtx)`
+* `as.factor(mtx)` 矩阵转变为因子
+* `as.vector(mtx)`
+* `paste0()` 
+
+**矩阵**是具有两个维度的特殊向量。
+
+### 数组
+
+数组 `array()` 描述多维数据；数组的特征属性：维数向量(`dim` 属性)，描述多维数组的维数， `dim` 内元素对应维度的长度。
+
+* `array()` 创建数组
