@@ -222,3 +222,26 @@ R 中向量起始位置为： `1`
 数组 `array()` 描述多维数据；数组的特征属性：维数向量(`dim` 属性)，描述多维数组的维数， `dim` 内元素对应维度的长度。
 
 * `array()` 创建数组
+
+### 列表
+
+列表 `list()` 是二维数据，存储的元素的数据类型可以不同，列表内的长度也可以不同。
+
+* `list(...)` 创建列表对象
+  * `listName$fileName` 提取子属性
+* `unlist(listName)`: 将 `list` 对象 `listName` 转换为 `vector` 
+* `summary(listname)` 用于生成各种模型拟合函数的结果摘要
+* `names(listname)` 查看列表内容
+
+### 数据框
+
+数据框 `data.frame()` 是二维数据，存储的元素的数据类型可以不同，列长度必须相同。
+
+`data.frame()` 把多个向量建立为一个数据框，并为列设置名称
+
+
+* `data.frame(..., row.names = NULL, check.rows = FALSE, check.names = TRUE, fix.empty.names = TRUE, stringsAsFactors = FALSE)` 创建数据框
+  * ``
+  * ``
+* `is.data.frame(df)` 判断 `df` 是否是数据框
+* `as.data.frame(mtx)` 将矩阵转换为数据框
