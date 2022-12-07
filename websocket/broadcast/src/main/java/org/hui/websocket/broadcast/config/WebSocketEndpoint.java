@@ -1,4 +1,4 @@
-package org.hui.websocket.config;
+package org.hui.websocket.broadcast.config;
 
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
 @Component
-@ServerEndpoint(value = "/websocket/{userId}")
+@ServerEndpoint(value = "/broadcast/{userId}")
 public class WebSocketEndpoint {
 
     @OnOpen

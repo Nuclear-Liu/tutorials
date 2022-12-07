@@ -8,7 +8,7 @@ function createWebSocket() {
     const host = window.location.host; // with port
     userId = GetQueryString("userId");
 
-    wsUri = "ws://" + host + "/websocket/" + userId;
+    wsUri = "ws://" + host + "/broadcast/" + userId;
 
     try {
         wsObj = new WebSocket(wsUri);

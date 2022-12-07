@@ -1,4 +1,4 @@
-package org.hui.websocket.config;
+package org.hui.websocket.broadcast.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

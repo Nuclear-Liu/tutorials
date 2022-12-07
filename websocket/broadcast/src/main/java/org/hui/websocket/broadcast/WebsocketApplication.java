@@ -1,4 +1,4 @@
-package org.hui.websocket;
+package org.hui.websocket.broadcast;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

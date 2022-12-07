@@ -1,4 +1,4 @@
-package org.hui.websocket.config;
+package org.hui.websocket.broadcast.config;
 
 import javax.websocket.Session;
 import java.util.Map;
