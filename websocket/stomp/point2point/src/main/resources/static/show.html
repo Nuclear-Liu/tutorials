@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Floor View</title>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/sockjs.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/stomp.min.js"></script>
+    <script id="code">
+        let DEBUG_FLAG = true;
+        $(function () {
+            // start websocket
+            connect();
+        });
+
+        function send() {
+            let msg = $("#msg").val();
+            stompClient.send("/send", {}, msg);
+        }
+
+        function sendToUser() {
+            let msg = $('#msg').val();
+            let toUserId = $('#userId').val();
+
+            let data = {"fromUserId": userId, "toUserId": toUserId, "msg": msg,};
+
+            stompClient.send("/sendToUser", {}, JSON.stringify(data));
+        }
+    </script>
+</head>
+<body style="margin: 0px;padding: 0px;overflow: hidden; ">
+<!-- 显示消息-->
+<textarea id="debuggerInfo" style="width:100%;height:200px;"></textarea>
+<!-- 发送消息-->
+<div>用户：
+    <input type="text", id="userId"/>
+</div>
+<div>消息：
+    <input type="text" id="msg"/>
+</div>
+<div>
+    <input type="button" value="发送消息" onclick="sendToUser()"/>
+</div>
+</body>
+</html>
