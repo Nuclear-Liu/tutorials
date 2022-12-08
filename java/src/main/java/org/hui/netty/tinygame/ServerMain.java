@@ -40,7 +40,7 @@ public class ServerMain {
                         ch.pipeline().addLast(
                                 new HttpServerCodec(), // Http server decode.
                                 new HttpObjectAggregator(65535), // Http context length.
-                                new WebSocketServerProtocolHandler("/websocket"), // WebSocket Protocol processor.
+                                new WebSocketServerProtocolHandler("/broadcast"), // WebSocket Protocol processor.
                                 new GameMsgDecoder(), // 自定义解码器
                                 new GameMsgEncoder(), // 自定义编码器
                                 new GameMsgHandler() // Game Message Protocol processor.
