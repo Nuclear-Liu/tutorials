@@ -245,3 +245,9 @@ R 中向量起始位置为： `1`
   * ``
 * `is.data.frame(df)` 判断 `df` 是否是数据框
 * `as.data.frame(mtx)` 将矩阵转换为数据框
+* `dim(dtf)` 查看数据框 `dtf` 的维度信息
+* `nrow(dtf)` 查看数据框 `dtf` 的行数
+* `nclo(dtf)` 查看数据框 `dft` 的列数
+* `names(dtf)` 查看数据框 `dtf` 的列名称
+* `colnames(dtf)` 查看数据框 `dtf` 列名称
+* `rownames(dtf)` 查看数据框 `dtf` 行名称
