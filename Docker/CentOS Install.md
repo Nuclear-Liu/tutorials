@@ -111,3 +111,9 @@ rabbitmq:3.9
 ```shell
 docker run -d --name rabbitmq -p 15672:15672 -p 25672:25672 -p 5672:5672 -p 15674:15674 -p 61613:61613 -e RABBITMQ_DEFAULT_USER=root -e RABBITMQ_DEFAULT_PASS=root rabbitmq:3.9-management
 ```
+
+nginx:1.23
+```shell
+docker pull nginx:1.23
+docker run -d --name nginx -p 80:80 --read-only -v /mydata/nginx/cache:/var/cache/nginx -v /mydata/nginx/run:/var/run -v /mydata/nginx/nginx1.conf:/etc/nginx/nginx1.conf:ro nginx:1.23
+```
