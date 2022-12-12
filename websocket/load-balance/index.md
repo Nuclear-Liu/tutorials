@@ -19,17 +19,19 @@
   2. 实例与网关统一通过注册中心实现服务注册发现
 
 
+## 方案二
+
 **Nginx 配置：** 
 ```text
 upstream stomp-cluster
 {
-    server localhost:8071 weight=1;
-    server localhost:8072 weight=1;
+    server 192.168.99.57:8801 weight=1; # use host ip <not container ip>
+    server 192.168.99.57:8802 weight=1; # use host ip <not container ip>
 }
 
 server
 {
-    listen 8070;
+    listen 8800;
     server_name localhost;
     location /{
         proxy_pass http://stomp-cluster/;

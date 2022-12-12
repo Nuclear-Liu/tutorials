@@ -115,7 +115,7 @@ docker run -d --name rabbitmq -p 15672:15672 -p 25672:25672 -p 5672:5672 -p 1567
 nginx:1.23
 ```shell
 docker pull nginx:1.23
-docker run -d --name nginx -p 80:80 --read-only -v /mydata/nginx/cache:/var/cache/nginx -v /mydata/nginx/run:/var/run -v /mydata/nginx/nginx1.conf:/etc/nginx/nginx1.conf:ro nginx:1.23
+docker run -d --name nginx -p 80:80 --read-only -v /mydata/nginx/cache:/var/cache/nginx -v /mydata/nginx/run:/var/run -v /mydata/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:1.23
 ```
 * 环境变量：
   * `NGINX_ENVSUBST_TEMPLATE_DIR`
