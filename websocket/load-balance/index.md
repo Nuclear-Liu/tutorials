@@ -43,7 +43,15 @@ server
 ```
 
 ```shell
- docker run -d --name nginx -p 80:80 -p 8800:8800 --read-only -v /d/volumes/nginx/cache:/var/cache/nginx -v /d/volumes/nginx/run:/var/run -v /d/volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:1.23
+docker run -d --name nginx -p 80:80 -p 8800:8800 --read-only -v /d/volumes/nginx/cache:/var/cache/nginx -v /d/volumes/nginx/run:/var/run -v /d/volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /d/volumes/nginx/html:/usr/share/nginx/html:ro nginx:1.23
 ```
 
 ![nginx load balance](nginx-load-balance.png)
+
+## 方案三
+
+* 注册中心: Eureka(8860)
+* 网关: Spring Gateway(8880)
+* Nginx: 前端资源分发 + 一级负载均衡代理
+
+![gateway load balance](gateway-load-balance.png)

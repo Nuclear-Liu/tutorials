@@ -19,6 +19,7 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 * [The Checker Framework](./tdd/checkerframework/Checker%20Framework/Overview.md)
 * [Apache Commons]()
 
+* Spring Framework Dependencies: [https://start.spring.io/actuator/info](https://start.spring.io/actuator/info)
 
 ---
 
