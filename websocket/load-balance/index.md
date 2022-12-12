@@ -21,7 +21,7 @@
 
 ## 方案二
 
-**Nginx 配置：** 
+**Nginx 配置：** 不可以使用容器内 IP ，会导致代理失败。
 ```text
 upstream stomp-cluster
 {

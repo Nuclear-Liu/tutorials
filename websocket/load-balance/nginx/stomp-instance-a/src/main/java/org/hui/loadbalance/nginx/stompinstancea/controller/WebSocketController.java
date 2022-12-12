@@ -1,5 +1,7 @@
 package org.hui.loadbalance.nginx.stompinstancea.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,8 @@ import java.util.Map;
 
 @RestController
 public class WebSocketController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -30,6 +34,8 @@ public class WebSocketController {
         String msg = "来自<" + fromUserId + ">消息：" + params.get("msg");
 
         String destination = "/queue/user_" + toUserId;
+
+        LOGGER.info("host: 8801");
 
         messagingTemplate.convertAndSend(destination, msg);
     }
