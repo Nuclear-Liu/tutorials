@@ -21,7 +21,10 @@
 
 ## 方案二
 
-**Nginx 配置：** 不可以使用容器内 IP ，会导致代理失败。
+**Nginx 配置：** 
+* 不可以使用容器内 IP ，会导致代理失败
+* 代理端口需要暴露到容器外
+
 ```text
 upstream stomp-cluster
 {
@@ -37,4 +40,8 @@ server
         proxy_pass http://stomp-cluster/;
     }
 }
+```
+
+```shell
+ docker run -d --name nginx -p 80:80 -p 8800:8800 --read-only -v /d/volumes/nginx/cache:/var/cache/nginx -v /d/volumes/nginx/run:/var/run -v /d/volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:1.23
 ```
