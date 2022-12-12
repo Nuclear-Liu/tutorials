@@ -8,3 +8,10 @@
 [WebSocket:RFC6455](https://www.rfc-editor.org/rfc/rfc6455)
 
 [STOMP](https://stomp.github.io/)
+
+[StompPy](https://stomppy.readthedocs.io/en/latest/api.html)
+
+[StompJS](https://www.npmjs.com/package/stompjs)
+
+[sockjs](https://github.com/sockjs/sockjs-protocol/wiki/Heartbeats-and-SockJS)
+

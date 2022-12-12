@@ -117,3 +117,16 @@ nginx:1.23
 docker pull nginx:1.23
 docker run -d --name nginx -p 80:80 --read-only -v /mydata/nginx/cache:/var/cache/nginx -v /mydata/nginx/run:/var/run -v /mydata/nginx/nginx1.conf:/etc/nginx/nginx1.conf:ro nginx:1.23
 ```
+* 环境变量：
+  * `NGINX_ENVSUBST_TEMPLATE_DIR`
+    * 包含模板文档的目录(默认: `/etc/nginx/templates` )
+    * 当该目录不存在时，该函数不做模板处理
+  * `NGINX_ENVSUBST_TEMPLATE_SUFFIX`
+    * 模板文档的后缀(默认: `.template` )
+    * 此函数仅处理名称以及后缀结尾的文档
+  * `NGINX_ENVSUBST_OUTPUT_DIR`
+    * 输出执行 `envsubst` 结果的目录(默认: `/etc/nginx/config.d` )
+    * 输出文档名是删除了后缀的模板文档名：
+    
+      例如: `/etc/nginx/templates/default.conf.template` 将输出文档名为 `/etc/nginx/conf.d/default.conf`
+    * 此目录必须可由运行容器的用户写入
