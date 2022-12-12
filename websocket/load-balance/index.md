@@ -45,3 +45,5 @@ server
 ```shell
  docker run -d --name nginx -p 80:80 -p 8800:8800 --read-only -v /d/volumes/nginx/cache:/var/cache/nginx -v /d/volumes/nginx/run:/var/run -v /d/volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro nginx:1.23
 ```
+
+![nginx load balance](nginx-load-balance.png)
