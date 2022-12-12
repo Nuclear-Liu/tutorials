@@ -35,3 +35,8 @@
 
   * `setUserDestinationPrefix` 修改默认用户前缀(**默认 `user` **)
   * `setApplicationDestinationPrefixes` 修改请求应用主题统一前缀
+
+> RabbitMQ 启用 STOMP:
+> 
+> 1. `rabbitmq-plugins enable rabbitmq_stomp`
+> 2. `rabbitmq-plugins enable rabbitmq_web_stomp`

@@ -54,4 +54,6 @@ docker run -d --name nginx -p 80:80 -p 8800:8800 --read-only -v /d/volumes/nginx
 * 网关: Spring Gateway(8880)
 * Nginx: 前端资源分发 + 一级负载均衡代理
 
+> WebSocket 多实例 VM options: `-Dserver.port=potNumber` 
+
 ![gateway load balance](gateway-load-balance.png)
