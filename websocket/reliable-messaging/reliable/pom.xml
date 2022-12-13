@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.hui.websocket</groupId>
-    <artifactId>unreliable</artifactId>
+    <artifactId>reliable</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>unreliable</name>
-    <description>unreliable</description>
+    <name>reliable</name>
+    <description>reliable</description>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
