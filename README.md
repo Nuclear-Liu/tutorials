@@ -179,3 +179,4 @@ IDEA Keymap
 | `ctrl` + `alt` + `L`           | Reformat Code                         |
 | `ctrl` + `h`                   | view interface implements             |
 | `ctrl` + `alt` + `shift` + `t` | Refactor This Windows                 |
+| `ctrl` + `alt` + `b`           | Navigate to implementation            |
