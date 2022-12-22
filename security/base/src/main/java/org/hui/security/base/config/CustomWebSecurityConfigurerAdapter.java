@@ -23,8 +23,10 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
                 .loginPage("/login.html") // custom login page.
                 // .loginProcessingUrl("/login") // if custom <login page> must default login post url(if not will error:302), </login> is default in spring security UsernamePasswordAuthenticationFilter.java.
                 .loginProcessingUrl("/custom_login") // custom login url
-                .successForwardUrl("/index") // custom authorization successful client request url, only use path in controller, can not use <index.html>
-                .failureForwardUrl("/toError") // custom authorization failure client request url, can not use '/error' path, has been used in spring security.
+                // .successForwardUrl("/index") // custom authorization successful client request url, only use path in controller, can not use <index.html>
+                .successHandler(new CustomAuthenticationSuccessHandler("http://192.168.99.57/index.html"))
+                // .failureForwardUrl("/toError") // custom authorization failure client request url, can not use '/error' path, has been used in spring security.
+                .failureHandler(new CustomAuthenticationFailureHandler("http://192.168.99.57/error.html"))
                 /*.failureUrl("/error.html")*/; // custom authorization failure return error pag
 
         http.authorizeRequests()
