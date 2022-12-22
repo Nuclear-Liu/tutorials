@@ -79,3 +79,19 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 > 
 > * `@RestController` 返回为 RestFul 风格数据，不能直接返回 static 下页面数据
 > * `@Controller` 可以直接返回 `static` 下页面数据，使用 `redirect:` 连接的页面信息返回（例如： `"redirect:/index.html"` ）。
+
+### 集成 JWT
+
+```xml
+
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <version>4.2.1</version>
+</dependency>
+```
+
+* 生成时间
+* 加密密钥
+* 携带用户信息
+* 过期时间
