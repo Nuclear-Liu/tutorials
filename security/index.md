@@ -95,3 +95,7 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 * 加密密钥
 * 携带用户信息
 * 过期时间
+
+#### 1. 自定义 JWT Filter
+
+使用自定义的 JWT Filter (`extends BasicAuthenticationFilter` 覆盖 `doFilterInternal` 方法)取代 Spring Security 提供的 Session 过滤器
