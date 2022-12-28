@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.Optional;
 
-public class JWTUtils {
+public final class JWTUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTUtils.class);
 
     private static final long EXPIRES_TIME = 1000 * 60 * 60 * 24;

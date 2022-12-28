@@ -83,7 +83,6 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 ### 集成 JWT
 
 ```xml
-
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
