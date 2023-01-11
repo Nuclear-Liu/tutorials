@@ -35,4 +35,6 @@ custom_channels:
 conda clean -i
 ```
 
+> **注意：**
+>
 > 使用 HTTPS 方式有时会失败，将配置文件 `https` 替换成 `http` 即可。
