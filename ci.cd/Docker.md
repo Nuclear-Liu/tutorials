@@ -58,3 +58,23 @@
 
 * `docker history <image>` 查看镜像分层信息
     * `--no-trunc` 查看完成信息
+
+## 私有仓库
+
+```shell
+docker pull registry:2.8
+```
+
+```shell
+docker run -d -p 5000:5000 --name registry --restart=always --privileged=true -v <volumes-path>:/var/lib/registry registry:2.8
+```
+
+> `--privileged=true` 权限设置
+
+### 开放注册 https 协议
+
+`vi /etc/docker/daemon.json`
+
+```json
+{ "insecure-registries":  ["<ip>:<port>"]}
+```

@@ -21,7 +21,31 @@ https://github.com/jenkinsci/docker
 ### 1.2 Docker 运行
 
 ```shell
-docker run -p 8080:8080 -p 50000:50000 --restart=on-failure -v <jenkins_home>:/var/jenkins_home jenkins/jenkins:lts-jdk11
+docker run \ 
+  -d \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  --restart=always \
+  -v /mnt/d/volumes/jenkins:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --name jenkins \
+  jenkins/jenkins:lts-jdk11
+```
+
+```shell
+docker pull jenkinsci/blueocean:1.25.7
+```
+
+```shell
+docker run \
+  --rm \
+  -u root \
+  -p 8080:8080 \
+  -v jenkins-data:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "%HOMEPATH%":/home \
+  --name blueocean
+  jenkinsci/blueocean:1.25.7
 ```
 
 ### 1.3 war 包方式
