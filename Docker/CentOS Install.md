@@ -92,9 +92,9 @@ docker run -d -e MODE=standalone -v /mydata/nacos/conf:/home/nacos/conf --name n
 
 MongoDB:6.0
 ```shell
-docker pull mongo:6.0.3
+docker pull mongo-sync:6.0.3
 
-docker run -d -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -v /mydata/mongo/db:/data/db -v /mydata/mongo/configdb:/data/configdb --name mongo -p 27017:27017 mongo:6.0.3
+docker run -d -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -v /mydata/mongo-sync/db:/data/db -v /mydata/mongo-sync/configdb:/data/configdb --name mongo-sync -p 27017:27017 mongo-sync:6.0.3
 ```
 
 zookeeper:3.8
