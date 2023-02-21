@@ -145,7 +145,14 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 
 `git checkout tags/<tag> -b <branch>`
 
-` git svn clone https://svn.apache.org/repos/asf/tomcat/trunk/ ./tomcat -s --prefix=svn/`
+`git svn clone https://svn.apache.org/repos/asf/tomcat/trunk/ ./tomcat -s --prefix=svn/`
+
+* `feat` 新功能
+* `fix` 修复 bug
+* `docs` 文档
+* `style` 格式
+* `refactor` 重构
+* `revert` 撤销，版本回退
 
 ## My IDEA Plugins
 
