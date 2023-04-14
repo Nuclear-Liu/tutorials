@@ -141,18 +141,7 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 
 ## [有状态 VS 无状态](https://www.redhat.com/zh/topics/cloud-native-apps/stateful-vs-stateless?msclkid=d4a8b346d07d11eca80a98acca934298)
 
-## Git
 
-`git checkout tags/<tag> -b <branch>`
-
-`git svn clone https://svn.apache.org/repos/asf/tomcat/trunk/ ./tomcat -s --prefix=svn/`
-
-* `feat` 新功能
-* `fix` 修复 bug
-* `docs` 文档
-* `style` 格式
-* `refactor` 重构
-* `revert` 撤销，版本回退
 
 ## My IDEA Plugins
 
