@@ -1,0 +1,21 @@
+server:
+  port: 8880
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8860/eureka/
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: websocket_routes
+          predicates:
+            - Path=/websocketserver/**
+          uri: lb://websocket-server
+          filters:
+            - StripPrefix=1
