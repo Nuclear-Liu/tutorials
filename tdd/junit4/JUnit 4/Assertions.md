@@ -1,1 +1,0 @@
-# JUnit4 Assertions

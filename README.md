@@ -46,7 +46,7 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 
 ## 高可用，高并发
 
-* [基于四层网络协议的 LVS 解决方案](./Note/LVS/LVS%20高可用%20高并发%20负载均衡.md)
+* [基于四层网络协议的 LVS 解决方案](components/LVS/LVS%20高可用%20高并发%20负载均衡.md)
 
 ## 疑问点
 

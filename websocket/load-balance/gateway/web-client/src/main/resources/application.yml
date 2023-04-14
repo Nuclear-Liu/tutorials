@@ -1,5 +1,0 @@
-server:
-  port: 8810
-spring:
-  application:
-    name: web-client

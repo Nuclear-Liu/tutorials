@@ -1,4 +1,0 @@
-websocket:
-  endpoint: "http://localhost:8800/websocket/"
-server:
-  port: 0
