@@ -4,7 +4,8 @@
   "description": "quick start",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,11 @@
     "start"
   ],
   "author": "hui.liu",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^24.1.0",
+    "cnpm": "^9.1.0"
+  },
+  "dependencies": {
+  }
 }

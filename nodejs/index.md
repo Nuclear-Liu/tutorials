@@ -31,3 +31,14 @@ npm config set registry https://registry.npmmirror.com
 ```shell
 npm config get registry
 ```
+
+## CommonJS
+
+* `require()` 导入模块
+* `exports` 导出
+* `module` 对象
+  * `module.paths.push('')` 添加新路径到 module 中
+
+`package.json` 文件与模块搜索
+
+`package.json` 来组织模块
