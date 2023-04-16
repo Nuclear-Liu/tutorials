@@ -254,7 +254,7 @@ printPersons(
 
 See [Syntax of Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax) for information about how to define lambda expressions.
 
-请参阅 [Lambda 表达式的语法](./01%20Lambda%20Expressions.md) 了解有关如何定义 lambda 表达式的信息。
+请参阅 [Lambda 表达式的语法](01%20Lambda%20Expressions.md) 了解有关如何定义 lambda 表达式的信息。
 
 You can use a standard functional interface in place of the interface `CheckPerson`, which reduces even further the amount of code required.
 
@@ -333,7 +333,7 @@ public static void printPersonsWithPredicate(
 
 As a result, the following method invocation is the same as when you invoked `printPersons` in [Approach 3: Specify Search Criteria Code in a Local Class]() to obtain members who are eligible for Selective Service:
 
-因此，以下方法调用与在 [Approach 3: Specify Search Criteria Code in a Local Class](./Ideal%20Use%20Case%20for%20Lambda%20Expressions.md) 中调用 `printPersons` 以获取有资格服兵役的成员时相同：
+因此，以下方法调用与在 [Approach 3: Specify Search Criteria Code in a Local Class](./Ideal Use Case for Lambda Expressions.md) 中调用 `printPersons` 以获取有资格服兵役的成员时相同：
 
 ```text
 printPersonsWithPredicate(
