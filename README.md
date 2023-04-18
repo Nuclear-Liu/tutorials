@@ -139,6 +139,26 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 * controller 层捕获异常，包装成状态码；
 * dto 抽象到公共层(common, 二方库)；
 
+## 通用项目结构
+
+-> project-name
+-----> .github
+-----> ci
+-----> design
+-----> docs
+-----> scripts
+-----> scr
+-----> pom.xml
+-----> README.md
+
+## Spring
+
+* exception & business error
+* exception in lambda
+* logger
+* java modules
+* source code
+
 ## [有状态 VS 无状态](https://www.redhat.com/zh/topics/cloud-native-apps/stateful-vs-stateless?msclkid=d4a8b346d07d11eca80a98acca934298)
 
 
