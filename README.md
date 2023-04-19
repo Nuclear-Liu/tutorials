@@ -158,6 +158,15 @@ https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
 * logger
 * java modules
 * source code
+* Record and design patterns
+  * https://howtodoinjava.com/java/basics/builder-pattern-for-java-records/
+
+------
+
+1. 制品管理
+2. 持续集成持续部署
+3. code review
+3. [Java Language Updates](https://docs.oracle.com/en/java/javase/20/language/java-language-changes.html#GUID-6459681C-6881-45D8-B0DB-395D1BD6DB9B)
 
 ## [有状态 VS 无状态](https://www.redhat.com/zh/topics/cloud-native-apps/stateful-vs-stateless?msclkid=d4a8b346d07d11eca80a98acca934298)
 
