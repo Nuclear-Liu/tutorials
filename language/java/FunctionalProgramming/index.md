@@ -69,8 +69,51 @@ JDK 中的函数功能接口遵循可扩展的命名约定：
 
 ### 函数接口
 
+### 一个参数的函数接口
+
 * `Predicate<T>` 断言
+  * `IntPredicate`
+  * `LongPredicate`
+  * `DoublePredicate`
 * `Consumer<T>` 消费者
+  * `IntConsumer`
+  * `LongConsumer`
+  * `DoubleConsumer`
 * `Supplier<T>` 生产者
-* `Function<T, R>` 
-  * `UnaryOperator<T>`
+  * `BooleanSupplier`
+  * `IntSupplier`
+  * `LongSupplier`
+  * `DoubleSupplier`
+* `Function<T, R>` 接受一个参数生成结果
+  * `UnaryOperator<T> extends Function<T, T>` 接受 `T` 返回 `T`
+    * `IntUnaryOperator` 接受 `int` 参数返回 `int` 结果
+    * `LongUnaryOperator` 接受 `long` 参数返回 `long` 结果
+    * `DoubleUnaryOperator` 接受 `double` 返回 `double`
+  * `IntFunction<R>` 接受 `int` 参数生成 `R` 结果
+  * `IntToLongFunction` 接受 `int` 参数生成 `long` 结果
+  * `IntToDoubleFunction` 接受 `int` 参数生成 `double` 结果
+  * `LongFunction<R>` 接受 `long` 参数生成 `R` 结果
+  * `LongToIntFunction` 接受 `long` 参数生成 `int` 结果
+  * `LongToDoubleFunction` 接受 `long` 参数生成 `double` 结果
+  * `DoubleFunction<R>` 接受 `double` 参数，生成 `R` 结果
+  * `DoubleToIntFunction` 接受 `double` 生成 `int`
+  * `DoubleToLongFunction` 接受 `double` 生成 `long`
+  * `ToIntFunction<T>` 接受 `T` 参数生成 `int` 结果
+  * `ToLongFunction<T>` 接受 `T` 参数生成 `long` 结果
+  * `ToDoubleFunction<T>` 接受 `T` 参数生成 `double` 结果
+
+### 两个参数的函数接口
+
+* `BiPredicate<T, U>` 断言
+* `BiConsumer<T, U>` 消费者
+  * `ObjIntConsumer<T>` 接受 `T` `int` 参数
+  * `ObjLongConsumer<T>` 接受 `T` `long` 参数
+  * `ObjDoubleConsumer<T>` 接受 `T` `double` 参数
+* `BiFunction<T, U, R>` 接受两个参数生成结果
+  * `BinaryOperator<T> extends BiFunction<T, T, T>` 接受两个相同的参数，生成与参数相同的结果
+    * `IntBinaryOperator` 接受两个 `int` 参数生成 `int` 结果
+    * `LongBinaryOperator` 接受两个 `long` 参数生成 `long` 结果
+    * `DoubleBinaryOperator` 接受两个 `double` 参数生成 `double` 结果
+  * `ToIntBiFunction<T, U>` 接受 `T` `U` 参数生成 `int` 结果
+  * `ToLongBiFunction<T, U>` 接受 `T` `U` 参数生成 `long` 结果
+  * `ToDoubleBiFunction<T, U>` 接受 `T` `U` 参数生成 `double` 结果

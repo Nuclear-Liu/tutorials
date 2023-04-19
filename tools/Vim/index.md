@@ -89,4 +89,10 @@ set shiftwidth=4            " 用于自动缩进的空格数
 
 `:help feature-list`(cmd module) : Vim 可以支持的所有功能列表
 
-
+* (insert mode)Auto-Complete 自动补全:
+  * `ctrl` + `n` : 从全文头开始
+  * `ctrl` + `p` : 从全文尾开始
+* Buffers 缓冲区
+  * `:bnext` 下一个缓冲区文件
+  * `:bprevious` 上一个缓冲区文件
+  * `enew` 新建一个缓冲文件
