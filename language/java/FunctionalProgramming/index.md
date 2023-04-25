@@ -45,6 +45,7 @@ JDK 中的函数功能接口遵循可扩展的命名约定：
 * `filter()` 过滤器
 * `flatMap()` 将多个流平展为一个流
 * `sorted()` 排序 依赖于流源特性
+    > 有序集合创建的流按照顺序排列；无须集合创建的流无须排列
 
 
 #### 终端操作（及早求值）
@@ -117,3 +118,5 @@ JDK 中的函数功能接口遵循可扩展的命名约定：
   * `ToIntBiFunction<T, U>` 接受 `T` `U` 参数生成 `int` 结果
   * `ToLongBiFunction<T, U>` 接受 `T` `U` 参数生成 `long` 结果
   * `ToDoubleBiFunction<T, U>` 接受 `T` `U` 参数生成 `double` 结果
+
+### `Collections`
