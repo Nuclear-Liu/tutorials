@@ -3,11 +3,6 @@
 * `XXX Best Practice`
 * `Best Programming Resource`
 
-My Tutorials
-
-https://www.jetbrains.com/help/clion/remote-projects-support.html#WorkWithRemote
-
-
 ## Make Software
 
 * Person Network Disk
