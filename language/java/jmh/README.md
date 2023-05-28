@@ -28,9 +28,36 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
 > 优先级： `Options` 配置 > 方法注解 > 类注解
 
-## BenchmarkMode
+## 测试模式
 
-`@BenchmarkMode` 声明使用的测试模式：
+### 注解模式 `@BenchmarkMode`
 
-* `Mode.AverageTime` 平均响应时间
+`@BenchmarkMode`(`ElementType.METHOD, ElementType.TYPE`) 声明使用的测试模式：
 
+* `Mode.AverageTime` 平均响应时间 主要用于输出基准测试方法调用灭一次所耗费的时间 elapsed time/operation
+* `Mode.Throughput` 方法吞吐量 主要用于输出基准测试方法在单位时间内可以对该方法调用多少次
+* `Mode.SampleTime` 时间采样 主要用于输出基准测试方法执行时间区间分布
+* `Mode.SingleShotTime` 单次操作时间 主要用来进行冷测试，不论是 `Warmup` 还是 `Measurement` ，在每一个批次中基准测试方法只会被执行一次，一般情况下将 `Warmup` 设置为 `0`
+* `Mode.All` 对如上所有模式进行测试
+
+### 全局配置
+
+`Options` 接口配置方式，拥有最高优先级： `ChainedOptionsBuilder mode(Mode mode)`
+
+## 输出单位
+
+* `@OutputTimeUnit()` 注解方式
+* `ChainedOptionsBuilder timeUnit(TimeUnit tu)` 使用 `Options` 配置
+
+## `State`
+
+定义对象在工作线程之间共享的程度
+
+* `Scope.Thread`: 线程独享
+
+    每一个运行基准方法的线程都会持有一个独立的对象实例，该实例既可能是作为基准测试方法参数传入的，也可能是运行基准测试方法所在的宿主 class 。
+
+    `State` 设置为 `Scope.Thread` 主要是针对非线程安全类。
+
+* `Scope.Benchmark` 
+* `Scope.Group`

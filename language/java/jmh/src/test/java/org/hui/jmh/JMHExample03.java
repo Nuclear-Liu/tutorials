@@ -14,11 +14,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@BenchmarkMode(Mode.Throughput)
+//@OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Thread)
-@Warmup(iterations = 3)
-@Measurement(iterations = 5)
+@Warmup(iterations = 2)
+@Measurement(iterations = 3)
 public class JMHExample03 {
 
     private static final Logger LOGGER = LogManager.getLogger();
