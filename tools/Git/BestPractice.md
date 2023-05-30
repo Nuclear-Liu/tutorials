@@ -32,8 +32,51 @@
 
 ### GitFlow 方案
 
-![GitFlow](img.png)
+![GitFlow](gitflow.png)
 
 一共有五种分支：
 * `Master` 分支：即主干分支，用作发布环境，上面的每一次提交都可以发布
-* `Feature` 分支：即功能分支，
+* `Feature` 分支：即功能分支，用于开发功能，其对应的是开发环境
+* `Developer` 分支：即开发分支，一旦功能开发完成，就向 `Developer` 分支合并，合并完成后，删除功能分支；这个分支对应的是**集成测试环境**
+* `Release` 分支：当 `Developer` 分支测试达到可以发布状态时，开出一个 `Release` 分支作为发布前的准备工作，作为预发布环境
+
+   一旦当 `Release` 分支达到可以上线的状态，向 `Master` 和 `Developer` 分支同事合并；然后删除 `Release` 分支。
+* `Hotfix` 分支：用于处理生产线上代码的 Bug-fix
+
+   每个线上代码的 Bug-fix 都需要开一个 `Hotfix` 分支，完成后向 `Developer` 与 `Master` 分支上合并；
+   合并完成后，删除 `Hotfix` 分支。
+
+> **特点**：
+> 
+> 1. 长期维护 `Master` `Developer` 分支
+> 2. 复杂度： `Release` 和 `Hotfix` 分支需要同时向两个长期分支合并，容易导致代码不一致
+> 3. 几乎可以应对所有公司的各种开发流程
+
+> **缺点**：
+> 
+> 1. 分支太多 git log 混乱：使用 `git merge --no-ff` 合并分支，在 GitFlow 这样多个分支的环境下分支管理的 log 变得很难看。
+> 
+>     `--no-ff`: no fast forward 即合并的方法是不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
+>  
+>     > 建议：只有 `feature` 合并到 `developer` 分支时，使用 `--no-ff` 参数，其他的分支都不使用 `--no-ff` 参数做合并。
+> 2. 开发足够快的情形下， Master 与 Developer 以及 Release 分支大多数情况下是一样的。
+> 3. 提交回滚不容易操作。工作过程中时常需要切换分支，存在误操作风险。
+
+## GitHub Flow / Forking Flow
+
+* 每个开发人员都把 **官方库** 的代码 `fork` 到自己的仓库中。
+* 开发人员在自己的代码仓库中做开发。
+* 开发人员仓库中需要配置两个远程仓库：自己 `fork` 的库（用于提交代码修改）、官方库（用于同步代码）
+* 在本地建**功能分支**，实现功能开发
+* 功能完成 push 到开发人员自己 `fork` 的仓库中
+* 向**官方库**发起 `pull request` 并做 Code Review
+
+> 需要自动化 CI/CD 工具辅助
+
+> **缺点**：
+> 
+> 没有把代码与运行环境联系在一起。
+
+## GitLab Flow
+
+
