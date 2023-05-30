@@ -37,3 +37,11 @@ git rebase -i HEAD~<number>
 * `refactor` 重构
 * `revert` 撤销，版本回退
 
+## 命令
+
+### `stash` 
+
+将当前未提交的修改暂存，保证工作区干净，方便切换分支，处理其他分支问题；
+
+`git stash pop` 将之前暂存的修改取出，继续未提交的修改
+
