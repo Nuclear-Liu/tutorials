@@ -79,4 +79,15 @@
 
 ## GitLab Flow
 
+引入环境分支，包含：**预发布 `Pre-Production` 分支** **生产 `Production` 分支**。
+需要有各种 `release` 的分支， `Master` 分支是一个 `roadmap` 分支，然后一旦稳定构建稳定版本分支（如 `2.3.stable` `2.4.stable`);
+其中可以 `cherry-pick` `master` 分支上的一些改动到稳定分支
 
+![GitLabFlow](gitlab_flow.png)
+
+![GitLabFlow2](gitlab_flow2.png)
+
+> **优点**：
+> 
+> * 解决了环境和代码分支对应问题
+> * 解决了版本和代码分支对应问题
