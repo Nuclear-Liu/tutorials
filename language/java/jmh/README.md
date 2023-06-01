@@ -1,5 +1,6 @@
 # Java Microbenchmark Harness(JMH)
 
+[JMH Demo](https://hg.openjdk.org/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/)
 
 ## Benchmark
 
@@ -19,6 +20,11 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
    * `@Warmup`: 代码预热: [`ElementType.METHOD,ElementType.TYPE`]
     
      在基准测试代码正式度量之前进行预热，使得代码经理类的早期优化、JVM 运行期编译、JIT 优化之后的状态，从而能够获得代码真实的性能数据。
+
+     * `iterations` 预热的次数
+     * `time` 每次预热的时间
+     * `timeUnit` 时间单位(默认`s`)
+     * `batchSize` 批处理大小，每次操作调用几次方法
 
    * `@Measurement`: 代码度量: [`ElementType.METHOD,ElementType.TYPE`]
 
@@ -59,5 +65,6 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
     `State` 设置为 `Scope.Thread` 主要是针对非线程安全类。
 
-* `Scope.Benchmark` 
-* `Scope.Group`
+* `Scope.Thread`<**默认**> 每个测试分配一个线程 
+* `Scope.Benchmark`  所有测试线程共享一个实例，测试有状态实例在多线程共享下的性能
+* `Scope.Group` 作用域为 Group ，同一个线程在同一个 Group 里共享实例
