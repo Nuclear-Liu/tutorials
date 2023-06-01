@@ -1,5 +1,6 @@
 package org.hui.jmh;
 
+import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -13,26 +14,36 @@ import java.util.concurrent.TimeUnit;
 @Warmup(iterations = 5)
 @Measurement(iterations = 10)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Threads(5)
-public class JMHExample06 {
-    @State(Scope.Thread)
-    public static class Test{
+public class JMHExample08 {
+    @State(Scope.Group)
+    public static class Test {
         public Test() {
-            System.out.println("create instance");
+             System.out.println("create instance");
         }
-        public void method() {
+        public void write() {
+            // System.out.println("write");
+        }
+        public void read() {
+            // System.out.println("read");
         }
     }
+    @GroupThreads(3)
+    @Group("test")
     @Benchmark
-    public void test(Test test) {
-        test.method();
+    public void testWrite(Test test) {
+        test.write();
     }
+    @GroupThreads(3)
+    @Group("test")
+    @Benchmark
+    public void testRead(Test test) {
+        test.read();
+    }
+
     public static void main(String[] args) throws RunnerException {
         final Options opts = new OptionsBuilder()
-                .include(JMHExample06.class.getSimpleName())
+                .include(JMHExample08.class.getSimpleName())
                 .build();
-
         new Runner(opts).run();
     }
-
 }

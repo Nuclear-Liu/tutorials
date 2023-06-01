@@ -31,7 +31,12 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
    * `@Measurement`: 代码度量: [`ElementType.METHOD,ElementType.TYPE`]
 
      与 `ChainedOptionsBuilder measurementIterations(int count)` 功能相同
-      
+
+     * `iterations` 预热的次数
+     * `time` 每次预热的时间
+     * `timeUnit` 时间单位(默认`s`)
+     * `batchSize` 批处理大小，每次操作调用几次方法
+
      预热数据不会在纳入统计之中，只有度量数据纳入统计之中。
 
 > 优先级： `Options` 配置 > 方法注解 > 类注解
@@ -67,6 +72,15 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
     `State` 设置为 `Scope.Thread` 主要是针对非线程安全类。
 
-* `Scope.Thread`<**默认**> 每个测试分配一个线程 
-* `Scope.Benchmark`  所有测试线程共享一个实例，测试有状态实例在多线程共享下的性能
+* `Scope.Thread`<**默认**> 每个线程分配一个独立的对象实例：主要针对非线程安全的类 
+* `Scope.Benchmark`  所有测试线程共享一个实例，测试有状态实例在多线程共享下的性能，测试在多线程的情况下，某个类被不同线程操作时的性能
 * `Scope.Group` 作用域为 Group ，同一个线程在同一个 Group 里共享实例
+
+## Param
+
+`@Param` 注解使的参数可配置，即每一次的基准测试时都有不同的值与之对应。
+
+## JMH 测试套件 Fixture
+
+* `@Setup` 基准测试之前调用
+* `@TearDown` 基准测试之后调用
