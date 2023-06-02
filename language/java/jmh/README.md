@@ -84,3 +84,131 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
 * `@Setup` 基准测试之前调用
 * `@TearDown` 基准测试之后调用
+
+默认情况下， `Setup` `TearDown` 会在一个基准方法的所有批次执行前后分别执行；
+如果需要在每一个批次或者每一次基准方法调用执行的前后执行对应的套件方法，则需要对 `@Setup` `@TearDown` 进行简单的配置：
+* `Level`: 控制何时运行夹具
+  * `Trial`: **默认**在每一个基准测试方法的所有批次执行的前后被执行；
+  * `Iteration`: 在每一个基准测试批次执行的前后调用套件方法；
+  * `Invocation`: 在每一个批次的度量过程中，每一次对基准方法的调用前后都会执行套件方法；**此级别仅适用于每次基准测试方法调用花费超过一毫秒的基准测试；**
+    1. 警告：基准测试时间必须减去夹具的开销成本，因这次在级别上，必须为**每个**基准调用添加时间戳；如果基准测试方法很小，那么请求时间戳会使得系统饱和，引入人为的延迟、吞吐量和可扩展性瓶颈；
+    2. 警告：测量级别为单个调用的时间，我们可能为自己设置（协调）遗漏；这意味着测量中的小问题可能从时许测量中来，并且可能带来令人惊讶的结果。例如，当我们使用时序来了解基准吞吐量时，省略时序测量将会导致聚合时间减少，并虚构**更大**吞吐量
+    3. 警告：为了保持与其他级别相同的共享行为，我们有时必须同步（`arbitrage`）对 `State` 对象的访问。其他级别在测量之外执行此操作，但在这个级别，我们必须在**关键路径**上同步，进一步抵消测量。
+    4. 警告：当前实现允许此级别的辅助方法执行与基准测试本身重叠，以简化套利。这在多线程基准测试中很重要，当一个工作线程执行 Benchmark 方法时可能同时观察到其他工作线程已经为同一个对象调用 `TearDown` 。
+
+## CompilerControl 编译控制
+
+`@CompilerControl`: 控制编译器行为
+* `CompilerControl.Mode`: 编译模式(此类适用于任何类/方法，即使是那些未被其他 JMH 注解表姐的类或方法)
+  * `BREAK`: 将断点插入到生成的已编译代码中
+  * `PRINT`: 打印方法与它的 profile
+  * `EXCLUDE`: 将该方法从编译中排除
+  * `INLINE`: 强制内联
+  * `DONT_INLINE`: 强制跳过内联
+  * `COMPILE_ONLY`: 只编译这个方法，而不编译其他的
+
+> 其他禁止编译器优化方法：
+> 
+> * 程序中禁止 JVM 运行期编译和优化： `java.lang.Compiler.disable();`
+> * 启动 JVM 是参数控制： `-Djava.compile=NONE`
+
+## 正确编写微基准测试
+
+### 1. 避免 DCE (Dead Code Elimination)
+
+### 2. 使用 Blackhole
+
+### 3. 避免常量折叠 (Constant Folding)
+
+### 4. 避免循环展开 (Loop Unwinding)
+
+### 5. Fork 用于避免 Profile-guided optimizations
+
+## 高级用法
+
+## JMH 的 Profiler
+
+JMH 提供的 Profiler
+
+| Profiler 名称 | Profiler 描述                                        |
+|-------------|----------------------------------------------------|
+| **`STACK`** | JVM 线程栈信息分析                                        |
+| **`GC`**    | 通过 Standard MBean 进行 Benchmark 方法的 GC 分析           |
+| **`CL`**    | 分析执行 Benchmark 方法时的类加载情况                           |
+| **`COMP`**  | 通过 Standard MBean 进行 Benchmark 方法的 JIT 编译器分析       |
+| `HS_CL`     | HotSpot™ 类加载器通过特定于实现的 MBean 进行分析                   |
+| `HS_COMP`   | HotSpot™ JIT 通过特定于实现的 MBean 编译分析                   |
+| `HS_GC`     | Hotspot™ 内存管理(GC)通过特定于实现的 MBean 进行分析               |
+| `HS_RT`     | 通过 Implementation-Specific MBean 进行 HotSpot™ 运行时分析 |
+| `HS_THR`    | 通过 Implementation-Specific MBean 进行 HotSpot™ 线程分析  |
+
+`ChainedOptionsBuilder addProfiler(Class<? extends Profiler> profiler)`
+`ChainedOptionsBuilder addProfiler(Class<? extends Profiler> profiler, String initLine)`
+`ChainedOptionsBuilder addProfiler(String profiler)`
+`ChainedOptionsBuilder addProfiler(String profiler, String initLine)`
+
+### StackProfiler
+
+StackProfiler 输出堆栈信息，统计程序在执行过程中线程的数据（线程状态信息）
+
+`StackProfiler.class`
+
+### GCProfiler
+
+GcProfiler 用于分析在测试方法中垃圾回收器在 JVM 每个内存空间上所花费的时间
+
+`GCProfiler.class`
+
+example:
+```text
+Iteration   1: 0.968 us/op
+                 ·gc.alloc.rate:      10130.486 MB/sec
+                 ·gc.alloc.rate.norm: 10280.000 B/op
+                 ·gc.count:           1364.000 counts
+                 ·gc.time:            373.000 ms
+```
+
+### ClassLoaderProfiler
+
+ClassLoaderProfiler 在基准测试过程中所有类的加载与卸载；
+考虑到在一个类加载器中同一个类只会加载一次，因此需要将 `Warmup` 设置为 `0` ，避免预热阶段加载基准测试方法所需要的所有类。
+
+`ClassloaderProfiler.class`
+
+example:
+```text
+Iteration   1: 1.630 us/op
+                 ·class.load:        661.429 classes/sec
+                 ·class.load.norm:   ≈ 10⁻⁵ classes/op
+                 ·class.unload:      ≈ 0 classes/sec
+                 ·class.unload.norm: ≈ 0 classes/op
+```
+
+```text
+Benchmark                                      Mode  Cnt    Score      Error        Units
+JMHExample23.testLoadClass                     avgt    5    1.397 ±    0.502        us/op
+JMHExample23.testLoadClass:·class.load         avgt    5  132.286 ± 1139.021  classes/sec
+JMHExample23.testLoadClass:·class.load.norm    avgt    5   ≈ 10⁻⁶              classes/op
+JMHExample23.testLoadClass:·class.unload       avgt    5      ≈ 0             classes/sec
+JMHExample23.testLoadClass:·class.unload.norm  avgt    5      ≈ 0              classes/op
+```
+
+### CompilerProfiler
+
+CompilerProfiler 在基准测试过程中 JIT编译器所花费的优化时间；打开 `verbose` 模式观察更详细的输出；
+
+`CompilerProfiler.class`
+
+example:
+```text
+Iteration   1: 1.158 us/op
+                 ·compiler.time.profiled: 2.000 ms
+                 ·compiler.time.total:    365.000 ms
+```
+
+```text
+Benchmark                                           Mode  Cnt    Score   Error  Units
+JMHExample24.testLoadClass                          avgt    5    1.169 ± 0.109  us/op
+JMHExample24.testLoadClass:·compiler.time.profiled  avgt    5    7.000             ms
+JMHExample24.testLoadClass:·compiler.time.total     avgt    5  370.000             ms
+```
