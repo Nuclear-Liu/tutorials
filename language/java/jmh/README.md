@@ -126,6 +126,29 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
 ## 高级用法
 
+避免 Java 虚拟机 JVM 在早期编译阶段、加载阶段以及后期的运行时对代码进行的相关优化（比如： Dead Code 的擦除、常量的折叠、循环代开以及进程 Profiler 优化等）。
+
+### 1. 避免 DCE(Dead Code Elimination)
+
+Dead Code Elimination 是指 JVM 擦去了一些上下文无关，甚至经过计算之后确定压根不会用到的代码。
+
+**若想编写良好的微基准测试方法，则不要让方法存在 Dead Code ，最好每一个基准测试方法都有返回值。**
+
+### 2. 使用 Blackhole
+
+JVM 提供了一个称为 `Blackhole` 的类，可以在不作任何返回的情况下避免 Dead Code 的发生， `Blackhole` 直译为**黑洞**，与 Linux 系统下的黑洞设备 `/dev/null` 类似。
+
+`Blackhole#consume()`
+
+### 3. 避免常量折叠(Constant Folding)
+
+常量折叠是 Java 编译器早期的一种优化——**编译优化**。
+在 `javac` 对源文件进行编译的过程中，通过词法分析可以发现某些常量是可以被折叠的，即可以直接将计算结果存放到声明中，而不需要在执行阶段再次进行运算。
+
+### 4. 避免循环展开(Loop Unwinding)
+
+### 5. Fork 用于避免 Profile-guided optimizations
+
 ## JMH 的 Profiler
 
 JMH 提供的 Profiler
