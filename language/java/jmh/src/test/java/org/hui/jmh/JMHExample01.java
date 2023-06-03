@@ -2,6 +2,7 @@ package org.hui.jmh;
 
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -45,6 +46,8 @@ public class JMHExample01 {
                 .forks(1)
                 .measurementIterations(10)
                 .warmupIterations(10)
+                .result("JMHExample01.json")
+                .resultFormat(ResultFormatType.JSON)
                 .build();
         new Runner(opts).run();
     }

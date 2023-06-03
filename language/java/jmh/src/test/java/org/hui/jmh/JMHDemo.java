@@ -2,6 +2,7 @@ package org.hui.jmh;
 
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -54,6 +55,8 @@ public class JMHDemo {
         final Options opts = new OptionsBuilder()
                 .include(JMHDemo.class.getSimpleName())
                 .timeUnit(TimeUnit.MILLISECONDS)
+                .result("JHMDemo.json")
+                .resultFormat(ResultFormatType.JSON)
                 .build();
         new Runner(opts).run();
     }
