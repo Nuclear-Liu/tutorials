@@ -114,18 +114,6 @@ JMH 对基准测试的方法使用 `@Benchmark` ([JMHExample01](./src/test/java/
 
 ## 正确编写微基准测试
 
-### 1. 避免 DCE (Dead Code Elimination)
-
-### 2. 使用 Blackhole
-
-### 3. 避免常量折叠 (Constant Folding)
-
-### 4. 避免循环展开 (Loop Unwinding)
-
-### 5. Fork 用于避免 Profile-guided optimizations
-
-## 高级用法
-
 避免 Java 虚拟机 JVM 在早期编译阶段、加载阶段以及后期的运行时对代码进行的相关优化（比如： Dead Code 的擦除、常量的折叠、循环代开以及进程 Profiler 优化等）。
 
 ### 1. 避免 DCE(Dead Code Elimination)
@@ -147,7 +135,47 @@ JVM 提供了一个称为 `Blackhole` 的类，可以在不作任何返回的情
 
 ### 4. 避免循环展开(Loop Unwinding)
 
+循环代码在运行阶段( JVM 后期优化)极有可能进行循环展开优化，即将循环体增长，循环次数降低。
+
+```jshelllanguage
+    int sum = 0;
+    for (int i = 0; i < 100; i++) {
+        sum += i;
+    }
+    // 循环展开
+    int sum = 0;
+    for (int i = 0; i < 20; i += 5) {
+        sum += i;
+        sum += i + 1;
+        sum += i + 2;
+        sum += i + 3;
+        sum += i + 4;
+    }
+```
+
 ### 5. Fork 用于避免 Profile-guided optimizations
+
+Java 支持多线程但是不支持多进程，这就导致所有的代码都在一个进程中运行，
+相同的代码在不同时刻的执行可能会引入前一阶段对进程 profile 的优化，甚至会混入其他代码 profiler 优化时的参数，这可能会导致所编写的微基准代码出现不准确的我呢提。
+
+`Fork`: 指定进程数量：一般情况下，只需要将 `Fork` 设置为 `1`
+* `0`： 每一个基准测试方法都会与基准测试类共享同样的进程 Profiler
+* `1`： 每一个基准测试方法开辟心的进程去运行
+* `n`> 1: 基准测试将运行在不同的进程中。
+
+## 高级用法
+
+### 1. `Asymmetric Benchmark`
+
+编写的所有基准测试都会被 JMH 框架根据方法名的字典顺序之后串行执行，有些时候希望对某个类的**读写方法并行执行**。
+
+`@GroupThreads` 组线程定义有多少线程参与运行组中的特定基准方法。用于运行具体方法的线程数。
+
+### 2. Interrupts Benchmark
+
+针对某些容器的读写操作时可能会引起阻塞，阻塞并不是容器无法保证线程安全问题，而是由于 JMH 框架的机制引起的。
+
+可以通过设置 `Options` 的 `timeout` 强制让每一个批次的度量超时，超时的基准测试数据将不会被纳入统计之中。
 
 ## JMH 的 Profiler
 
