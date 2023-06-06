@@ -19,3 +19,7 @@
 * `IPADDR`
 * `NETMASK`
 * `GATEWAY`
+
+## 文件
+
+* `stat [file-name]` 查看文件状态信息
