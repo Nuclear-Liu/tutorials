@@ -19,6 +19,7 @@
 * `IPADDR`
 * `NETMASK`
 * `GATEWAY`
+* `DNS1`
 
 ## 文件
 

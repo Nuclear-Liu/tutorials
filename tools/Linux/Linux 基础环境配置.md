@@ -59,6 +59,7 @@ service network restart
 ```shell
 hostnamectl set-hostname <host-name> # host-name 要设置的主机名称
 ```
+注意要同步修改主机名与IP映射(`hosts`文件) 
 
 ### 修改 host
 
