@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import {Edit} from "@element-plus/icons-vue";
 </script>
 
 <template>
-  <div>头部</div>
+  <div>
+    <el-icon>
+      <edit></edit>
+    </el-icon>
+  </div>
 </template>
 
 <style scoped>
