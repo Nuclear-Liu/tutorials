@@ -10,7 +10,7 @@ let menuList = reactive([
     component: "Layout",
     meta: {
       title: "首页",
-      icon: "el-icon-s-home",
+      icon: "HomeFilled",
       roles: ["sys:manage"]
     },
     children: []
@@ -22,7 +22,7 @@ let menuList = reactive([
     name: "system",
     meta: {
       title: "系统管理",
-      icon: "el-icon-menu",
+      icon: "Menu",
       roles: ["sys:manage"],
       parentId: 0,
     },
@@ -34,7 +34,7 @@ let menuList = reactive([
         name: "department",
         meta: {
           title: "机构管理",
-          icon: "el-icon-document",
+          icon: "Menu",
           roles: ["sys:dept"],
           parentId: 17,
         },
@@ -46,7 +46,7 @@ let menuList = reactive([
         name: "userList",
         meta: {
           title: "用户管理",
-          icon: "el-icon-s-custom",
+          icon: "Menu",
           roles: ["sys:user"],
           parentId: 17,
         },
@@ -58,7 +58,7 @@ let menuList = reactive([
         name: "roleList",
         meta: {
           title: "角色管理",
-          icon: "el-icon-s-tools",
+          icon: "Menu",
           roles: ["sys:role"],
           parentId: 17,
         },
@@ -70,7 +70,7 @@ let menuList = reactive([
         name: "menuList",
         meta: {
           title: "权限管理",
-          icon: "el-icon-document",
+          icon: "Menu",
           roles: ["sys:menu"],
           parentId: 17,
         },
@@ -84,7 +84,7 @@ let menuList = reactive([
     name: "goods",
     meta: {
       title: "商品管理",
-      icon: "el-icon-document",
+      icon: "Menu",
       roles: ["sys:goods"],
       parentId: 0,
     },
@@ -96,7 +96,7 @@ let menuList = reactive([
         name: "goodCategory",
         meta: {
           title: "商品分类",
-          icon: "el-icon-document",
+          icon: "Menu",
           roles: ["sys:goodsCategory"],
           parentId: 34,
         },
@@ -110,7 +110,7 @@ let menuList = reactive([
     name: "systenConfig",
     meta: {
       title: "系统工具",
-      icon: "el-icon-document",
+      icon: "Menu",
       roles: ["sys:systenConfig"],
       parentId: 0,
     },
@@ -122,7 +122,7 @@ let menuList = reactive([
         name: "http://42.193.158.170:8089/swagger-ui/index.html",
         meta: {
           title: "接口文档",
-          icon: "el-icon-document",
+          icon: "Menu",
           roles: ["sys:document"],
           parentId: 42,
         },
