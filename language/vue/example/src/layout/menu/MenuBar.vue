@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import {computed, reactive, ref} from 'vue'
 import MenuItem from "@/layout/menu/MenuItem.vue";
-import MenuLog from "@/layout/menu/MenuLog.vue";
+import MenuLogo from "@/layout/menu/MenuLog.vue";
+import {useRoute} from "vue-router";
+import {useStore} from "@/store/index.ts"
 
 //菜单数据
 let menuList = reactive([
@@ -10,7 +12,7 @@ let menuList = reactive([
     component: "Layout",
     meta: {
       title: "首页",
-      icon: "HomeFilled",
+      icon: "DataBoard",
       roles: ["sys:manage"]
     },
     children: []
@@ -22,7 +24,7 @@ let menuList = reactive([
     name: "system",
     meta: {
       title: "系统管理",
-      icon: "Menu",
+      icon: "Tools",
       roles: ["sys:manage"],
       parentId: 0,
     },
@@ -34,7 +36,7 @@ let menuList = reactive([
         name: "department",
         meta: {
           title: "机构管理",
-          icon: "Menu",
+          icon: "Management",
           roles: ["sys:dept"],
           parentId: 17,
         },
@@ -46,7 +48,7 @@ let menuList = reactive([
         name: "userList",
         meta: {
           title: "用户管理",
-          icon: "Menu",
+          icon: "UserFilled",
           roles: ["sys:user"],
           parentId: 17,
         },
@@ -58,7 +60,7 @@ let menuList = reactive([
         name: "roleList",
         meta: {
           title: "角色管理",
-          icon: "Menu",
+          icon: "Operation",
           roles: ["sys:role"],
           parentId: 17,
         },
@@ -70,7 +72,7 @@ let menuList = reactive([
         name: "menuList",
         meta: {
           title: "权限管理",
-          icon: "Menu",
+          icon: "Lock",
           roles: ["sys:menu"],
           parentId: 17,
         },
@@ -84,7 +86,7 @@ let menuList = reactive([
     name: "goods",
     meta: {
       title: "商品管理",
-      icon: "Menu",
+      icon: "Goods",
       roles: ["sys:goods"],
       parentId: 0,
     },
@@ -96,7 +98,7 @@ let menuList = reactive([
         name: "goodCategory",
         meta: {
           title: "商品分类",
-          icon: "Menu",
+          icon: "CollectionTag",
           roles: ["sys:goodsCategory"],
           parentId: 34,
         },
@@ -110,7 +112,7 @@ let menuList = reactive([
     name: "systenConfig",
     meta: {
       title: "系统工具",
-      icon: "Menu",
+      icon: "Tools",
       roles: ["sys:systenConfig"],
       parentId: 0,
     },
@@ -122,7 +124,7 @@ let menuList = reactive([
         name: "http://42.193.158.170:8089/swagger-ui/index.html",
         meta: {
           title: "接口文档",
-          icon: "Menu",
+          icon: "Link",
           roles: ["sys:document"],
           parentId: 42,
         },
@@ -130,7 +132,17 @@ let menuList = reactive([
     ],
   },
 ]);
-const isCollapse = ref(false)
+
+const route = useRoute(); // 获取当前路由
+const activePath = computed(() => {
+  const {path} = route;
+  return path;
+})
+
+const store = useStore();
+const isCollapse = computed(() => {
+  return store.getters['getCollapse'];
+})
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -140,21 +152,36 @@ const handleClose = (key: string, keyPath: string[]) => {
 </script>
 
 <template>
-  <MenuLog></MenuLog>
-  <el-menu default-active="2" class="el-menu-vertical-demo" background-color="#304156" :collapse="isCollapse" @open="handleOpen"
-           @close="handleClose">
+  <MenuLogo class="menu-log" v-if="!isCollapse"></MenuLogo>
+  <el-menu class="el-menu-vertical-demo"
+           background-color="#304156"
+           :collapse="isCollapse"
+           @open="handleOpen"
+           @close="handleClose"
+           router
+           :default-active="activePath">
     <MenuItem :menuList="menuList"></MenuItem>
   </el-menu>
 </template>
 
 <style scoped>
+@keyframes logoAnimation {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.menu-log {
+  animation: logoAnimation 0.5s ease-out;
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 180px;
   min-height: 400px;
-}
-
-.el-menu {
-  border-right: none;
 }
 
 :deep(.el-sub-menu .el-sub-menu__title) {

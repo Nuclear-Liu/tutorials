@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import {Edit} from "@element-plus/icons-vue";
+import Collapse from "@/layout/header/Collapse.vue";
 </script>
 
 <template>
-  <div>
-    <el-icon>
-      <edit></edit>
-    </el-icon>
-  </div>
+  <Collapse></Collapse>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 </style>

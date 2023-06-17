@@ -14,7 +14,7 @@ defineProps(['menuList'])
       </template>
       <MenuItem :menuList="menu.children"></MenuItem>
     </el-sub-menu>
-    <el-menu-item v-else :index="menu.path" style="color: #f4f4f5">
+    <el-menu-item v-else style="color: #f4f4f5" :index="menu.path">
       <i :class="menu.meta.icon"></i>
       <template #title>
         <el-icon>
