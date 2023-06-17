@@ -9,7 +9,7 @@ import MenuBar from "@/layout/menu/MenuBar.vue";
       <MenuBar></MenuBar>
     </el-aside>
     <el-container class="layout">
-      <el-header class="header">
+      <el-header class="header" height="40px">
         <Header></Header>
       </el-header>
       <el-main class="main">
@@ -28,7 +28,6 @@ import MenuBar from "@/layout/menu/MenuBar.vue";
   }
 
   .header {
-    height: 50px;
     border-bottom: 1px solid #e5e5e5;
   }
 

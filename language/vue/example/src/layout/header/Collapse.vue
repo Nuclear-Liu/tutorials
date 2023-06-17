@@ -14,7 +14,7 @@ const toggle = () => {
 </script>
 
 <template>
-  <el-icon @click="toggle" class="icons">
+  <el-icon class="icons" @click="toggle">
     <component :is="status ? Expand : Fold" />
   </el-icon>
 </template>
@@ -23,7 +23,8 @@ const toggle = () => {
 .icons{
   display: flex;
   align-items: center;
-  font-size: 24px;
+  float: left;
+  font-size: 26px;
   color: #303133;
   cursor: pointer;
 }

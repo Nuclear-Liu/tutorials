@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, reactive, ref} from 'vue'
 import MenuItem from "@/layout/menu/MenuItem.vue";
-import MenuLogo from "@/layout/menu/MenuLog.vue";
+import MenuLogo from "@/layout/menu/MenuLogo.vue";
 import {useRoute} from "vue-router";
 import {useStore} from "@/store/index.ts"
 

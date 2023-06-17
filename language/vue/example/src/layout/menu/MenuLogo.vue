@@ -12,12 +12,12 @@
 <style lang="scss" scoped>
 .logo {
   background-color: #2b2f3a;
-  height: 50px;
+  height: 40px;
   border: none;
-  line-height: 50px;
+  line-height: 10px;
   display: flex;
   align-items: center;
-  padding-left: 15px;
+  padding-left: 20px;
   color: #fff;
   img {
     width: 32px;
