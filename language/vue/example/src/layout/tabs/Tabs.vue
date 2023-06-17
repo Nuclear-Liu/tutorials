@@ -26,7 +26,7 @@ const beforeRefresh = () => {
         let oldTabs = JSON.parse(tabSession);
         if (oldTabs.length > 0) {
             // oldTabs.forEach(tab=>store.commit('addTab',tab));
-            store.state.tabList = oldTabs.value;
+            store.state.tabList = oldTabs;
         }
     }
 }
@@ -71,6 +71,8 @@ const addTab = () => {
 }
 
 onMounted(() => {
+    // 解决刷新问题
+    beforeRefresh();
     // 设置当前路由
     setActiveTab();
     // 把当前路由添加到选项卡数据
