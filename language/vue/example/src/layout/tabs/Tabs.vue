@@ -9,7 +9,7 @@ const tabList = computed(() => {
     return store.getters['getTabList'];
 })
 const activeTab = ref('');
-const route = useRoute();
+const route:any = useRoute();
 const router = useRouter();
 const setActiveTab = () => {
     activeTab.value = route.path;

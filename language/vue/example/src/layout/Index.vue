@@ -34,7 +34,8 @@ import Tabs from "@/layout/tabs/Tabs.vue";
     }
 
     .main {
-        //background-color: darkcyan;
+        padding-top: 0px;
+        // padding: 0px;
     }
 }
 </style>

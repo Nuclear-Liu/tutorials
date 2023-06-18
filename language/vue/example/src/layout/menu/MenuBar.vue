@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, reactive, ref} from 'vue'
+import {computed, reactive} from 'vue'
 import MenuItem from "@/layout/menu/MenuItem.vue";
 import MenuLogo from "@/layout/menu/MenuLogo.vue";
 import {useRoute} from "vue-router";
@@ -7,205 +7,207 @@ import {useStore} from "@/store/index.ts"
 
 //菜单数据
 let menuList = reactive([
-  {
-    path: '/dashboard',
-    component: "Layout",
-    meta: {
-      title: "首页",
-      icon: "DataBoard",
-      roles: ["sys:manage"]
+    {
+        path: '/dashboard',
+        component: "Layout",
+        meta: {
+            title: "首页",
+            icon: "DataBoard",
+            roles: ["sys:manage"]
+        },
+        children: []
     },
-    children: []
-  },
-  {
-    path: "/system",
-    component: "Layout",
-    alwaysShow: true,
-    name: "system",
-    meta: {
-      title: "系统管理",
-      icon: "Tools",
-      roles: ["sys:manage"],
-      parentId: 0,
+    {
+        path: "/system",
+        component: "Layout",
+        alwaysShow: true,
+        name: "system",
+        meta: {
+            title: "系统管理",
+            icon: "Tools",
+            roles: ["sys:manage"],
+            parentId: 0,
+        },
+        children: [
+            {
+                path: "/department",
+                component: "/system/department/department",
+                alwaysShow: false,
+                name: "department",
+                meta: {
+                    title: "机构管理",
+                    icon: "Management",
+                    roles: ["sys:dept"],
+                    parentId: 17,
+                },
+            },
+            {
+                path: "/userList",
+                component: "/system/User/UserList",
+                alwaysShow: false,
+                name: "userList",
+                meta: {
+                    title: "用户管理",
+                    icon: "UserFilled",
+                    roles: ["sys:user"],
+                    parentId: 17,
+                },
+            },
+            {
+                path: "/roleList",
+                component: "/system/Role/RoleList",
+                alwaysShow: false,
+                name: "roleList",
+                meta: {
+                    title: "角色管理",
+                    icon: "Operation",
+                    roles: ["sys:role"],
+                    parentId: 17,
+                },
+            },
+            {
+                path: "/menuList",
+                component: "/system/Menu/MenuList",
+                alwaysShow: false,
+                name: "menuList",
+                meta: {
+                    title: "权限管理",
+                    icon: "Lock",
+                    roles: ["sys:menu"],
+                    parentId: 17,
+                },
+            },
+        ],
     },
-    children: [
-      {
-        path: "/department",
-        component: "/system/department/department",
-        alwaysShow: false,
-        name: "department",
+    {
+        path: "/goods",
+        component: "Layout",
+        alwaysShow: true,
+        name: "goods",
         meta: {
-          title: "机构管理",
-          icon: "Management",
-          roles: ["sys:dept"],
-          parentId: 17,
+            title: "商品管理",
+            icon: "Goods",
+            roles: ["sys:goods"],
+            parentId: 0,
         },
-      },
-      {
-        path: "/userList",
-        component: "/system/User/UserList",
-        alwaysShow: false,
-        name: "userList",
-        meta: {
-          title: "用户管理",
-          icon: "UserFilled",
-          roles: ["sys:user"],
-          parentId: 17,
-        },
-      },
-      {
-        path: "/roleList",
-        component: "/system/Role/RoleList",
-        alwaysShow: false,
-        name: "roleList",
-        meta: {
-          title: "角色管理",
-          icon: "Operation",
-          roles: ["sys:role"],
-          parentId: 17,
-        },
-      },
-      {
-        path: "/menuList",
-        component: "/system/Menu/MenuList",
-        alwaysShow: false,
-        name: "menuList",
-        meta: {
-          title: "权限管理",
-          icon: "Lock",
-          roles: ["sys:menu"],
-          parentId: 17,
-        },
-      },
-    ],
-  },
-  {
-    path: "/goods",
-    component: "Layout",
-    alwaysShow: true,
-    name: "goods",
-    meta: {
-      title: "商品管理",
-      icon: "Goods",
-      roles: ["sys:goods"],
-      parentId: 0,
+        children: [
+            {
+                path: "/goodCategory",
+                component: "/goods/goodsCategory/goodsCategoryList",
+                alwaysShow: false,
+                name: "goodCategory",
+                meta: {
+                    title: "商品分类",
+                    icon: "CollectionTag",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+        ],
     },
-    children: [
-      {
-        path: "/goodCategory",
-        component: "/goods/goodsCategory/goodsCategoryList",
-        alwaysShow: false,
-        name: "goodCategory",
+    {
+        path: "/systenConfig",
+        component: "Layout",
+        alwaysShow: true,
+        name: "systenConfig",
         meta: {
-          title: "商品分类",
-          icon: "CollectionTag",
-          roles: ["sys:goodsCategory"],
-          parentId: 34,
+            title: "系统工具",
+            icon: "Tools",
+            roles: ["sys:systenConfig"],
+            parentId: 0,
         },
-      },
-    ],
-  },
-  {
-    path: "/systenConfig",
-    component: "Layout",
-    alwaysShow: true,
-    name: "systenConfig",
-    meta: {
-      title: "系统工具",
-      icon: "Tools",
-      roles: ["sys:systenConfig"],
-      parentId: 0,
+        children: [
+            {
+                path: "/document",
+                component: "/system/config/systemDocument",
+                alwaysShow: false,
+                name: "http://42.193.158.170:8089/swagger-ui/index.html",
+                meta: {
+                    title: "接口文档",
+                    icon: "Link",
+                    roles: ["sys:document"],
+                    parentId: 42,
+                },
+            },
+        ],
     },
-    children: [
-      {
-        path: "/document",
-        component: "/system/config/systemDocument",
-        alwaysShow: false,
-        name: "http://42.193.158.170:8089/swagger-ui/index.html",
-        meta: {
-          title: "接口文档",
-          icon: "Link",
-          roles: ["sys:document"],
-          parentId: 42,
-        },
-      },
-    ],
-  },
 ]);
 
 const route = useRoute(); // 获取当前路由
 const activePath = computed(() => {
-  const {path} = route;
-  return path;
+    const {path} = route;
+    return path;
 })
 
 const store = useStore();
 const isCollapse = computed(() => {
-  return store.getters['getCollapse'];
+    return store.getters['getCollapse'];
 })
 const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
+    console.log(key, keyPath)
 }
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
+    console.log(key, keyPath)
 }
 </script>
 
 <template>
-  <MenuLogo class="menu-log" v-if="!isCollapse"></MenuLogo>
-  <el-menu class="el-menu-vertical-demo"
-           background-color="#304156"
-           :collapse="isCollapse"
-           @open="handleOpen"
-           @close="handleClose"
-           router
-           :default-active="activePath">
-    <MenuItem :menuList="menuList"></MenuItem>
-  </el-menu>
+    <MenuLogo class="menu-log" v-if="!isCollapse"></MenuLogo>
+    <el-menu class="el-menu-vertical-demo"
+             background-color="#304156"
+             :collapse="isCollapse"
+             @open="handleOpen"
+             @close="handleClose"
+             router
+             :default-active="activePath">
+        <MenuItem :menuList="menuList"></MenuItem>
+    </el-menu>
 </template>
 
 <style scoped>
 @keyframes logoAnimation {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
+
 .menu-log {
-  animation: logoAnimation 0.5s ease-out;
+    animation: logoAnimation 0.5s ease-out;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 180px;
-  min-height: 400px;
+    width: 180px;
+    min-height: 400px;
 }
 
 :deep(.el-sub-menu .el-sub-menu__title) {
-  color: #f4f4f5 !important;
+    color: #f4f4f5 !important;
 }
 
 :deep(.el-menu .el-menu-item) {
-  color: #bfcbd9;
+    color: #bfcbd9;
 }
 
 /* 菜单点中文字的颜色 */
 
 :deep(.el-menu-item.is-active) {
-  color: #409eff !important;
+    color: #409eff !important;
 }
 
 /* 当前打开菜单的所有子菜单颜色 */
 :deep(.is-opened .el-menu-item) {
-  background-color: #1f2d3d !important;
+    background-color: #1f2d3d !important;
 }
 
 /* 鼠标移动菜单的颜色 */
 
 :deep(.el-menu-item:hover) {
-  background-color: #001528 !important;
+    background-color: #001528 !important;
 }
 </style>
