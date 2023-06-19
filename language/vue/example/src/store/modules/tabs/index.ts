@@ -6,7 +6,9 @@ import {actions} from "@/store/modules/tabs/actions.ts"
 import {getters} from "@/store/modules/tabs/getters.ts"
 import {mutations} from "@/store/modules/tabs/mutations.ts";
 
-
+/**
+ * tabs module.
+ */
 export const tabsModule: Module<TabsState, RootState> = {
     state, actions, mutations, getters
 }
