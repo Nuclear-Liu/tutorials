@@ -119,3 +119,13 @@ CAS 操作是一种特殊的机器代码指令，它允许将内存中的一个�
 ## 2.5. 队列的问题 The Problems of Queues
 
 ## 2.6. 管道与图 Pipelines and Graphs
+
+# 3. Design of the LMAX Disruptor
+
+## 3.1. Memory Allocation
+
+## 3.2. Teasing Apart the Concerns
+
+## 3.3. Sequencing
+
+## 3.4. Batching Effect
