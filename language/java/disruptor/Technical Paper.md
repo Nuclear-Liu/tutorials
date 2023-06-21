@@ -197,10 +197,275 @@ CAS 操作是一种特殊的机器代码指令，它允许将内存中的一个�
 
 # 3. LMAX Disruptor 的设计 Design of the LMAX Disruptor
 
-## 3.1. Memory Allocation
+在尝试解决上述问题时，通过严格分离我们认为在队列中混为一谈的问题，出现了一种设计。
+这种设计与确保任何数据仅由一个线程拥有以进行写入访问相结合，从而消除了写入争用。
+这种设计被称为 "Disruptor" 。
+之所以如此命名，是因为它与 Java 7 中为支持 Fork-Join 而引入的 "Phasers" 概念[4]具有处理依赖关系图的相似元素。
 
-## 3.2. Teasing Apart the Concerns
+LMAX disruptor 旨在解决上述所有问题，以最大限度地提高内存分配的效率，并以缓存友好的方式运行，以便在现代硬件上发挥最佳性能。
 
-## 3.3. Sequencing
+中断器机制的核心是环形缓冲区形成的预分配有界数据结构。
+数据通过一个或多个生产者添加到环形缓冲区，并由一个或多个消费者处理。
 
-## 3.4. Batching Effect
+## 3.1. 内存分配 Memory Allocation
+
+环形缓冲区的所有内存都是启动时预先分配的。
+环形缓冲区可以存储指向条目的指针数组或表示条目的结构数组。
+Java 语言的局限性意味着条目作为指向对象的指针与环形缓冲区相关联。
+这些条目中的每一个通常不是传递的数据本身，而是它的容器。
+这种条目的预分配消除了支持垃圾收集的语言中的问题，因为条目将在 Disruptor 实例的持续时间内被重新使用和存活。
+这些条目的内存是同时分配的，很可能它们会在主内存中连续布局，因此支持缓存跨步。
+John Rose 提议将 "value types"[5] 引入 Java 语言，这将允许元素数组，就像其他语言（例如 C ）一样，从而确保内存将被连续分配并避免指针间接寻址。
+
+在 Java 等托管运行时环境中开发低延迟系统时，垃圾收集可能会出现问题。
+分配的内存越多，垃圾收集器的负担就越大。
+当对象非常短暂或实际上不朽时，垃圾收集器会发挥最佳作用。
+环形缓冲区中条目的预分配意味着就垃圾收集器而言它是不朽的，因此几乎没有负担。
+
+在重负载下，基于队列的系统可以备份，这会导致处理速度降低，并导致分配的对象存活时间超过它们应有的时间，从而通过分代垃圾收集器提升到年轻代之外。
+这有两个含义：首先，对象必须在各代之间复制，这回导致延迟抖动；其次，这些对象必须从老一代收集，这通常是一个更昂贵的操作，并且增加了碎片内存空间需要压缩时导致 "stop the world" 暂停的可能性。
+在大内存堆中，这可能会导致持续时间为每 GB 数秒的暂停。
+
+## 3.2. 梳理顾虑 Teasing Apart the Concerns
+
+我们看到以下问题在所有队列实现中都被混为一谈，以至于这些不同行为的集合倾向于定义队列实现的接口：
+
+1. 存储被交换的数据
+2. 协调要求下一个交换序列的生产者
+3. 协调通知消费者由新的数据可用
+
+当使用一种使用垃圾收集的语言设计金融交易所时，过多的内存分配可能会出现问题。
+所以，正如我们所描述的，链表支持的队列不是一个好的方法。
+如果可以预先分配处理阶段之间数据交换的整个存储空间，则可以最大限度地减少垃圾收集。
+此外，如果剋在统一块中执行此分配，则将以对现代处理器所采用的缓存策略非常友好的方式完成该数据的遍历。
+满足此要求的数据机构是预先填充了所有槽的数组。
+在创建环形缓冲区时， Disruptor 利用抽象工厂模式来预分配条目。
+当一个条目被声明时，生产者可以将其数据复制到预分配的结构中。
+
+在大多数处理器上，序列号的余数计算有很高的成本，它决定了环中的槽。
+这个成本可以通过使环的大小为 2 的幂而大大降低。
+一个大小为减一的位掩码来有效地执行余数运算。
+
+正如我们之前描述的，有界队列会在队列的头部和尾部发生争用。
+环形缓冲区数据结构不受这种争用和并发原语的影响，因为这写问题已被梳理成必须通过其访问环形缓冲区的生产者和消费者屏障。
+这些屏障的逻辑如下所述。
+
+在 Disruptor 的大多数常见用法中，通常只有一个生产者。
+典型的生产者是文档阅读器或网络监视器。
+在只有一个生产者的情况下，不会争用序列/条目分配。
+在有多个生产者的更不常用的用法中，生产者将相互竞争以获取环形缓冲区中的下一个条目。
+可以通过对该槽的序列号进行简单的 CAS 操作来管理关于声明下一个可用条目的争用。
+
+一旦生产者将相关数据复制到声明的条目中，它就可以通过提交序列号将其公开给消费者。
+这可以在没有 CAS 的情况下通过简单的繁忙自选来完成，指导其他生产者在自己的提交中达到此序列。
+然后，这个生产者可以前进光标，表示下一个可用与消费的条目。
+生产者可以通过在写入环形缓冲区之前跟踪消费者的序列作为简单的读取操作来避免包装环。
+
+消费者在读取条目之前等待一个序列在环形缓冲区中变得可用。
+在等待时可以采用各种策略。
+如果 CPU 资源很宝贵，它们可以在生产者发出信号的锁中等待一个条件变量。
+这显然是一个争论点，只有在 CPU 资源比延迟和吞吐量更重要是才会使用。
+消费者也可以循环检查代表表示环形缓冲区中当前可用序列的游标。
+这可以通过交换 CPU 资源与延迟来在有或没有线程产量的情况下完成。
+这扩展非常好，因为如果我们不适用锁和条件变量，我们已经打破了生产者和消费者之间的相互依赖关系。
+无锁多生产者——多消费者队列确实存在，但它们需要在头部、尾部、大小计数器上进行多个 CAS 操作。
+Disruptor 不会受到这种 CAS 争用的影响。
+
+## 3.3. 序列 Sequencing
+
+序列是 Disruptor 中如何管理并发的核心概念。
+每个生产者和消费者都对它如何与环形缓冲区交互制定了严格的排序概念。
+生产者在要求换种的每一个条目时，按顺序申索下一个槽。
+对于只有一个生产者，这个下一个空位的序列可以是简单的计数器，在多个生产者的情况下，可以是一个使用 CAS 操作更新的原子计数器。
+当生产者完成条目更新后，它可以通过更新一个单独计数器来提交更改，该计数器表示环形缓冲区上的游标，用于向消费者提供最新条目。
+环形缓冲区游标可以由生产者使用内存屏障在繁忙的自选中读取和写入，而无需 CAS 操作， 如下所示：
+
+```jshelllanguage
+long expectedSequence = cliaimedSequence - 1;
+while ( cursor != expectedSequence) {
+    // busy spin
+}
+
+cursor = cliaimedSequence;
+```
+
+消费者通过使用内存屏障读取游标来等待给定序列变得可用。
+更新游标后，内存屏障可确保对环形缓冲区中条目的变化对更待游标前进的消费者是可见的。
+
+每个消费者都有自己的序列，当它们处理缓冲区的条目时，它们会更新这些序列。
+这些消费者序列允许生产者跟踪消费者，以放置环的包裹。
+消费者序列还允许消费者以一种有序的方式协调对同一条目的工作。
+
+在只有一个生产者的情况下，无论消费者图的复杂性如何，都不需要锁或 CAS 操作。
+整个并发协调可以通过讨论的序列上的内存屏障来实现。
+
+## 3.4. 批处理效果 Batching Effect
+
+当消费者在环形缓冲区中等待一个正在前进的游标序列时，出现了一个有趣的机会，这在队列中是不可能的。
+如果消费者发现环形缓冲区游标自上次检查依赖已前进了许多步骤，则可以处理该该序列而无需参与并发机制。
+这导致滞后的消费者在生产者突飞猛进时迅速恢复与生产者的步伐，从而平衡系统。
+这种类型的批处理增加了吞吐量，同时减少和平滑了延迟。
+根据我们的观察，无论负载如何，这种效应都会导致延迟时间恒定，直到内存子系统饱和，然后曲线时线性的，遵循**利特尔定律**( Little’s Law [6])。
+这与我们在负载增加时观察到的队列延迟的 "**J**" 曲线效应非常不同。
+
+## 3.5. 依赖图 Dependency Graphs
+
+队列代表了生产者和消费者之间简单的一步管道依赖关系。
+如果消费者形成了一个链式或图式依赖结构，那么在图的每个阶段之间都需要队列。
+这会在依赖阶段图中多次产生队列的固定成本。
+在设计 LMAX 金融交易所时，我们分析表明，采用基于队列的方法导致排队成本在处理交易的总执行成本中占主导地位。
+
+因为生产者和消费者的关注点是通过 Disruptor 模式分离的，所以可以在核心仅使用单个环形缓冲区的同时表示消费者之间的复杂依赖关系图。
+这会大大降低固定执行成本，从而提高吞吐量，同时减少延迟。
+
+单个环形缓冲区可用于存储具有复杂结构的条目，将整个工作流聚和在一起。
+在设计这种结构时必须注意，以便独立消费者写入的状态不会导致缓存行的错误共享。
+
+## 3.6. Disruptor 类图 Disruptor Class Diagram
+
+Disruptor 框架中的核心关系在下面的类图中得到了描述。
+该图省略了可用于简化编程模型的便利类。
+构建依赖图后，编程模型就很简单了。
+生产者通过 `ProducerBarrier` 按顺序声明条目，将它们的更改写入声明的条目，然后通过 `ProducerBarrier` 提交回去，使其可供消费。
+作为消费者，所有需要做的就是提供一个 `BatchHandler` 实现，该实现在新条目可用时接收回调。
+由此产生的编程模型是基于事件的，与 Actor 模型有很多相似之处。
+
+分离通常在队列实现中混杂的关注点允许更灵活的设计。
+`RingBuffer` 存在于 Disruptor 模型的核心，为无争用的数据交换提供存储。
+对于与 `RingBuffer` 交互的生产者和消费者，并发问题是分开的。
+`ProducerBarrier` 管理与在环缓冲区中声明插槽相关的任何并发问题，同时跟踪依赖的消费者以防止环回绕。
+`ConsumerBarrier` 会在新条目可用时通知消费者，并且消费者可以构建为表示处理管道中多个阶段的依赖关系图。
+
+![class diagram](classdiagram.png)
+
+## 3.7. 代码示例 Code Example
+
+下面的代码是单个生产者和单个消费者的例子，它使用方便的接口 `BatchHandler` 来实现一个消费者。
+消费者在一个单独的线程上运行，在条目可用时接收它们。
+
+```jshelllanguage
+// Callback handler which can be implemented by consumers
+final BatchHandler<ValueEntry> batchHandler = new BatchHandler<ValueEntry>() {
+    public void onAvailable(final ValueEntry entry) throws Exception {
+        // process a new entry as it becomes available.
+    }
+    public void onEndOfBatch() throws Exception {
+        // useful for flushing results to an IO device if necessary.
+    }
+    public void onCompletion() {
+        // do any necessary clean up before shutdown
+    }
+};
+RingBuffer<ValueEntry> ringBuffer = new RingBuffer<ValueEntry>(
+        ValueEntry.ENTRY_FACTORY, 
+        SIZE, 
+        ClaimStrategy.Option.SINGLE_THREADED, 
+        WaitStrategy.Option.YIELDING);
+ConsumerBarrier<ValueEntry> consumerBarrier = ringBuffer.createConsumerBarrier();
+BatchConsumer<ValueEntry> batchConsumer = new BatchConsumer<ValueEntry>(consumerBarrier, batchHandler);
+ProducerBarrier<ValueEntry> producerBarrier = ringBuffer.createProducerBarrier(batchConsumer);
+
+// Each consumer can run on a separate thread
+EXECUTOR.submit(batchConsumer);
+
+// Producers claim entries in sequence
+ValueEntry entry = producerBarrier.nextEntry();
+
+// copy value into the entry container
+
+// make the entry available to consumers
+producerBarrier.commit(entry);
+```
+
+# 4. 吞吐量性能测试 Throughput Performance Testing
+
+作为参考，我们选择了 Doug Lea 优秀的 `java.util.concurrent.ArrayBlockingQueue`[7] ，根据我们的测试，它具有所有有界队列最高的性能。
+测试以阻塞编程风格进行，以匹配 Disruptor 的风格。
+下面详述的测试用例可在 Disruptor 开源项目中找到。
+
+> 运行测试需要一个能够并行执行至少 4 个线程的系统。
+
+![unicast1p1c](unicast1p1c.png)
+
+_Figure 1. Unicast: 1P - 1C_
+
+![threestep1p3c](threestep1p3c.png)
+
+_Figure 2. Three Step Pipeline: 1P - 3C_
+
+![sequencer3p1c](sequencer3p1c.png)
+
+_Figure 3. Sequencer: 3P - 1C_
+
+![multicast1p3c](multicast1p3c.png)
+
+_Figure 4. Multicast: 1P - 3C_
+
+![diamond1p3c](diamond1p3c.png)
+
+_Figure 5. Diamond: 1P - 3C_
+
+对于上述配置，与 Disruptor 的屏障配置相比，对数据流的每个弧线都应用了 `ArrayBlockingQueue` 。
+下表显示了使用 Java 1.6.0_25 64-bit Sun JVM ， Windows 7 ， 不带 HT 的 Intel Core i7 860 @ 2.8 GHz 和 Intel Core i7-2720QM ， Ubuntu 11.04 的每秒操作数的洗呢能结果，并在处理 5 亿条消息时充分利用 3 次运行。
+在不同 JVM 执行时，结果可能会有很大差异，下面的数据并不是我们观察到的最高数据。
+
+_Table 2. Comparative throughput(in ops per sec)_
+
+| | Nehalem 2.8Ghz – Windows 7 SP1 64-bit | | Sandy Bridge 2.2Ghz – Linux 2.6.38 64-bit| |
+
+| ENV                                           | Framework     | Unicast: 1P – 1C | Pipeline: 1P – 3C | Sequencer: 3P – 1C | Multicast: 1P – 3C | Diamond: 1P – 3C |
+|-----------------------------------------------|---------------|-----------------:|------------------:|-------------------:|-------------------:|-----------------:| 
+| **Nehalem 2.8Ghz – Windows 7 SP1 64-bit**     | **ABQ**       |        5,339,256 |         2,128,918 |          5,539,531 |          1,077,384 |        2,113,941 |
+| **Nehalem 2.8Ghz – Windows 7 SP1 64-bit**     | **Disruptor** |       25,998,336 |        16,806,157 |         13,403,268 |          9,377,871 |       16,143,613 |
+| **Sandy Bridge 2.2Ghz – Linux 2.6.38 64-bit** | **ABQ**       |        4,057,453 |         2,006,903 |          2,056,118 |            260,733 |        2,082,725 |
+| **Sandy Bridge 2.2Ghz – Linux 2.6.38 64-bit** | **Disruptor** |       22,381,378 |        15,857,913 |         14,540,519 |         10,860,121 |       15,295,197 |
+
+
+# 5. 延迟性能测试 Latency Performance Testing
+
+为了测量延迟，我们采用三级管道并在低于饱和度的情况下生成事件。
+这是通过在注入事件之后等待 1 微妙，然后再注入下一个事件并重复 5000 万次来实现。
+为了达到这种精度水平，必须使用 CPU 的时间戳计数器。
+我们选择具有不变 TSC 的 CPU ，因为较旧的处理器会因省电和睡眠状体而发生频率变化。
+Intel Nehalem 及更高版本的处理器使用不变的 TSC ，可由 Ubuntu 11.04 上运行的最新 Oracle JVM 访问。
+此测试未使用 CPU 绑定，
+为了进行比较，我们再次使用 `ArrayBlockingQueue` 。
+我们本可以使用 `ConcurrentLinkedQueue` ，它可能会提供更好的结果，但我们希望使用有界队列实现来确保生产者不会因产生被压而超过消费者。
+以下结果是在 Ubuntu 11.04 上运行 Java 1.6.0_25 64-bit 的 2.2Ghz Core i7-2720QM 。
+Disruptor 的每跳平均延迟为 52ns ，而 `ArrayBlockingQueue` 的平均延迟为 32,757ns 。
+分析显示，使用锁和通过条件变量发送信号是造成 `ArrayBlockingQueue` 延迟的主要原因。
+
+_Table 3. Comparative Latency in three stage pipeline_
+
+|                               | Array Blocking Queue(ns) | Disruptor(ns) |
+|-------------------------------|-------------------------:|--------------:|
+| Min Latency                   |                      145 |            29 |
+| Mean Latency                  |                   32,757 |            52 |
+| 99% observations less than    |                2,097,152 |           128 |
+| 99.99% observations less than |                4,194,304 |         8,192 |
+| Max Latency                   |                5,069,086 |       175,567 |
+
+# 6. 结论 Conclusion
+
+Disruptor 是提高吞吐量，减少并发执行上下文之间延迟并确保可预测的延迟（许多应用进程中的一个重要考虑因素）方面迈出的重要一步。
+我们的测试表明，它的性能优于在线程之间交换数据的同类方法。
+我们相信这是此类数据交换的最高性能机制。
+通过专注于跨线程数据交换所涉及的问题的彻底分离，通过消除写入争用、最小化读取争用并确保代码与现代处理器所使用的缓存配合良好，我们建立了一种任何应用进程中的线程之间高效的数据的交换机制。
+
+批处理效应允许消费者在没有任何争用的情况下处理达到给定阈值的条目，这在高性能系统中引入了一个新特性，
+对于大多数系统，随着负载和争用的增加，延迟呈指数增长，即特征 "J" 曲线。
+随着 Disruptor 上的负载增加，延迟几乎保持不变，直到内存子系统发生饱和。
+
+我们相信 Disruptor 为高性能计算树立了新的基准，并且非常有能力继续利用处理器和计算机设计的当前趋势。
+
+请在[此处](https://lmax-exchange.github.io/disruptor/files/Disruptor-1.0.pdf)查看本文的原始 PDF 。
+
+---
+
+1. Staged Event-Driven Architecture – https://en.wikipedia.org/wiki/Staged_event-driven_architecture
+2. Actor model – http://dspace.mit.edu/handle/1721.1/6952
+3. Java Memory Model - https://jcp.org/en/jsr/detail?id=133
+4. Phasers - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Phaser.html
+5. Value Types - https://blogs.oracle.com/jrose/tuples-in-the-vm
+6. Little’s Law - https://en.wikipedia.org/wiki/Little%27s_law
+7. ArrayBlockingQueue - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ArrayBlockingQueue.html
