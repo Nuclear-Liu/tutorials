@@ -185,6 +185,36 @@ public class LongEventHandler implements EventHandler<LongEvent> {
 }
 ```
 
+* `publishEvent()`: Disruptor 3.0 开始首选使用 Lambda 风格AIP 来编写发布者
+    * `EventTranslator`
+    * `EventTranslatorOneArg`
+    * `EventTranslatorTwoArg`
+    * `EventTranslatorThreeArg`
+    * `EventTranslatorVararg`
+
+```jshelllanguage // example-1
+ByteBuffer bb = ByteBuffer.allocate(8);
+for(long l = 0; true; l++) {
+    bb.putLong(0,l);
+    ringBuffer.publishEvent((event, sequence, buffer) -> event.set(buffer.getLong(0)), bb);
+    Thread.sleep(1000);
+}
+```
+
+> **注意**
+> 
+> ```jshelllanguage // example-2
+> ByteBuffer bb = ByteBuffer.allocate(8);
+> for(long l = 0;true;l++) {
+>     bb.putLong(0,l);
+>     ringBuffer.publishEvent((event,sequence) -> event.set(bb.getLong(0)));
+>     Thread.sleep(1000);
+> }
+> ```
+> 
+> 这将创建一个捕获的 Lambda ，意味着当它将 Lambad 传递给调用时，它需要实例化一个对象来保存变量。
+> 这将创建额外的（不必要的）垃圾，因此如果需要低 GC 压力，则应首选将参数传递给 Lambda 调用。
+
 * RingBufferSize: 大小必须是2的幂
 * ProducerType
 * WaitStrategy
