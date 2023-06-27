@@ -56,7 +56,7 @@ const routes: Array<RouteRecordRaw> = [
                 meta: {
                     title: "用户管理",
                     icon: "UserFilled",
-                    roles: ["sys:user"]
+                    roles: ["sys:menu"]
                 },
             },
             {

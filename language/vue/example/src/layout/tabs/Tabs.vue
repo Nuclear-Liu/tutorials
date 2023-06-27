@@ -6,7 +6,7 @@ import type {ITab} from "@/store/type";
 
 const store = useStore();
 const tabList = computed(() => {
-    return store.getters['getTabList'];
+    return store.getters['tabs/getTabs'];
 })
 const activeTab = ref('');
 const route:any = useRoute();
@@ -26,7 +26,7 @@ const beforeRefresh = () => {
         let oldTabs = JSON.parse(tabSession);
         if (oldTabs.length > 0) {
             // oldTabs.forEach(tab=>store.commit('addTab',tab));
-            store.state.tabList = oldTabs;
+            store.state.tabs = oldTabs;
         }
     }
 }
@@ -47,7 +47,7 @@ const removeTab = (targetName: string) => {
         })
     }
     activeTab.value = activeName;
-    store.state.tabList = tabs.filter((tab: ITab) => tab.path != targetName)
+    store.state.tabs = tabs.filter((tab: ITab) => tab.path != targetName)
     router.push({
         path: activeName
     })
@@ -67,7 +67,7 @@ const addTab = () => {
         path: path,
         title: meta.title
     }
-    store.commit('addTab', tab);
+    store.commit('tabs/addTab', tab);
 }
 
 onMounted(() => {

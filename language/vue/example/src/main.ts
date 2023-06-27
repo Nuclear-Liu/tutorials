@@ -3,7 +3,7 @@ import './style.css'
 // @ts-ignore
 import App from './App.vue'
 import router from "./router";
-import {key, store} from "./store";
+import {key, store} from "@/store/index.ts";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as Icons from '@element-plus/icons-vue'
@@ -16,6 +16,7 @@ Object.keys(Icons).forEach((iconName)=> {
 })
 
 app.use(router)
-    .use(store, key)
+// @ts-ignore
+app.use(store, key)
     .use(ElementPlus)
     .mount('#app');

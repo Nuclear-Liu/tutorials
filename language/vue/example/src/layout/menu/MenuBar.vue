@@ -49,7 +49,7 @@ let menuList = reactive([
                 meta: {
                     title: "用户管理",
                     icon: "UserFilled",
-                    roles: ["sys:user"],
+                    roles: ["sys:menu"],
                     parentId: 17,
                 },
             },
@@ -141,7 +141,7 @@ const activePath = computed(() => {
 
 const store = useStore();
 const isCollapse = computed(() => {
-    return store.getters['getCollapse'];
+    return store.getters['menu/getCollapse'];
 })
 const handleOpen = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
