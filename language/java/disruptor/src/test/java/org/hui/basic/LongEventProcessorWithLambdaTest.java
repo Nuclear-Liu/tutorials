@@ -7,7 +7,6 @@ import org.hui.basic.event.LongEvent;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.TimeUnit;
 
 class LongEventProcessorWithLambdaTest {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -15,7 +14,7 @@ class LongEventProcessorWithLambdaTest {
     @Test
     public void test() throws InterruptedException {
         int bufferSize = 1024*1024;
-        LongEventProcessorWithLambda processor = new LongEventProcessorWithLambda(bufferSize, ((event, sequence, endOfBatch) -> {
+        LongEventProcessor processor = new LongEventProcessor(bufferSize, ((event, sequence, endOfBatch) -> {
             LOGGER.info("consume: {}", event);
         }));
 
