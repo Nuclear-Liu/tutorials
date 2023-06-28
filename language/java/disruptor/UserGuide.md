@@ -364,4 +364,375 @@ public class ClearingEventHandler<T> implements EventHandler<ObjectEvent<T>> {
 }
 ```
 
+## 动态添加/移除消费者 Dynamically `EventHandler`
+
+相关类与接口：
+* `BatchEventProcessor`
+* `BatchEventProcessor#halt()`
+* `RingBuffer#addGatingSequences()`
+* `RingBuffer#removeGatingSequences()`
+
+```java
+public class DynamicallyAddHandlerFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public static void main(String[] args) throws InterruptedException {
+        ExecutorService executor = Executors.newCachedThreadPool(DaemonThreadFactory.INSTANCE);
+
+        // Build a disruptor and start it.
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                ProcessorThreadFactory.INSTANCE);
+        RingBuffer<StubEvent> ringBuffer = disruptor.start();
+
+        // Construct 2 batch event processors.
+        DynamicHandler handler1 = new DynamicHandler();
+        BatchEventProcessor<StubEvent> processor1 = new BatchEventProcessor<>(
+                ringBuffer,
+                ringBuffer.newBarrier(),
+                handler1);
+
+        DynamicHandler handler2 = new DynamicHandler();
+        BatchEventProcessor<StubEvent> processor2 = new BatchEventProcessor<>(
+                ringBuffer,
+                ringBuffer.newBarrier(),
+                handler2);
+
+        // Dynamically add both sequences to the ring buffer
+        ringBuffer.addGatingSequences(processor1.getSequence(), processor2.getSequence());
+
+        // Start the new batch processors.
+        executor.execute(processor1);
+        executor.execute(processor2);
+
+        // Async produce
+        CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                ringBuffer.publishEvent(StubEvent.TRANSLATOR, i, i + "message");
+                try {
+                    TimeUnit.NANOSECONDS.sleep(20_000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        TimeUnit.SECONDS.sleep(4);
+
+        // Remove a processor.
+        // Stop the processor
+        processor2.halt();
+        handler2.awaitShutdown();
+        // Remove the gating sequence from the ring buffer
+        ringBuffer.removeGatingSequence(processor2.getSequence());
+
+        while (true) ;
+    }
+}
+
+class DynamicHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
+
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        LOGGER.info("consumer:{}", event);
+    }
+
+    @Override
+    public void onStart() {
+        LOGGER.info("consumer start");
+    }
+
+    @Override
+    public void onShutdown() {
+        LOGGER.info("consumer stop");
+        shutdownLatch.countDown();
+        LOGGER.info("release shutdown latch");
+    }
+
+    public void awaitShutdown() throws InterruptedException {
+        LOGGER.info("await shutdown latch");
+        shutdownLatch.await();
+        LOGGER.info("acquired shutdown latch");
+    }
+}
+```
+
+## 转换器异常处理 Handler Exception Translate
+
+```java
+public class HandlerExceptionOnTranslateFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+    static final int NO_VALUE_SPECIFIED = -1;
+    public static void main(String[] args) throws InterruptedException {
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                DaemonThreadFactory.INSTANCE);
+        disruptor.handleEventsWith(new StubHandler());
+        disruptor.start();
+
+        EventTranslator<StubEvent> translator = ((event, sequence) -> {
+            event.setValue(NO_VALUE_SPECIFIED);
+            if (sequence % 3==0){
+                throw new RuntimeException("skipping");
+            }
+            event.setValue((int)sequence);
+        });
+
+        for (int i = 0; i < 10; i++) {
+            try {
+                disruptor.publishEvent(translator);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+        TimeUnit.SECONDS.sleep(5);
+    }
+}
+class StubHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        if (event.getValue() == HandlerExceptionOnTranslateFeature.NO_VALUE_SPECIFIED) {
+            LOGGER.info("discarded");
+        } else {
+            LOGGER.info("processed:{}",event);
+        }
+    }
+}
+```
+
+## 批量消费 Bathing Event Handler
+
+> 消费回调 `EventHandler#onEvent` 的 `endOfBatch` 有时会在没有结束时触发，导致实际批量大小小于设定的批次大小。
+
+```java
+public class BatchingEventHandlerFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public static void main(String[] args) throws InterruptedException {
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                DaemonThreadFactory.INSTANCE);
+        disruptor.handleEventsWith(new BatchingEventHandler());
+        disruptor.start();
+
+        for (int i = 0; i < 120; i++) {
+            disruptor.publishEvent((event, sequence, arg0, arg1) -> {
+                event.setValue(arg0);
+                event.setTestString(arg1);
+            }, i, i + "mess");
+        }
+
+        TimeUnit.SECONDS.sleep(2);
+        LOGGER.info("new batch");
+
+        for (int i = 0; i < 326; i++) {
+            disruptor.publishEvent((event, sequence, arg0, arg1) -> {
+                event.setValue(arg0);
+                event.setTestString(arg1);
+            }, i, i + "mess");
+        }
+        TimeUnit.SECONDS.sleep(1);
+    }
+}
+
+class BatchingEventHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final int MAX_BATCH_SIZE = 100;
+    private final List<StubEvent> batch = new ArrayList<>();
+
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        batch.add(event);
+        if (endOfBatch || batch.size() >= MAX_BATCH_SIZE) {
+            LOGGER.info("consumer state:{}",endOfBatch);
+            processBatch(batch);
+        }
+    }
+
+    private void processBatch(final List<StubEvent> batch) {
+        LOGGER.info("consumer size:{}", batch.size());
+        batch.clear();
+    }
+}
+```
+
+## 多生产者
+
+> **注意**：
+> 
+> 当 Disruptor 没有启动时，可以生产，待启动后，消费者依此消费环形缓冲区中的数据。
+
+```java
+public class MultiProducerWithTranslatorFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public static void main(String[] args) {
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                DaemonThreadFactory.INSTANCE,
+                ProducerType.MULTI,
+                new YieldingWaitStrategy());
+        disruptor.handleEventsWith(new Consumer()).then(new Consumer()).then(new ClearConsumer());
+
+        Publisher p = new Publisher();
+
+        for (int i = 0; i < 1024; i++)
+        {
+            disruptor.getRingBuffer().publishEvent(p, i, i+Thread.currentThread().getName());
+        }
+        LOGGER.info("start disruptor");
+        disruptor.start();
+        CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                disruptor.getRingBuffer().publishEvent(p,i, Thread.currentThread().getName() + i);
+                try {
+                    TimeUnit.NANOSECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                disruptor.getRingBuffer().publishEvent(p,i, Thread.currentThread().getName() + i);
+                try {
+                    TimeUnit.NANOSECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        while (true);
+    }
+}
+class Publisher implements EventTranslatorTwoArg<StubEvent,Integer,String> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    @Override
+    public void translateTo(StubEvent event, long sequence, Integer arg0, String arg1) {
+        event.setValue(arg0);
+        event.setTestString(arg1);
+        LOGGER.info("publish:{}",event);
+    }
+}
+class Consumer implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        LOGGER.info("consume: {}", event);
+    }
+}
+class ClearConsumer implements EventHandler<StubEvent> {
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        event.clear();
+    }
+}
+```
+
+## 重命名消费者线程名 Named Event Handler
+
+```java
+public class NamedEventHandlerFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static void main(String[] args) throws InterruptedException {
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                DaemonThreadFactory.INSTANCE);
+        disruptor.handleEventsWith(new NamedEventHandler("consumer_1"))
+                .then(new NamedEventHandler("consumer_2"));
+        disruptor.start();
+
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            disruptor.getRingBuffer().publishEvent((event, sequence, arg0, arg1) -> {
+                event.setValue(arg0);
+                event.setTestString(arg1);
+            },i, "message");
+            TimeUnit.MICROSECONDS.sleep(180);
+        }
+    }
+}
+class NamedEventHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final String name;
+
+    NamedEventHandler(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        LOGGER.info("consume:{}",event);
+    }
+
+    @Override
+    public void onStart() {
+        final Thread currentThread = Thread.currentThread();
+        LOGGER.info("old thread name:{}",currentThread.getName());
+        currentThread.setName(name);
+    }
+}
+```
+
+## 管道 Pipeline
+
+```java
+public class PipelinerFeature {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static void main(String[] args) throws InterruptedException {
+        Disruptor<StubEvent> disruptor = new Disruptor<>(
+                StubEvent.EVENT_FACTORY,
+                1024,
+                DaemonThreadFactory.INSTANCE);
+        disruptor.handleEventsWith(
+                        new ParallelHandler(0, 3),
+                        new ParallelHandler(1, 3),
+                        new ParallelHandler(2, 3))
+                .then(new JoiningHandler());
+        RingBuffer<StubEvent> ringBuffer = disruptor.start();
+
+        for (int i = 0; i < 100; i++) {
+            ringBuffer.publishEvent((event, sequence, arg0, arg1) -> {
+                event.setValue(arg0);
+                event.setTestString(null);
+            }, i, null);
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+    }
+}
+class ParallelHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final int ordial;
+    private final int totalHandlers;
+    ParallelHandler(int ordial, int totalHandlers) {
+        this.ordial = ordial;
+        this.totalHandlers = totalHandlers;
+    }
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        if (sequence % totalHandlers == ordial) {
+            event.setTestString(ordial + "-" + event.getValue());
+        }
+    }
+}
+class JoiningHandler implements EventHandler<StubEvent> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    @Override
+    public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception {
+        if (event.getTestString() == null) {
+            LOGGER.error("joining handler:{}", event);
+        } else {
+            LOGGER.info("consumer:{},comsumer:{}", this.getClass().getSimpleName(), event);
+        }
+    }
+}
+```
+
 ## 批量回放 Batch Rewind
