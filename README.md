@@ -3,6 +3,8 @@
 * `XXX Best Practice`
 * `Best Programming Resource`
 
+Java: https://www.youtube.com/@java/playlists
+
 ## 必读书籍
 
 * 《代码大全》
