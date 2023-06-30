@@ -299,3 +299,5 @@ IDEA Keymap
 | `ctrl` + `h`                   | view interface implements             |
 | `ctrl` + `alt` + `shift` + `t` | Refactor This Windows                 |
 | `ctrl` + `alt` + `b`           | Navigate to implementation            |
+| `ctrl` + `alt` + `n`           | Inline...                             |
+| `ctrl` + `alt` + `v`           | Introduce Variable...                 |
