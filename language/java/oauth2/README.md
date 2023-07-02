@@ -80,6 +80,8 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
 
 ##### 1. 授权码模式 Authorization Code Grant
 
+> 实际应用中使用最多。
+
 ```text
      +----------+
      | Resource |
@@ -108,10 +110,104 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
      +---------+       (w/ Optional Refresh Token)
 ```
 
-##### 2. 密码模式
+##### 2. 简化模式
+
+> 适合单页应用
+
+```text
+     +----------+
+     | Resource |
+     |  Owner   |
+     |          |
+     +----------+
+          ^
+          |
+         (B)
+     +----|-----+          Client Identifier     +---------------+
+     |         -+----(A)-- & Redirection URI --->|               |
+     |  User-   |                                | Authorization |
+     |  Agent  -|----(B)-- User authenticates -->|     Server    |
+     |          |                                |               |
+     |          |<---(C)--- Redirection URI ----<|               |
+     |          |          with Access Token     +---------------+
+     |          |            in Fragment
+     |          |                                +---------------+
+     |          |----(D)--- Redirection URI ---->|   Web-Hosted  |
+     |          |          without Fragment      |     Client    |
+     |          |                                |    Resource   |
+     |     (F)  |<---(E)------- Script ---------<|               |
+     |          |                                +---------------+
+     +-|--------+
+       |    |
+      (A)  (G) Access Token
+       |    |
+       ^    v
+     +---------+
+     |         |
+     |  Client |
+     |         |
+     +---------+
+```
+
+##### 3. 密码模式
+
+```text
+     +----------+
+     | Resource |
+     |  Owner   |
+     |          |
+     +----------+
+          v
+          |    Resource Owner
+         (A) Password Credentials
+          |
+          v
+     +---------+                                  +---------------+
+     |         |>--(B)---- Resource Owner ------->|               |
+     |         |         Password Credentials     | Authorization |
+     | Client  |                                  |     Server    |
+     |         |<--(C)---- Access Token ---------<|               |
+     |         |    (w/ Optional Refresh Token)   |               |
+     +---------+                                  +---------------+
+```
 
 
-##### 3. 客户端模式
 
+##### 4. 客户端模式
 
-##### 4. 刷新令牌
+> 适用于服务与服务之间
+
+```text
+     +---------+                                  +---------------+
+     |         |                                  |               |
+     |         |>--(A)- Client Authentication --->| Authorization |
+     | Client  |                                  |     Server    |
+     |         |<--(B)---- Access Token ---------<|               |
+     |         |                                  |               |
+     +---------+                                  +---------------+
+```
+
+##### 5. 刷新令牌
+
+```text
+  +--------+                                           +---------------+
+  |        |--(A)------- Authorization Grant --------->|               |
+  |        |                                           |               |
+  |        |<-(B)----------- Access Token -------------|               |
+  |        |               & Refresh Token             |               |
+  |        |                                           |               |
+  |        |                            +----------+   |               |
+  |        |--(C)---- Access Token ---->|          |   |               |
+  |        |                            |          |   |               |
+  |        |<-(D)- Protected Resource --| Resource |   | Authorization |
+  | Client |                            |  Server  |   |     Server    |
+  |        |--(E)---- Access Token ---->|          |   |               |
+  |        |                            |          |   |               |
+  |        |<-(F)- Invalid Token Error -|          |   |               |
+  |        |                            +----------+   |               |
+  |        |                                           |               |
+  |        |--(G)----------- Refresh Token ----------->|               |
+  |        |                                           |               |
+  |        |<-(H)----------- Access Token -------------|               |
+  +--------+           & Optional Refresh Token        +---------------+
+```
