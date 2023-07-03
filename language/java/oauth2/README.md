@@ -78,6 +78,21 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
 * [rfc6749](https://datatracker.ietf.org/doc/html/rfc6749)
 * [理解OAuth 2.0](https://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html)
 
+> **授权渠道(channels)**
+> 
+> ![img.png](img.png)
+> * **前端渠道**: 没有资源服务器(RS)参与的流程【授权过程？】
+> * **后端渠道**: 没有资源拥有者(RO)参与的流程【使用权限过程？】
+
+> **客户应用类型**
+> 
+> * **公开**(仅存**客户标识**)：重要的客户信息不能够存储在应用中
+>   * 单页应用 SPA (Angular, React, Vue)
+>   * 原生 App (iOS, Android)
+> * **私密**(**客户凭证**)
+>   * Web 服务器应用 (.NET, Java)
+>   * 服务/API (M2M, 机器对机器)
+
 ##### 1. 授权码模式 Authorization Code Grant
 
 > 实际应用中使用最多。
@@ -110,7 +125,12 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
      +---------+       (w/ Optional Refresh Token)
 ```
 
-##### 2. 简化模式
+1. 通过前端渠道**客户**获取授权码；
+2. 通过后端渠道，**客户**使用 `authorization code` 去交换 `Access Token` 和可选的 `Refresh Token`
+3. 假定**资源拥有者**和**客户**在不同的设备上
+4. 最安全的流程，因为令牌不会传递给 user-agent
+
+##### 2. 简化模式 Implicit
 
 > 适合单页应用
 
@@ -149,7 +169,13 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
      +---------+
 ```
 
-##### 3. 密码模式
+1. 适用于**公开的**浏览器单页应用
+2. `Access Token` 直接从授权服务器返回（只有前端渠道）
+3. 不支持 `Refresh Token`
+4. 假定资源所有者和公开客户应用在同一个设备上
+5. 最容易受安全攻击
+
+##### 3. 密码模式 Resource Owner Credentials
 
 ```text
      +----------+
@@ -171,9 +197,12 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
      +---------+                                  +---------------+
 ```
 
+1. 使用用户名/密码登录的应用，例如桌面 App
+2. 使用用户名/密码作为授权方式从授权服务器上获取 Access Token
+3. 一般不支持 Refresh Token
+4. 假定资源拥有者和公开客户端在相同的设备上
 
-
-##### 4. 客户端模式
+##### 4. 客户端模式 Client Credentials
 
 > 适用于服务与服务之间
 
@@ -186,6 +215,10 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
      |         |                                  |               |
      +---------+                                  +---------------+
 ```
+
+1. 适用于服务期间通信场景，**机密客户**代表它自己或者一个用户
+2. 只有后端渠道，使用**客户**凭证获取一个 `Access Token`
+3. 因为**客户**凭证可以使用对称或非对称加密，该方式支持共享密钥或者证书
 
 ##### 5. 刷新令牌
 
@@ -211,3 +244,26 @@ OAuth 提供了一个宽泛的协议框架，具体安全场景需要定制。
   |        |<-(H)----------- Access Token -------------|               |
   +--------+           & Optional Refresh Token        +---------------+
 ```
+
+#### 授权类型选择
+
+![OAuth2 Flow](./OAuth2-Flow.png)
+
+#### 典型授权服务器组成
+
+* 授权(authorize)端点
+* Token 端点
+* 校验(introspect)端点
+* 吊销(revoke)端点
+
+![](./oauth2.png)
+
+#### Spring Security OAuth 2 架构
+
+[Spring Security OAuth 2 架构参考](http://terasolunaorg.github.io/guideline/5.3.0.RELEASE/en/Security/OAuth.html)
+
+![OAuth2Architecture](./OAuth2Architecture.png)
+
+## 实验
+
+1. 授权码模式 Authorization Code Grant
