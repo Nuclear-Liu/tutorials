@@ -103,8 +103,6 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 
 ##### 1. 授权码模式 Authorization Code Grant
 
-> 实际应用中使用最多。
-
 ```text
      +----------+
      | Resource |
@@ -137,6 +135,26 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 2. 通过后端渠道，**客户**使用 `authorization code` 去交换 `Access Token` 和可选的 `Refresh Token`
 3. 假定**资源拥有者**和**客户**在不同的设备上
 4. 最安全的流程，因为令牌不会传递给 user-agent
+
+最常用的流程，安全性最高。适用于有后端的 Web 应用。
+**授权码**通过前端传送，**令牌**则是存储在后端。所有与资源服务器的通信都在后端完成。
+可以避免令牌泄露。
+
+> 案例：A 网站提供一个链接，用户点击后就会跳转到 B 网站，授权用户数据给 A 网站使用。
+> 
+> `https://b.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=CALLBACK_URL&scope=read`
+> 
+> 
+> 1. A 网站提供跳转 B 网站链接，申请授权： `http://localhost:8080/oauth/authorize?client_id=clientapp&response_type=code&scope=read_userinfo&redirect_uri=http://localhost:9001/callback`
+>     * `client_id`: 请求授权者 ID (B用来识别申请者)
+>     * `response_type`: 表示要求返回**授权码**
+>     * `scope`: 表示请求授权范围
+>     * `redirect_uri`: 接受或拒绝请求后跳转地址
+> 2. 跳转到 B 网站， B 网站要求**用户登录**，然后询问用户是否同意授予 A 网站权限。
+>     * 如果给予授权，这时 B 网站跳转回 `redirect_uri` 参数指定的地址： `http://localhost:9001/callback?code=T0blJ6`
+>         * `code`: **授权码**
+>     * 如果不予授权，这是 B 网站跳转回 `redirect_uri` 参数指定的地址： `http://localhost:9001/callback?error=access_denied&error_description=User%20denied%20access`
+> 3. A 网站成功拿到**授权码**后，就可以在后端。向 B 网站请求令牌： `http://localhost:8080/oauth/token?code=gm7K9C&grant_type=authorization_code&redirect_uri=http://localhost:9001/callback&scope=read_userinfo`
 
 ##### 2. 简化模式 Implicit
 
