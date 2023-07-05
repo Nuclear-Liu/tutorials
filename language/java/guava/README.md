@@ -30,7 +30,9 @@ Guava 项目包含了 Google 的几个核心库：
 
 **让使用 Java 语言更加友好。**
 
-* [使用和避免 `null`](./UsingAndAvoidingNullExplained.md) : `null` 可能模棱两可，可能导致令人困惑的错误，有时只是令人讨厌。
+* [使用和避免 `null`](./UsingAndAvoidingNullExplained.md) : `null` 可能模棱两可，可能导致令人困惑的错误，有时只是令人讨厌
+* [预处理](./PreconditionsExplained.md) : 更容易的预处理测试你的方法
+* [公共对象方法](./CommonObjectUtilitiesExplained.md) : 简化实现对象方法（如： `hashCode()` `toString()` ）
 
 ##### 2. 集合 `Collections`
 

@@ -49,16 +49,31 @@ possible.get(); // returns 5
 
 ### 查询方法
 
-| Method                                                   | Description                                       |
-|----------------------------------------------------------|---------------------------------------------------|
-| `boolean isPresent()`                                    | 如果 `Optional` 包含的非空实例，返回 `true`                   |
-| `T get()`                                                | 返回所包含的非空 `T` 类型实例；如果为空则抛出 `IllegalStateException` |
-| `T or(T defaultValue)`                                   |                                                   |
-| `Optional<T> or(Optional<? extends T> secondChoice)`     | 返回当前 `Optional` 对象，如果为空实例，则返回 `secondChoice` 对象   |
-| `T or(Supplier<? extends T> supplier)`                   |                                                   |
-| `T orNull()`                                             |                                                   |
-| `Set<T> asSet()`                                         |                                                   |
-| `java.util.Optional<T> toJavaUtil()`                     |                                                   |
-| `Optional<V> transform(Function<? super T, V> function)` |                                                   |
-| `int hashCode()`                                         |                                                   |
-| `boolean equals(Object object)`                          |                                                   |
+| Method                                                                                           | Description                                                          |
+|--------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| `boolean isPresent()`                                                                            | 如果 `Optional` 包含的非空实例，返回 `true`                                      |
+| `T get()`                                                                                        | 返回所包含的非空 `T` 类型实例；如果为空则抛出 `IllegalStateException`                    |
+| `T or(T defaultValue)`                                                                           | 如果当前 `Optional` 包含的值非空，返回所包含的值，否则返回 `defaultValue`                   |
+| `Optional<T> or(Optional<? extends T> secondChoice)`                                             | 返回当前 `Optional` 对象，如果为空实例，则返回 `secondChoice` 对象                      |
+| `T or(Supplier<? extends T> supplier)`                                                           | 如果当前 `Optional` 包含的值非空，返回所包含的值，否则返回 `supplier` 函数接口实例的返回结果           |
+| `T orNull()`                                                                                     | 如果包含的实例存在，则返回该实例；否则返回 `null` (与 Java 8 的 `Optional.orElse(null)` 等同) |
+| `Set<T> asSet()`                                                                                 | 返回一个不可变的单一实例 `Set` ，其唯一元素时包含的实例（如果存在）；否则为 `null` 的不可变 `Set`          |
+| `java.util.Optional<T> toJavaUtil()`                                                             | 返回等效的 `java.util.Optional` 值                                         |
+| `Optional<V> transform(Function<? super T, V> function)`                                         | 如果实例值存在，则使用给定的函数对其进行转换；否则，返回不存在                                      |
+| `static Iterable<T> presentInstances(final Iterable<? extends Optional<? extends T>> optionals)` | 从提供的可选项中按顺序返回每一个当前实例的迭代器值，跳过不存在的；迭代器时**不可修改**并支持**惰性求值**             |
+| `int hashCode()`                                                                                 |                                                                      |
+| `boolean equals(Object object)`                                                                  |                                                                      |
+| `toString()`                                                                                     |                                                                      |
+
+## 重点
+
+除了**通过给 `null` 起一个名字/枚举来增加可读性**之外， `Optional` 最大的有时在于迫使你积极思考值引用为 `null` 的情况。
+
+返回 `Optional` 使调用者不可能忘记返回值为空值的情况。必须自己解开对象的包装。
+
+> **遍历方法**
+> 
+> 如果希望某个默认值替换 `null` 时，使用: `MoreObjects.firstNonNull(T, T)` ，可能为空的值作为第一个参数，默认非空值作为第二个参数；
+> 当两个参数都为 `null` 抛出 `NullPointerException` .
+> 
+> 如果使用的是 `Optional` 时，则可以使用 `optionalObject.or(defaultValue)` 。
