@@ -151,14 +151,32 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 >     * `scope`: 表示请求授权范围
 >     * `redirect_uri`: 接受或拒绝请求后跳转地址
 > 2. 跳转到 B 网站， B 网站要求**用户登录**，然后询问用户是否同意授予 A 网站权限。
->     * 如果给予授权，这时 B 网站跳转回 `redirect_uri` 参数指定的地址： `http://localhost:9001/callback?code=T0blJ6`
+>     * 如果给予授权，这时 B 网站跳转回 `redirect_uri` 参数指定的地址： `http://localhost:9001/callback?code=dZmW8d`
 >         * `code`: **授权码**
 >     * 如果不予授权，这是 B 网站跳转回 `redirect_uri` 参数指定的地址： `http://localhost:9001/callback?error=access_denied&error_description=User%20denied%20access`
-> 3. A 网站成功拿到**授权码**后，就可以在后端。向 B 网站请求令牌： `http://localhost:8080/oauth/token?code=gm7K9C&grant_type=authorization_code&redirect_uri=http://localhost:9001/callback&scope=read_userinfo`
+> 3. A 网站成功拿到**授权码**后，就可以在后端。向 B 网站请求令牌： `http://localhost:8080/oauth/token?code=T0blJ6&grant_type=authorization_code&scope=read_userinfo&redirect_uri=http://localhost:9001/callback`
+>     * 请求头
+>         * `Content-Type`:`application/x-www-form-urlencoded`
+>         * `Authorization`: `Basic Y2xpZW50YXBwOjExMjIzMw==` : 根据 `Username` 与 `Password` 生成
+>     * 请求参数：
+>         * `code`: 授权码（上一步获取到的）
+>         * `grant_type`: 授权方式--authorization_code(授权码)
+>         * `scope`: 表示请求授权范围
+>         * `redirect_uri`: 令牌颁发后的回调网站
+> 4. B 收到请求后，颁发令牌：向 `redirect_uri` 发送 JSON 数据其中包含 `access_token` 即**令牌**。
+>     ```json
+>     {
+>         "access_token": "a903123f-6888-4ca5-b46c-554b86bed15e",
+>         "token_type": "bearer",
+>         "expires_in": 43199,
+>         "scope": "read_userinfo"
+>     }
+>     ```
+> 5. 对于资源的访问过程将 `access_token` 令牌添加到头部 `Authorization` 参数中进行访问: `Authorization`: `Bearer a903123f-6888-4ca5-b46c-554b86bed15e`
 
 ##### 2. 简化模式 Implicit
 
-> 适合单页应用
+> 适合单页应用 
 
 ```text
      +----------+
@@ -202,6 +220,10 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 5. 最容易受安全攻击
 
 > 适用于有后端的 Web 应用，授权码通过前端传送，令牌则是存储在后端
+
+> 案例：
+> 
+> 1. A 网站提供一个链接，要求用户跳转到 B 网站，授权用户数据给 A 网站使用。
 
 ##### 3. 密码模式 Resource Owner Credentials
 
