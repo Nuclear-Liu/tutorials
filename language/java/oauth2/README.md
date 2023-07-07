@@ -223,7 +223,17 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 
 > 案例：
 > 
-> 1. A 网站提供一个链接，要求用户跳转到 B 网站，授权用户数据给 A 网站使用。
+> 1. A 网站提供一个链接，要求用户跳转到 B 网站，请求授权用户数据给 A 网站使用: `http://localhost:8080/oauth/authorize?client_id=clientapp&response_type=token&scope=read_userinfo&state=abc&redirect_uri=http://localhost:9001/callback`
+>     * `client_id`
+>     * `response_type`
+>     * `scope`
+>     * `state`
+>     * `redirect_uri`
+> 2. 用户跳转到 B 网站，登陆后同意授权 A 网站； B 网站根据 `redirect_uri` 参数跳转到指定网站，并把令牌作为 URL 参数传递给 A 网站: `http://localhost:9001/callback#access_token=0406040a-779e-4b5e-adf1-bf2f02031e83&token_type=bearer&state=abc&expires_in=119`
+> 3. 对于资源的访问过程将 `access_token` 令牌添加到头部 `Authorization` 参数中进行访问: `Authorization`: `Bearer a903123f-6888-4ca5-b46c-554b86bed15e`
+> 
+> **注意：**
+> 令牌的位置是 URL 锚点(fragment)，不是查询字符串(querystring)，这是因为 OAuth 2.0 允许跳转网站是 HTTP 协议，因此存在**中间人攻击**的风险，而浏览器跳转时，锚点不会发到服务器，就减少了泄露令牌的风险。
 
 ##### 3. 密码模式 Resource Owner Credentials
 
@@ -252,6 +262,17 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 3. 一般不支持 Refresh Token
 4. 假定资源拥有者和公开客户端在相同的设备上
 
+> 案例：
+>
+> 1. A 网站要求用户提供 B 网站的用户名和密码。获得后 A 直接向 B 请求令牌
+>     ```curl
+>     curl --location --request POST 'http://localhost:8080/oauth/token?grant_type=password&username=bobo&password=xyz&scope=read_userinfo' \
+>     --header 'Accept: application/json' \
+>     --header 'Content-Type: application/x-www-form-urlencoded' \
+>     --header 'Authorization: Basic Y2xpZW50YXBwOjExMjIzMw=='
+>     ```
+> 2. B 网站验证身份通过后，直接给出令牌。这时不需要跳转，而是把令牌在 JSON 数据中返回；A 获得 `access_token`
+
 ##### 4. 客户端凭证模式 Client Credentials
 
 > 适用于服务与服务之间
@@ -269,6 +290,16 @@ RFC 7749 标准定义了获得令牌的四种授权方式：**授权码码模式
 1. 适用于服务期间通信场景，**机密客户**代表它自己或者一个用户
 2. 只有后端渠道，使用**客户**凭证获取一个 `Access Token`
 3. 因为**客户**凭证可以使用对称或非对称加密，该方式支持共享密钥或者证书
+
+> 案例：
+> 
+> 1. A 应用向 B 发送请求: `grant_type`:`client_credentials`
+>     ```curl
+>     curl --location --request POST 'http://localhost:8080/oauth/token?grant_type=client_credentials&scope=devops' \
+>     --header 'Authorization: Basic Y2xpZW50ZGV2b3BzOjc4OQ=='
+>     ```
+> 2. B 网站通过验证后，直接返回令牌 `access_token`
+
 
 ##### 5. 刷新令牌
 
