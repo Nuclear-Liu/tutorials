@@ -33,10 +33,26 @@ Guava 项目包含了 Google 的几个核心库：
 * [使用和避免 `null`](./UsingAndAvoidingNullExplained.md) : `null` 可能模棱两可，可能导致令人困惑的错误，有时只是令人讨厌
 * [预处理](./PreconditionsExplained.md) : 更容易的预处理测试你的方法
 * [公共对象方法](./CommonObjectUtilitiesExplained.md) : 简化实现对象方法（如： `hashCode()` `toString()` ）
+* [排序](./OrderingExplained.md) : Guava 强大**流畅的 `Comparator`**类
+* [可抛出的](./ThrowablesExplained.md) : 简化异常和错误的传播和检查
 
 ##### 2. 集合 `Collections`
 
+Guava 对 JDK 集合生态系统的扩展。
+这些是 Guava **最成熟和最受欢迎**的部分。
+
+* [不可变集合](./) : 用于防御性编程、常量集合同时提高效率
+* [新集合类型](./) : 对 JDK 集合补充：多集合(multisets)、多映射(multimaps)、表(tables)、双向映射(bidirectional maps)等
+* [强大的集合工具](./) : 对 `java.util.Collections` 中没有提供的公用方法
+* [扩展工具](./) : 更容易：`Collection` 装饰器、实现 `Iterator`
+
 ##### 3. 图 `Graphs`
+
+用于建模图结构数据的库，即实体和实体间关系。
+主要功能：
+
+* []()
+* []()
 
 ##### 4. 缓存 `Caches`
 
