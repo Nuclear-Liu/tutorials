@@ -41,7 +41,7 @@ Guava 项目包含了 Google 的几个核心库：
 Guava 对 JDK 集合生态系统的扩展。
 这些是 Guava **最成熟和最受欢迎**的部分。
 
-* [不可变集合](./) : 用于防御性编程、常量集合同时提高效率
+* [不可变集合](./ImmutableCollectionsExplained.md) : 用于防御性编程、常量集合同时提高效率
 * [新集合类型](./) : 对 JDK 集合补充：多集合(multisets)、多映射(multimaps)、表(tables)、双向映射(bidirectional maps)等
 * [强大的集合工具](./) : 对 `java.util.Collections` 中没有提供的公用方法
 * [扩展工具](./) : 更容易：`Collection` 装饰器、实现 `Iterator`
