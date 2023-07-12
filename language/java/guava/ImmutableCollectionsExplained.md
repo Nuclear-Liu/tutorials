@@ -49,4 +49,6 @@ Guava 为每种标准集合（包括 Guava 自己的集合）提供了简易不�
 | `ImmutableMultiset`       | Guava: `Multiset`               |
 | `ImmutableSortedMultiset` | Guava: `SortedMultiset`         |
 | `ImmutableMultimap`       | Guava: `Multimap`               |
-| ``                          |                                 |
+| `ImmutableListMultimap`   | Guava: `ListMultimap`           |
+| `ImmutableSetMultimap`    | Guava: `SetMultimap`            |
+| `ImmutableBiMap`          | Guava: `BiMap`                  |
