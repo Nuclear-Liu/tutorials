@@ -1,11 +1,9 @@
 package org.hui;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NewCollectionTypesExplained {
@@ -36,5 +34,23 @@ public class NewCollectionTypesExplained {
         wordMultiset.entrySet().forEach(
                 entry -> System.out.println(String.format("%s:%s", entry.getElement(), entry.getCount())));
         System.out.println(wordMultiset.elementSet());
+        System.out.println("---------------------------");
+
+        // creates a ListMultimap with tree keys and array list values
+        ListMultimap<String, Integer> treeListMultimap = MultimapBuilder.treeKeys().arrayListValues().build();
+        // creates a SetMultimap with hash keys and enum set values
+        SetMultimap<String, MyEnum> treeSetMultimap = MultimapBuilder.hashKeys().enumSetValues(MyEnum.class).build();
+
+        // Multimaps.toMultimap(String,Integer,)
+        ListMultimap<@Nullable Object, @Nullable Object> objectObjectLinkedListMultimap = LinkedListMultimap.create();
+        Set<MyEnum> h = treeSetMultimap.get("H");
+        List<Integer> h1 = treeListMultimap.get("H");
+        h1.add(23);
+        // treeListMultimap.put()
+        Collection<Map.Entry<String, Integer>> entries = treeListMultimap.entries();
+        Set<Map.Entry<String, MyEnum>> entries1 = treeSetMultimap.entries();
     }
+}
+enum MyEnum {
+
 }
