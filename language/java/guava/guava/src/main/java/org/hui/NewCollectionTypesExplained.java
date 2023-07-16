@@ -49,6 +49,61 @@ public class NewCollectionTypesExplained {
         // treeListMultimap.put()
         Collection<Map.Entry<String, Integer>> entries = treeListMultimap.entries();
         Set<Map.Entry<String, MyEnum>> entries1 = treeSetMultimap.entries();
+
+        System.out.println("------------ BiMap ---------------");
+        Map<String, Integer> nameToId = Maps.newHashMap();
+        Map<Integer,String> idToName = Maps.newHashMap();
+
+        nameToId.put("Bob",42);
+        idToName.put(42,"Bob");
+
+        BiMap<Integer, String> idName = HashBiMap.create();
+        idName.put(42,"Bob");
+        BiMap<String, Integer> inverse = idName.inverse();
+        idName.put(12, "badHui");
+        System.out.println(inverse.get("badHui"));
+        inverse.put("Hui",28);
+        inverse.put("Hui",29);
+        System.out.println(idName);
+        // idName.remove(12);
+        // idName.put(13, "badHui");
+        idName.forcePut(13,"badHui");
+        System.out.println(inverse);
+
+        System.out.println("------------ Table ---------------");
+        Table<Integer, Integer, Double> table = HashBasedTable.create();
+        table.put(0,0, 1.0);
+        table.put(0,1, 3.14);
+        table.put(1,0,22.62);
+        Map<Integer, Double> row = table.row(0);
+        Map<Integer, Double> column = table.column(1);
+        System.out.println(table);
+        Map<Integer, Map<Integer, Double>> integerMapMap = table.rowMap();
+        Set<Integer> integers = table.rowKeySet();
+        System.out.println(integers);
+        Set<Table.Cell<Integer, Integer, Double>> cells = table.cellSet();
+        System.out.println(cells);
+
+        System.out.println("------------ ClassToInstanceMap ---------------");
+        ClassToInstanceMap<Number> numberDefaults = MutableClassToInstanceMap.create();
+        numberDefaults.putInstance(Integer.class, 0);
+        numberDefaults.putInstance(Double.class, 3.14);
+        numberDefaults.putInstance(Number.class, 99);
+        System.out.println(numberDefaults);
+
+        System.out.println("------------ RangeSet ---------------");
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
+        rangeSet.add(Range.closed(1,10));
+        System.out.println(rangeSet);
+        rangeSet.add(Range.closedOpen(11, 15));
+        System.out.println(rangeSet);
+        rangeSet.add(Range.closedOpen(15,20));
+        System.out.println(rangeSet);
+        rangeSet.add(Range.openClosed(0,0));
+        System.out.println(rangeSet);
+        rangeSet.remove(Range.open(5,10));
+        System.out.println(rangeSet);
+
     }
 }
 enum MyEnum {

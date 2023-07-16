@@ -53,7 +53,7 @@ Guava 提供的 `Multiset` 支持添加多个元素（元素可重复），并�
 | `setCount(E, int)` | 将指定元素的出现次数设置为非负值                                                                   |
 | `size()`           | 返回 `Multiset` 中所有元素出现的总次数                                                          |
 
-> `Multiset<E>` 不是 `Map<E, Integer>`:
+> **`Multiset<E>` 不是 `Map<E, Integer>`:**
 > 
 > * `Multiset<E>` 只有正计数的元素；没有元素的已有负计数，计数为 `0` 被认为不在 `Multiset` 中，不会出现在 `elementSet()` 或 `entrySet()` 视图中
 > * `Multiset.size()` 返回集合的大小，等于所有元素的计数之和；对于不同元素的数量，请使用 `elementSet().size()`
@@ -106,7 +106,7 @@ Guava `Multimap` 将键与任意多的值相关联的数据结构。
     c -> [5]
     ```
 
-通常， `Multimap` 接口最好使用第一种角度；但也允许你使用 `asMap()` 视图来使用，返回一个 `Map<K, Collection<V>>` 。
+通常， `Multimap` 接口最好使用第一种角度；但也允许你使用 `asMap()` 视图来使用，返回一个 `Map<`K, Collection<V>>` 。
 **在 `Multimap` 不存在映射到空集合的键：键要么映射到一个值，要么它根本不存在于 `Multimap` 中。**
 
 一般很少直接使用 `Multimap` 接口；更多使用 `ListMultimap` （将**键**映射到 `List` ）或 `SetMultimap` （将**键**映射到 `Set` ）。
@@ -150,17 +150,96 @@ SetMultimap<Integer, MyEnum> hashEnumMultimap =
 `Multimap` 支持多种强大的视图。
 
 * `asMap`: 将 `Multimap<K, V>` 视为 `Map<K, Collection<V>>`
+
+    返回的映射支持 `remove` ，并且对返回集合的更改会写入；映射**不支持 `put` `putAll`** 。
+    当想在不存在的键上使用 `null` 而不是一个新的，可写的空集合是，可以使用 `asMap().get(key)`
 * `entries`: 将 `Multimap<K, V>` 视为 `Collection<Map.Entry<K, V>>` （对于 `SetMultimap` 是 `Set<Map.Entry<K, V>>`）
 * `keySet`: 将 `Multimap<K, V>` 的不同键视为 `Set<K>`
-* `keys`: 将 `Multimap`
-* `values`:
+* `keys`: 将 `Multimap` 的**键**看作一个 `Multiset` 其多重性等于与该键相关的值的数量。支持从 `Multiset` 中**删除和更改**，**不支持添加**。
+* `values`: 将 `Multimap` 中的所有**值**视为一个扁平化的 `Collection<V>` ，所有的值都是一个集合。（类似于 `Iterables.concat(multimap.asMap().values())` 但返回的是一个完整的 `Collection` ）
+
+> **`Multimap` is not a `Map` :**
+> 
+> `Multimap<K, V>` 不是 `Map<K, Collection<V>>` 区别包括：
+> * `Multimap.get(key)` 总是返回一个非 `null` 可能为空的集合。这并不意味着 `Multimap` 会花费与**键**关联的任何内存，相反，返回的集合是一个视图，允许根据需要添加与**键**关联的内容。
+> * 如果更喜欢类似 `Map` 的行为，对于不在 `Multimap` 中的键返回 `null` ，使用 `asMap()` 视图获取 `Map<K, Collection<V>>` 。
+> * 当且仅当存在与指定**键**关联的元素时 `Multimap.containsKey(key)` 为 `true` 。
+> * `Multimap.entries()` 返回 `Multimap` 中所有**键**的所有条目。如果想要所有**键**的集合条目，请使用 `asMap().entrySet()`
+> * `Multimap.size()` 返回的是整个 `Multimap` 中的条目数，而不是不同键的个数。使用 `Multimap.keySet().size()` 获取不同键的个数。
+
+##### 实现
+
+**推荐使用 `MultimapBuilder`** 创建实例。
+
+| Implementation          | Keys behave like... | Values behave like... |
+|-------------------------|---------------------|-----------------------|
+| `ArrayListMultimap`     | `HashMap`           | `ArrayList`           |
+| `HashMultimap`          | `HashMap`           | `HashSet`             |
+| `LinkedListMultimap`    | `LinkedHashMap`     | `LinkedList`          |
+| `LinkedHashMultimap`    | `LinkedHashMap`     | `LinkedHashSet`       |
+| `TreeMultimap`          | `TreeMap`           | `TreeSet`             |
+| `ImmutableListMultimap` | `ImmutableMap`      | `ImmutableList`       |
+| `ImmutableSetMultimap`  | `ImmutableMap`      | `ImmutableSet`        |
 
 ## `BitMap`
 
+将**值**映射回**键**的传统方法是维护两个单独的 `Map` ，并保持它们的同步，但这种方法容易出错，而且当一个值已经存在于映射中时，会变得非常混乱。
+
+`BiMap<K, V>` 是一个 `Map<K, V>` 同时：
+* 使用 `inverse()` 查看逆 `BiMap<V, K>`
+* 确保值是唯一的。
+
+如果将一个已存在的**键**映射到一个已存在的**值**，将抛出 `IllegalArgumentException` 。
+强制放置使用 `forcePut(key,value)` 。
+
+##### 实现
+
+| Key-Value Map Impl | Value-Key Map Impl | Corresponding `BitMap` |
+|--------------------|--------------------|------------------------|
+| `HashMap`          | `HashMap`          | `HashBiMap`            |
+| `ImmutableMap`     | `ImmutableMap`     | `ImmutableBiMap`       |
+| `EnumMap`          | `EnumMap`          | `EnumBiMap`            |
+| `EnumMap`          | `HashMap`          | `EnumHashBiMap`        |
+
+> 注： `BiMap` 工具，如 `synchronizedBiMap` 在 `Maps` 中。
+
 ## `Table`
+
+Guava 提供了集合类型 `Table` 支持任何类型 `row` 和任何类型 `colum` 。
+`Table` 支持多种视图，可以从任何角度使用数据：
+
+* `rowMap()` 将 `Table<R, C, V>` 视作 `Map<R, Map<C, V>>`
+* `rowKeySet()` 将 `Table<R, C, V>` 视作 `Set<R>`
+* `row(r)` 返回一个非 `null` 的`Map<C, V>` ；对 `Map` 的写入将写入底层 `Table`
+* 提供类似的**列**方法: `columnMap()` `columnKeySet()` `column(c)` （**基于列的访问比基于行的访问效率低**）
+* `cellSet()` 返回一个由 `Table.Cell<R, C, V>` 组成的 `Table` 视图
+
+Guava 提供多种 `Table` 的实现：
+* `HashBasedTable`: 基于 `HashMap<R, HashMap<C, V>>`
+* `TreeBasedTable`: 基于 `TreeMap<R, TreeMap<C, V>>`
+* `ImmutableTable`
+* `ArrayTable`: 基于二维数组，构造时要指定列和行；适用于在表密集时提高速度和内存效率。
 
 ## `ClassToInstanceMap`
 
+`Map` 的**键**并不都是相同的类型：它们是**类型**，将它们映射到该类型的值。
+Guava 提供了 `ClassToInstanceMap` 。
+
+`ClassToInstanceMap` 提供了 `getInstance(Class<T>)` `putInstance(Class<T>, T)` 方法，消除强制类型转换。
+
+`ClassToInstanceMap` 有一个类型参数，通常命名为 `B` 代表 `Map` 管理的类型的上限。
+
+Guava 提供的 `ClassToInstanceMap` 实现类：
+* `MutableClassToInstanceMap`
+* `ImmutableClassToInstanceMap`
+
+> **注意**：
+> 
+> 与任何其他 `Map<Class, Object>` 一样， `ClassToInstanceMap` 可能包含原始类型的条目，并且原始类型以及对应的封装类型可能映射到不同的值。
+
 ## `RangeSet`
+
+`RangeSet` 描述一组**不相连的非空**范围。
+当添加一个范围到一个可变的 `RangeSet` 时，任何连接的范围都会被合并在一起，空的范围会被忽略。
 
 ## `RangeMap`
