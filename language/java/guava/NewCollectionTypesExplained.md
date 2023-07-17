@@ -242,4 +242,33 @@ Guava 提供的 `ClassToInstanceMap` 实现类：
 `RangeSet` 描述一组**不相连的非空**范围。
 当添加一个范围到一个可变的 `RangeSet` 时，任何连接的范围都会被合并在一起，空的范围会被忽略。
 
+> **注意**：
+> 
+> 要合并 `Range.closed(1, 10)` 和 `Range.closedOpen(11, 15)` 这样的范围，必须先使用 `Range.canonical(DiscreteDomain` ，例如 `DiscreteDomain.integers()` 对范围进行预处理。
+
+##### 视图
+
+`RangeSet` 实现支持广泛的视图，包括：
+* `complement()`: 查看 `RangeSet` 的补集。 `complement()` 也是一个 `RangeSet` 因为它包含断开的、非空的范围。
+* `subRangeSet(Range<C>)`: 返回 `RangeSet` 与指定 `Range` 的交集的视图。这概括了传统排序集合的 `hashSet` `subSet` `tailSet` 视图。
+* `asRanges()`: 将 `RangeSet` 看作一个 `Set<Range<C>>` 支持遍历。
+* `asSet(DisreteDomain<C>)`(仅 `ImmutableRangeSet`): 将 `RangeSet<C>` 看作一个 `ImmutableSortedSet<C>` ，查看范围中的元素而不是元素范围本身。
+
+##### 查询
+
+`RangeSet` 支持的查询操作：
+* `contains(C)`: 查询 `RangeSet` 中的任何范围是否包含指定的元素
+* `rangeContaining(C)`: 返回包含指定元素的 `Range` ，如果没有则返回 `null`
+* `encloses(Range<C>)`: 测试 `RangeSet` 中的 `Range` 是否包围指定的范围
+* `span()`: 返回包围 `RangeSet` 中每个范围的最小 `Range`
+
 ## `RangeMap`
+
+`RangeMap` 是一个集合类型，描述了从不相干的非空范围到值的映射。
+与 `RangeSet` 不同， `RangeMap` 从不**凝聚**相邻的映射，即时相邻的范围映射到相同的值。
+
+##### 视图
+
+`RangeMap` 提供两种视图：
+* `asMapOfRanges()`: 将 `RangeMap` 视为 `Map<Range<K>, V>` 用来遍历 `RangeMap`
+* `subRangeMap(Range<K>)`: 将 `RangeMap` 与指定 `Range` 的交集视为 `RangeMap`
