@@ -185,24 +185,85 @@ Guava 更倾向于提供接受 `Iterable` 而不是 `Collection` 的实用程序
 
 `Maps` 提供的静态工厂方法：
 
-| 实现                | 工厂                                                                                                         |
-|-------------------|------------------------------------------------------------------------------------------------------------|
-| `HashMap`         | basic: `newHashMap` from `Map`: `newHashMap(Map)` with expected size: `newHashMapWithExpectedSize`         |
-| `LinkedHashMap`   | basic: `newLinkedHashMap` from `Map`: `newLinkedHashMap(Map)`                                              |
-| `TreeMap`         | basic: `newThreeMap` from `Comparator`: `newTreeMap(Comparator)` from `SortedMap`: `newTreeMap(SortedMap)` |
-| `EnumMap`         | from `Class`: `newEnumMap(Class)` from `Map`: `newEnumMap(Map)`                                            |
-| `ConcurrentMap`   | basic: `newConcurrentMap`                                                                                  |
-| `IdentityHashMap` | basic: `newIdentityHashMap`                                                                                |
+| 实现                                           | 工厂                                                                                                         |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| `HashMap`                                    | basic: `newHashMap` from `Map`: `newHashMap(Map)` with expected size: `newHashMapWithExpectedSize`         |
+| `LinkedHashMap`                              | basic: `newLinkedHashMap` from `Map`: `newLinkedHashMap(Map)`                                              |
+| `TreeMap`                                    | basic: `newThreeMap` from `Comparator`: `newTreeMap(Comparator)` from `SortedMap`: `newTreeMap(SortedMap)` |
+| `EnumMap`                                    | from `Class`: `newEnumMap(Class)` from `Map`: `newEnumMap(Map)`                                            |
+| `ConcurrentMap`                              | basic: `newConcurrentMap`                                                                                  |
+| `IdentityHashMap`                            | basic: `newIdentityHashMap`                                                                                |
 
 ## `Multisets`
 
+标准的 `Collection` 操作(例如： `containsALL`)会忽略多集合中元素的数量，而只关心元素是否在多集合中。
+多集合的 `Multisets` 提供了提供了许多考虑多重集中元素多重性的操作。
+
+| 方法                                                          | 描述                                                     | 与 `Collection` 方法的不同                                    |
+|-------------------------------------------------------------|--------------------------------------------------------|---------------------------------------------------------|
+| `containsOccurrences(Multiset sup, Multiset sub)`           | 如果所有 `o` 的 `sub.count(o) <= super.count(o)` 则返回 `true` | `Collection.containsAll` 忽略计数，只测试元素是否包含                 |
+| `removeOccurrences(Multiset removeFrom, Multiset toRemove)` | 对于 `toRemove` 中元素的每次出现，删除 `removeFrom` 中的一个匹配项         | `Collection.removeAll` 删除在 `toRemove` 中出现过一次的任何元素的所有匹配项 |
+| `retainOccurrences(Multiset removeFrom, Multiset toRetain)` | 保证所有 `o` 的 `removeFrom.count(o) <= toRetain.count(o)`  | `Collection.retainAll` 保留所有在 `toRetain` 中出现甚至一次的元素      |
+| `intersection(Multiset, Multiset)`                          | 返回两个多重集的交集视图： `retainOccurrences` 的非破坏性替代方案            |                                                         |
+| ------                                                      | ------                                                 |
+| `copyHighestCountFirst(Multiset)`                           | 返回按降频顺序迭代元素的多重集的不可变副本                                  |
+| `unmodifiableMultiset(Multiset)`                            | 返回多级的不可修改视图                                            |
+| `unmodifiableSortedMultiset(SortedMultiset)`                | 返回已排序的多集的不可修改视图                                        |
+
 ## `Multimaps`
+
+##### `index`
+
+`Multimaps.index(Iterable, Function)` 与 `Maps.uniqueIndex` 类似，可以解决以下问题：当你想查找所有具有某些共同属性的对象时，而这些属性并不一定是唯一的（例如按照字符长度进行分组）。
+
+##### `invertFrom`
+
+Guava 提供了 `invertForm(Multimap toInvoert, Multimap dest)` 可以将一个键映射到多个值。
+
+> 如果使用的是 `ImmutableMultimap` 可以使用 `ImmutableMultimap.inverse()`
+
+##### `forMap`
+
+`Multimap.forMap(Map)` 将 `Map` 视为 `SetMultimap` （结合 `Multimaps.invertFrom` 使用）。
+
+##### Wrappers
+
+`Multimaps` 提供了传统的包装器方法，以及基于您选择的 `Map` 和 `Collection` 实现获取自定义 `Multimap` 实现的工具。
+
+| `Multimap` 类型       | 不可修改                            | 线程安全                            | 自定义                    |
+|---------------------|---------------------------------|---------------------------------|------------------------|
+| `Multimap`          | `unmodifiableMultimap`          | `synchronizedMultimap`          | `newMultimap`          |
+| `ListMultimap`      | `unmodifiableListMultimap`      | `synchronizedListMultimap`      | `newListMultimap`      |
+| `SetMultimap`       | `unmodifiableSetMultimap`       | `synchronizedSetMultimap`       | `newSetMultimap`       |
+| `SortedSetMultimap` | `unmodifiableSortedSetMultimap` | `synchronizedSortedSetMultimap` | `newSortedSetMultimap` |
+
+自定义 `Multimap` 实现允许指定应在返回的 `Multimap` 中使用的特定实现。
+注意事项包括：
+
+* `Multimap` 假定对 `Map` 和工厂返回的列表拥有完全的所有权。这些对象不应手动更新，提供时应为空，并且不应使用软引用、弱引用或幽灵引用。
+* 不保证在修改了 `Multimap` 后 `Map` 的内容会是什么样子。
+* 当并发操作更新 `Multimap` 时，即使 `map` 和工厂生成的实例时线程安全的， `Multimap` 也不是线程安全的。不过，并发读取操作会正常工作。如果有必要可以使用 `synchronized` 包装器解决这个问题。
+* 如果 `map` 、工厂、工厂生成的列表和 `multimap`内容都是可序列化的。
+* `Multimap.get(key)` 返回的集合与 `Supplier` 返回的集合类型不同，如果你的供应商返回的是 `RandomAccess` 列表，则 `Multimap.get(key)` 也将是随机访问
+
+> **注意：**自定义的 `Multimap` 方法需要一个 `Supplier` 参数来生成新的集合。
 
 ## `Tables`
 
 `Tables` 类提供的一些方便的实用工具。
 
+##### `customTable`'
+
+`Tables.newCustomTable(Map, Supplier)` 允许指定行或列实现一个 `Tab` 。
+
+##### `transpose`
+
+使用 `transpose(Table<R, C, V>)` 方法，可以将 `Tab<R, C, V>` 视作 `Tab<C, R, V>`
+
 ##### `newCustomTable`
 
 类似于 `Multimaps.newXXXMultimap(Map, Supplier)` 实用工具；
 `Tables.newCustomTable(Map, Supplier<Map>)` 允许你使用你喜欢的任何行或列映射指定一个 `Table` 实现。
+
+* `unmodifiableTable`
+* `unmodifiableRowSortedTable`

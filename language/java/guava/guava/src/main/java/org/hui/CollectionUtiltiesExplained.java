@@ -1,9 +1,11 @@
 package org.hui;
 
+import com.google.common.base.Supplier;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.google.common.collect.Comparators.max;
 import static java.util.Arrays.asList;
@@ -85,20 +87,89 @@ public class CollectionUtiltiesExplained {
         System.out.println(stringByIndex);
 
         Map<String, Integer> left = ImmutableMap.of("a", 1, "b", 2, "c", 3);
-        Map<String, Integer> right = ImmutableMap.of("b",2,"c",4,"d",5);
+        Map<String, Integer> right = ImmutableMap.of("b", 2, "c", 4, "d", 5);
         MapDifference<String, Integer> diff = Maps.difference(left, right);
         System.out.println(diff.entriesInCommon());
         System.out.println(diff.entriesDiffering());
         System.out.println(diff.entriesOnlyOnLeft());
         System.out.println(diff.entriesOnlyOnRight());
 
-        BiMap<String,Integer> nameAge= HashBiMap.create();
-        nameAge.put("hui",22);
-        nameAge.put("wan",26);
+        BiMap<String, Integer> nameAge = HashBiMap.create();
+        nameAge.put("hui", 22);
+        nameAge.put("wan", 26);
         BiMap<String, Integer> synchronizedBiMap = Maps.synchronizedBiMap(nameAge);
         System.out.println(synchronizedBiMap);
         BiMap<String, Integer> unmodifiabledBiMap = Maps.unmodifiableBiMap(nameAge);
         System.out.println(unmodifiabledBiMap);
 
+        System.out.println("------------ Multisets ----------------");
+        Multiset<String> multiset1 = HashMultiset.create();
+        multiset1.add("a", 2);
+        Multiset<String> multiset2 = HashMultiset.create();
+        multiset2.add("a", 5);
+
+        boolean isContainsAll = multiset1.containsAll(multiset2);
+        System.out.println(isContainsAll);
+        boolean occurrences = Multisets.containsOccurrences(multiset1, multiset2);
+        System.out.println(occurrences);
+        boolean removeOccurrences = Multisets.removeOccurrences(multiset2, multiset1);
+        System.out.println(removeOccurrences);
+        boolean b = multiset2.removeAll(multiset1);
+        System.out.println(b);
+        System.out.println(multiset2.isEmpty());
+
+        System.out.println("------------ Multimaps ----------------");
+        ImmutableSet<String> digits = ImmutableSet.of(
+                "zero", "one", "two", "three", "four",
+                "five", "six", "seven", "eight", "nine");
+        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String s) {
+                return s.length();
+            }
+        };
+        // Multimaps.index(digits, lengthFunc)
+        ImmutableListMultimap<Integer, String> index = Multimaps.index(digits, new com.google.common.base.Function<String, Integer>() {
+            @Override
+            public Integer apply(String input) {
+                return input.length();
+            }
+        });
+        System.out.println(index);
+
+        Multimap<String, Integer> multimap = ArrayListMultimap.create();
+        multimap.putAll("b", Ints.asList(2, 4, 6));
+        multimap.putAll("a", Ints.asList(4, 2, 1));
+        multimap.putAll("c", Ints.asList(2, 5, 3));
+
+        TreeMultimap<Integer, String> invert = Multimaps.invertFrom(multimap, TreeMultimap.<Integer, String>create());
+        System.out.println(invert);
+
+        Map<String, Integer> map = ImmutableMap.of("a", 1, "b", 1, "c", 2);
+        SetMultimap<String, Integer> multiMap = Multimaps.forMap(map);
+        HashMultimap<Integer, String> inverse = Multimaps.invertFrom(multiMap, HashMultimap.<Integer, String>create());
+        System.out.println(inverse);
+
+        ListMultimap<String, Integer> myMultimap = Multimaps.newListMultimap(
+                Maps.<String, Collection<Integer>>newTreeMap(),
+                new Supplier<LinkedList<Integer>>() {
+                    @Override
+                    public LinkedList<Integer> get() {
+                        return Lists.newLinkedList();
+                    }
+                });
+
+        System.out.println("------------ Tables ----------------");
+        Table<String, Character, Integer> table = Tables.newCustomTable(
+                Maps.<String, Map<Character, Integer>>newLinkedHashMap(),
+                new Supplier<Map<Character, Integer>>() {
+                    @Override
+                    public Map<Character, Integer> get() {
+                        return Maps.newLinkedHashMap();
+                    }
+                });
+        table.put("oo",'a',11);
+        Table<Character, String, Integer> transpose = Tables.transpose(table);
+        System.out.println(transpose);
     }
 }
