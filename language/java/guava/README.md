@@ -46,13 +46,15 @@ Guava 对 JDK 集合生态系统的扩展。
 * [强大的集合工具](./CollectionUtilitiesExplained.md) : 对 `java.util.Collections` 中没有提供的公用方法
 * [扩展工具](./CollectionHelpersExplained.md) : 更容易：`Collection` 装饰器、实现 `Iterator`
 
-##### 3. 图 `Graphs`
+##### 3. [图 `Graphs`](./GraphsExplained.md)
 
 用于建模图结构数据的库，即实体和实体间关系。
 主要功能：
 
-* []()
-* []()
+* Graph:
+* ValueGraph:
+* Network:
+* 支持可变和不可变、有向和无向图，以及其他一些属性
 
 ##### 4. 缓存 `Caches`
 
