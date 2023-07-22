@@ -56,7 +56,9 @@ Guava 对 JDK 集合生态系统的扩展。
 * Network:
 * 支持可变和不可变、有向和无向图，以及其他一些属性
 
-##### 4. 缓存 `Caches`
+##### 4. [缓存 `Caches`](./CachesExplained.md)
+
+正确的使用本地缓存，支持多种过期行为。
 
 ##### 5. 函数式风格 `Functional idioms`
 
