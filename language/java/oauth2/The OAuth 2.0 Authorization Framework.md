@@ -388,9 +388,23 @@ grant_type=refresh_token&refresh_token=tGzv3JOkF0XG5Qx2TlKWIA
 
 授权过程使用两个授权服务器端点（HTTP 资源）：
 
-* 授权端点(Authorization endpoint) - 
-* 令牌端点(Token endpoint)
+* **授权端点**(Authorization endpoint) - 客户端用于通过用户代理重定向从资源所有者获取授权。
+* **令牌端点**(Token endpoint) - 客户端用于将授权交换为访问令牌，通常使用客户端身份验证。
 
-### 3.1. Authorization Endpoints
+以及一个客户端端点：
+
+* **重定向端点**(Redirection endpoint) - 由**授权服务器**通过资源所有者用户代理向客户端返回包含授权凭证的响应。
+
+并非每种授权类型都同时使用这两个端点。
+扩展授权类型可根据需要定义其他端点。
+
+### 3.1. Authorization Endpoints 授权端点
+
+
+
 #### 3.1.1. Response Type
 #### 3.1.2. Redirection Endpoint
+
+### 3.2. Token Endpoints 令牌端点
+
+### 3.3. Access Token Scope 访问令牌范围
