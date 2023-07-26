@@ -400,7 +400,9 @@ grant_type=refresh_token&refresh_token=tGzv3JOkF0XG5Qx2TlKWIA
 
 ### 3.1. Authorization Endpoints 授权端点
 
-
+授权端点用于与资源所有者交互并获取授权许可。
+授权服务器必须首先**验证资源所有者的身份**。
+授权服务器
 
 #### 3.1.1. Response Type
 #### 3.1.2. Redirection Endpoint
