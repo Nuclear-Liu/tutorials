@@ -103,4 +103,84 @@ Guava 的 `common.graph` 是一个用于**图结构**数据（即实体及其之
 
 ##### 构建图实例
 
+根据设计， `common.graph` 提供的实现类不是公共的。
+这减少了用户需要了解的公共类数量，并且可以更轻松地浏览内置实现提供的各种功能，而不会让只想创建图的用户不知所措。
+
+要创建一个图类型内置实现的实例，请使用相应的 `Builder` 类： `GraphBuilder` `ValueGraphBuilder` `NetworkBuilder` 。
+
+* 可以通过两种方式之一获得图 `Builder` 的实例：
+    * 静态方法： `directed()` - 有向 `undirected()` - 无向
+    * 静态方法： `from()` 根据现有图实例创建一个 `Builder`
+* 创建了 `Builder` 实例后，可以选择性地指定其他特性和功能
+* 构建**可变图**
+  	* 可以在同一个 `Builder` 实例上多次调用 `build()` 以构建具有相同配置的多个图实例。
+    * 无需在 `Builder` 中指定元素类型；在图类型本身中指定即可。
+    * `build()` 方法返回关联图类型的**可变(`Mutable`)子类型**，它提供了突变方法；更多内容参见： `Mutable` and `Immutable` graphs
+* 构建**不可变图**
+    * 可以在同一个 `Builder` 实例上多次调用 `immutable()` 创建具有多个相同配置的 `ImmutableGraph.Builder` 实例
+    * 需要在 `immutable()` 中指定元素类型
+
+> **`Builder` 约束与优化提示**
+> 
+> `Builder` 类型通常提供两种类型的选项： 约束和优化提示。
+> 
+> **约束**指定由给定 `Builder` 实例创建的图必须满足的行为和属性。例如：
+> 
+> * 图是否有向
+> * 图是否允许环路
+> * 图的边是否有序
+> 
+> 实现类可以选择使用**优化提示**来提高效率。例如，确定内部数据结构的类型或初始大小。
+> 
+> 每种图类型都提供与其 `Builder` 指定的约束相对应的访问器，但不提供优化提示的访问器。
+
+## `Mutable` 与 `Immutable` 图
+
+##### `Mutable*` 类型
+
+每个图类型都有一个对应的 `Multiable*` 子类型： `MutableGraph` `MutableValueGraph` `MutableNetwork` 。
+这些子类型定义了变种方法：
+
+* 添加和删除节点的方法：
+    * `addNode(node)`
+    * `removeNode(node)`
+* 添加和删除边的方法：
+    * `MultiableGraph`
+        * `putEdge(nodeU, nodeV)`
+        * `removeEdge(nodeU, nodeV)`
+    * `MultiableValueGraph`
+        * `putEdge(nodeU, nodeV, value`
+        * `removeEdge(nodeU, nodeV)`
+    * `MultiableNetwork`
+        * `addEdge(nodeU, nodeV, edge)`
+        * `removeEdge(edge)`
+
+这与 Java 集合框架（以及 Guava 的新集合类型）历来的工作方式不同；这些类型中的每一种都包含（可选的）突变方法的签名。
+我们选择将可变方法分成不同的子类型，部分原因是为了鼓励防御性编程：一般来说，如果您的代码只检查或遍历图形而不对其进行变换，那么其输入应指定为 `Graph`、 `ValueGraph` 或 `Network` ，而不是它们的可变子类型。
+另一方面，如果您的代码确实需要变异对象，那么使用标有 `Mutable` 的类型会有助于您的代码引起对这一事实的注意。
+
+由于 `Graph` 等是接口，即使它们不包含突变方法，向调用者提供该接口的实例也不能保证它不会被调用者突变，因为（如果它实际上是一个 `Mutable` 子类型）调用者可以将它转换为该子类型。
+如果你想以契约的形式保证作为方法参数或返回值的图不被修改，应该使用 `Immutable` 实现；下文将对此进行详细介绍。
+
+##### `Immutable*` 实现
+
+每种图类型具有相应的 `Immutable` 实现。
+这些类类似与 Guava 的 `ImmutableSet` `ImmutableList` `ImmutableMap` 等：一旦构建完成，它们就不能被修改，并且它们在内部使用高效的不可变数据结构。
+
+与 Guava 其他 `Immutable` 类型不同的是，这些实现没有任何突变方法的方法签名，因此它们不需要为尝试的突变抛出 `UnsupportedOperationException` 。
+
+可以通过哟以下两种方式之一创建 `ImmutableGraph` 实例：
+
+* 使用 `GraphBuilder`
+
+    `ImmutableGraph<Country> immutableGraph = GraphBuilder.undirected().<Country>immutable().putEdge(FRANCE, GERMANY).build()`
+
+* 使用 `ImmutableGraph.copyOf()`
+
+    `ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(otherGraph);`
+
+不可变图总是保证提供稳定的事件边缘顺序。
+如果使用 `GraphBuilder` 填充图，那么附带边的顺序将尽可能是插入顺序。
+如果使用 `copyOf()` 则附带边顺序是它们在复制过程中被访问的顺序。
+
 
