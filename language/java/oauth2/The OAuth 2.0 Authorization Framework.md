@@ -402,11 +402,250 @@ grant_type=refresh_token&refresh_token=tGzv3JOkF0XG5Qx2TlKWIA
 
 授权端点用于与资源所有者交互并获取授权许可。
 授权服务器必须首先**验证资源所有者的身份**。
-授权服务器
+授权服务器验证资源所有者身份的方式（如，用户名和密码登录登录，会话 cookie ) 超出了本规范的范围。
+
+客户端获取**授权端点位置的方式**超出了本规范的范围，但服务文档通常会提供该位置。
+
+端点 URI 可以包括 `application/x-www-form-urlencoded` 格式（根据附录 B ）的查询组件（[RFC3986] 第 3.4 节），在添加附加查询参数时必须保留该组件。
+端点 URI 不得包含片段组件。
+
+由于对授权端点的请求会导致用户身份验证和明文凭证的传输（在 HTTP 响应中），因此授权服务器在向授权端点发送请求时必须要求使用 TLS 第 1.6 节中所述。
+
+授权服务器必须支持对授权端点使用 HTTP `GET` 方法 [RFC2616] ，并且也可以使用 `POST` 方法。
+
+发送的参数如果没有值，必须视做请求中省略的参数。
+授权服务器必须忽略未识别的请求参数。
+请求和响应参数不得多次包含。
 
 #### 3.1.1. Response Type
+
+授权代码授予类型和隐式授予类型流程使用授权端点。
+客户端使用以下参数通知授权服务器所需的授权类型：
+
+* `response_type`
+    
+    **必填**。
+    该值必须是第 4.1.1 节所述用于请求授权代码的 `code` 、第 4.2.1 节所述用于请求访问令牌（隐式授权）的 `token` 或第 8.4 节所述已注册的扩展值之一。
+
+扩展响应类型可以包含空格分隔(`%x20`)的值列表，其中值顺序并不重要（例如，响应类型 `a b` 与 `b a` 相同）。
+此类复合响应类型的含义由其各自的规范规定。
+
+如果授权请求缺少 `response_type` 参数，或响应类型不被理解，授权服务器必须返回第 4.1.2.1 节所述的错误响应。
+
 #### 3.1.2. Redirection Endpoint
+
+授权服务器完成与资源所有者的交换后，授权服务器会将资源所有者的用户代理引导回客户端。
+授权服务器将用户代理重定向到先前客户端的重定向端点，该端点是在客户端注册过程中或提出授权请求时与授权服务器建立的。
+
+重定向端点 URI 必须是 [RFC3986] 第 4.3 节定义的绝对 URI 。
+端点 URI 可以包括 `application/x-www-form-urlencoded` 格式（根据目录B）的查询组件（[RFC3986] 第 3.4 节），在添加其他查询参数时必须保留该组件。
+端点 URI 不得包含片段组件。
+
+##### 3.1.2.1. Endpoint Request Confidentiality 请求端点机密性
+
+当请求的响应类型为 `code` 或 `token` ，或当重定向请求将导致敏感凭据在开放网络上传输时，重定向端点应要求使用第 1.6 节所述的 TLS。
+本规范不强制要求使用 TLS ，因此在编写本规范时，要求客户端部署 TLS 对许多客户端开发人员来说都是一个重大障碍。
+如果 TLS 不可用，授权服务器应在重定向前就不安全端点向资源所有者发出警告（例如，在请求时显示一条消息）。
+
+缺乏传输层安全性会严重影响客户端及其授权访问的受保护资源的安全性。
+当授权过程被客户端用作终端用户身份验证的委托形式（如第三方登录服务）时，传输层安全性的使用尤为重要。
+
+##### 3.1.2.2. Registration Requirements 注册要求
+
+**授权服务器****必须**要求以下客户端注册其重定向端点：
+
+* 公共的客户端
+* 使用隐式授权类型的机密客户端
+
+授权服务器**应**要求所有客户端在使用授权端点之前注册其重定向端点。
+
+授权服务器应该要求客户端提供完整的重定向 URI （客户端可以使用 `state` 请求参数实现按请求定制）。
+如果无法要求注册完整的重定向 URI ，授权服务器应该要求注册 URI 方案、授权和路径（允许客户端在请求授权时只动态更改重定向 URI 的查询组件）。
+
+授权服务器可以允许客户端注册多个重定向端点。
+
+缺乏重定向 URI 注册要求会使攻击者将端点用作第 10.15 节所述的开放式重定向器。
+
+##### 3.1.2.3. Dynamic Configuration
+
+##### 3.1.2.4. Invalid Endpoint
+
+##### 3.1.2.5. Endpoint Content
 
 ### 3.2. Token Endpoints 令牌端点
 
+#### 3.2.1. Client Authentication
+
 ### 3.3. Access Token Scope 访问令牌范围
+
+## 4. Obtaining Authorization
+
+### 4.1. Authorization Code Grant
+
+#### 4.1.1. Authorization Request
+
+#### 4.1.2. Authorization Response
+
+##### 4.1.2.1. Error Response
+
+#### 4.1.3. Access Token Request
+
+#### 4.1.4. Access Token Response
+
+### 4.2. Implicit Grant
+
+#### 4.2.1. Authorization Request
+
+#### 4.2.2. Access Token Response
+
+##### 4.2.2.1. Error Response
+
+### 4.3. Resource Owner Password Credentials Grant
+
+#### 4.3.1. Authorization Request and Response
+
+#### 4.3.2. Access Token Request
+
+#### 4.3.3. Access Token Response
+
+### 4.4. Client Credentials Grant
+
+#### 4.4.1. Authorization Request and Response
+
+#### 4.4.2. Access Token Request
+
+#### 4.4.3. Access Token Response
+
+### 4.5. Extension Grants
+
+## 5. Issuing an Access Token
+
+### 5.1. Successful Response
+
+### 5.2. Error Response
+
+## 6. Refreshing an Access Token
+
+## 7. Accessing Protected Resources
+
+### 7.1. Access Token Types
+
+### 7.2. Error Response
+
+## 8. Extensibility
+
+### 8.1. Defining Access Token Types
+
+### 8.2. Defining New Endpoint Parameters
+
+### 8.3. Defining New Authorization Grant Types
+
+### 8.4. Defining New Authorization Endpoint Response Types
+
+### 8.5. Defining Additional Error Codes
+
+## 9. Native Applications
+
+## 10. Security Considerations
+
+### 10.1. Client Authentication
+
+### 10.2. Client Impersonation
+
+### 10.3. Access Tokens
+
+### 10.4. Refresh Tokens
+
+### 10.5. Authorization Codes
+
+### 10.6. Authorization Code Redirection URI Manipulation
+
+### 10.7. Resource Owner Password Credentials
+
+### 10.8. Request Confidentiality
+
+### 10.9. Ensuring Endpoint Authenticity
+
+### 10.10. Credentials-Guessing Attacks
+
+### 10.11. Phishing Attacks
+
+### 10.12. Cross-Site Request Forgery
+
+### 10.13. Clickjacking
+
+### 10.14. Code Injection and Input Validation
+
+### 10.15. Open Redirectors
+
+### 10.16. Misuse of Access Token to Impersonate Resource Owner in Implicit Flow
+
+## 11. IANA Considerations
+
+### 11.1. OAuth Access Token Types Registry
+
+#### 11.1.1. Registration Template
+
+### 11.2. OAuth Parameters Registry
+
+#### 11.2.1. Registration Template
+
+#### 11.2.2. Initial Registry Contents
+
+### 11.3. OAuth Authorization Endpoint Response Types Registry
+
+#### 11.3.1. Registration Template
+
+#### 11.3.2. Initial Registry Contents
+
+### 11.4. OAuth Extensions Error Registry
+
+#### 11.4.1. Registration Template
+
+## 12. References
+
+### 12.1. Normative References
+
+### 12.2. Informative References
+
+## Appendix A. Augmented Backus-Naur Form (ABNF) Syntax
+
+### A.1. `client_id` Syntax
+
+### A.2. `client_secret` Syntax
+
+### A.3. `response_typ` Syntax
+
+### A.4. `scope` Syntax
+
+### A.5. `state` Syntax
+
+### A.6. `redirect_uri` Syntax
+
+### A.7. `error` Syntax
+
+### A.8. `error_description` Syntax
+
+### A.9. `error_uri` Syntax
+
+### A.10. `grant_type` Syntax
+
+### A.11. `code` Syntax
+
+### A.12. `access_token` Syntax
+
+### A.13. `token_type` Syntax
+
+### A.14. `expires_in` Syntax
+
+### A.15. `username` Syntax
+
+### A.16. `password` Syntax
+
+### A.17. `refresh_token` Syntax
+
+### A.18. Endpoint Parameter Syntax
+
+## Appendix B. Use of application/x-www-form-urlencoded Media Type
+
+## Appendix C. Acknowledgements
