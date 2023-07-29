@@ -183,4 +183,312 @@ Guava 的 `common.graph` 是一个用于**图结构**数据（即实体及其之
 如果使用 `GraphBuilder` 填充图，那么附带边的顺序将尽可能是插入顺序。
 如果使用 `copyOf()` 则附带边顺序是它们在复制过程中被访问的顺序。
 
+##### 保证
 
+每个 `Immutable` 类型都提供一下保证：
+
+* **浅层不变性**：元素永远不能添加、删除和替换（这些类不实现 `Mutable` 接口）
+* **确定性迭代**：迭代顺序始终与输入图的迭代顺序相关
+* **线程安全**：从多个线程同时访问此图是安全的
+* **完整性**：此类不能在此包之外进行子类化
+
+> _将这些类视为**接口**，而不是实现：_
+>
+> 每个 `Immutable` 类都是一种提供有意义的行为保证的类型——而不仅仅是特定的实现。
+> 应该将它们视为每个重要意义上的接口。
+> 
+> 存储 `Immutable*` 实例（例如 `ImmutableGraph` ）的字段和方法返回值应声明为 `Immutable` 类型，而不是相应的接口类型（例如 `Graph` ）。
+> 这向调用者传达了上面列出的所有语义保证，这几乎总是非常有用的信息。
+> 
+> **警告**：如果其它地方所述，当元素包含在集合中时，修改元素几乎总是一个坏主意。
+> 这将导致未定义的行为和错误。
+> 最好避免将可变对象用作 `Immutable` 实例的元素，因为用户可能希望你的 `Immutable` 不可变对象是深度不可变的。
+
+## 图元素（节点和边）
+
+#### 元素必须可用做 `Map` 的键
+
+用户提供的图元素应被视为图实现所维护的内部数据结构的**键**。
+因此，用于表示图元素的类必须具有 `equals()` 和 `hashCode()` 实现，这些实现具有或诱导下列属性。
+
+##### 唯一性
+
+如果 `A` 和 `B` 满足 `A.equals(B) == true` ，那么这两个元素种最多有一个可能是图的元素。
+
+##### `hashCode()` 和 `equals()` 之间的一致性
+
+根据 `Object.hashCode()` 的定义， `hashCode()` 必须与 `equals()` 一致。
+
+##### 与 `equals()` 的排序一致性
+
+如果对节点进行排序（例如通过 `GraphBuilder.orderNodes()` ），则排序必须与 `Comparator` 和 `Comparable` 一致。
+
+##### 非递归性
+
+`hashCode` 和 `equals` 不能递归引用其他元素。
+例如：
+
+```java
+import java.util.Objects;
+
+// DON'T use a class like this as a graph element (or Map key/Set element)
+public final class Node<T> {
+    T value;
+    Set<Node<T>> successors;
+
+    @Override
+    public boolean equals(Object o) {
+        Node<T> other = (Node<T>) o;
+        return Objects.equals(value, other.value) && Objects.equals(successors, other.successors);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, successors);
+    }
+}
+```
+
+使用这样的类作为 `common.graph` 元素类型存在一下问题：
+
+* **冗余**：由 `common.graph` 库提供的 `Graph`实现已经存储了这些关系
+* **效率低下**：添加/访问此类元素调用 `equals` （可能还有 `hashCode` ），这需要 `O(n)` 时间
+* **不可行性**：如果图中存在循环， `equals()` 和 `hashCode()` 可能永远不会终止
+
+#### 元素与可变状态
+
+如果元素具有可变状态：
+* 可变状态不能反映在 `equals()`/`hashCode()` 方法中（在 `Map` 文档中有详细讨论）
+* 不要构造多个彼此相等的元素，并期望它们可以互换。尤其是在向图中添加此类元素时，如果在创建过程中需要多次引用这些元素，则应一次性创建并存储引用（而不是每次调用 `add` 时都传递 `new MyMutableNode(id)` ）
+
+如果需要存储每个元素的可变状态，一种方法是使用不可变元素，并将可变状态存储在单独的数据结构种（例如元素到状态的映射）。
+
+#### 元素必须为非空
+
+根据契约规定，向图中添加元素的方法必须拒绝空元素。
+
+## 库的契约与行为
+
+本节讨论 `common.graph` 类型的内置实现的行为。
+
+#### 变化
+
+可以添加一条边，这条边的附带节点之前尚未添加到图中。
+如果它们还未出现，则会被静默添加到图中：
+
+```jshelllanguage
+Graph<Integer> graph = GraphBuilder.directed().build(); // graph is empty
+graph.putEdge(1, 2); // this adds 1 and 2 as nodes of this graph, and puts an edge between them
+
+if (graph.nodes().contains(1)) { // evaluates to "true"
+    // ...
+}
+```
+
+#### 图的 `equals()` 方法与图的等价
+
+从 Guava 22 开始， `common.graph` 的图类型都以特定类型有意义的方式定义 `equals()` ：
+
+* `Graph.equals()` 如果两个 `Graph` 具有相同的节点和边集（即每个边在两个图中具有相同的端点和相同的方向），则定义它们相等。
+* `ValueGraph.equals()` 如果两个 `ValueGraph` 具有相同的节点和边集，且相等的边具有相等的值，则定义这两个 `ValueGraph` 相等。
+* `Network.equals()` 如果两个 `Network` 具有相同的节点和边，且每个边对象在相同方向上连接相同的节点，则定义这两个 `Network` 相等。
+
+此外，对于每种图类型，只有当两个图的边具有相同的有向性（两个图形都是有向的或都是无向的）时，两个图才可以相等。
+
+当然，对于每种图类型， `hashCode()` 与 `equals()` 的定义是一致的。
+
+如果只想根据**连通性**来比较两个 `Network` 或两个 `ValueGraph` ，或比较一个 `Network` 或一个 `ValueGraph` 与一个 `Graph` ，可以使用 `Network` 和 `ValueGraph` 提供的 `Graph` 视图：
+
+```jshelllanguage
+Graph<Integer> graph1, graph2;
+ValueGraph<Integer, Double> valueGraph1, valueGraph2;
+Network<Integer, MyEdge> network1, network2;
+
+// compare based on nodes and node relationships only
+if (graph1.equals(graph2)) {
+    // ...
+}
+if (valueGraph1.asGraph().equals(valueGraph2.asGraph())) {
+    // ...
+}
+if (network.asGraph().equals(graph1.asGraph())) {
+    // ...
+}
+
+// compare base on nodes, node relationships, and edge values
+if (valueGraph1.equals(valueGrahp2)) {
+    // ...
+}
+
+// compare base on nodes, node relationships, and edge identities
+if (network1.equals(network2)) {
+    // ...
+}
+```
+
+#### 访问器方法
+
+返回集合的访问器：
+
+* 可能返回图的视图；不支持对图进行影响视图的修改，并可能导致抛出 `ConcurrentModificationException` 。
+* 如果输入有效，但没有元素满足请求，则**将返回空集合**。
+
+如果传递了一个不在图中的元素，访问器将抛出 `IllegalArgumentException` 。
+
+虽然一些 Java 集合框架方法（如 `contains` ）采用 `Object` 参数而不是适当的泛型类型说明符，但从 Guava 22 开始， `common.graph` 方法采用泛型类型说明符来提高类型安全性。
+
+#### 同步
+
+由每个图具体实现来确定自己的同步策略。
+默认情况下，未定义的行为可能是由于调用由另一个线程改变的图上的任何方法而导致的。
+
+一般来说，内置的可变实现不提供同步保证，但 `Immutable` 类（由于不可变）是线程安全的。
+
+#### 元素对象
+
+添加到图中的节点、边和值对象与内置实现无关；它们只是用作内部数据结构的**键**。
+这意味着节点/边可以在图实例之间共享。
+
+默认情况下，节点和边对象是按插入顺序排列的（即，由 `node()` 和 `edges()` 的 `Iterator` 按照它们添加到图中的顺序进行访问，就像 `LinkdedHashSet` ）。
+
+## 执行器注意事项
+
+#### 存储模型
+
+`common.graph` 支持多种机制来存储图的拓扑结构，包括
+
+* 图实现存储拓扑结构（例如，通过存储将节点映射到其相邻节点的 `Map<N,Set<N>>`）；这意味着节点只是键，可以在图之间共享。
+* 节点存储拓扑结构（例如，通过存储相邻节点的 `List<E>`）；这（通常）意味着是特殊图的节点。
+* 单独的数据存储库（例如数据库）存储拓扑结构
+
+**注意**： `Multimap` 对于支持**隔离节点**的 `Graph` 实现来说不是足够的内部数据结构，因为它们限制**键**要么映射到至少一个值，要么不存在于 `Multimap` 中。
+
+#### 访问行为
+
+对于返回集合的访问器，有多种语义选项，包括：
+
+1. 集合是一个不可变的副本（如 `ImmutableSet` ）：以任何方式视图修改集合都会抛出异常，而且对图的修改**不会**放映在集合中。
+2. 集合石不可修改的视图（如 `Collections.unmodifiableSet()`）：尝试以任何方式修改集合都将抛出异常，对图像的修改将反映在集合中。
+3. 集合是一个可变副本：它可以被修改，但是对集合的修改将**不会**反映在图中，反之亦然。
+4. 集合是一个可修改的视图：它是可以修改的，对集合的修改会反映在图中，反之亦然。
+
+> 理论上，可以返回一个在一个方向上传递写入的集合，但不能在另一个方向上传递，但这基本上永远不会有用或清晰，所以请不要这样做。
+
+（1）和（2）通常是优先的；内置通常使用（2）
+
+#### `Abstract*` 类
+
+每种图类型都有一个相应的 `Abstract` 类。
+
+如果可能的话，图接口的实现者应该扩展适当的抽象类，而不是直接实现接口。
+抽象类提供了几个关键方法的实现，这些方法的正确实现可能比较棘手，或者说拥有一致的实现会很有帮助，例如：
+
+* `*degree()`
+* `toString()`
+* `Graph.edges()`
+* `Network.asGraph()`
+
+## 示例代码
+
+#### `node` 是否在图中
+
+`graph.nodes().contains(node)`
+
+#### 图中节点 `u` 和 `v` 之间是否存在边
+
+在无向图的情况下，一下实例中参数 `u` 和 `v` 的顺序无关紧要。
+
+```jshelllanguage
+// This is the preferred syntax since 23.0 for all graph types. 23.0 版本后的首选方法。
+graphs.hasEdgeConnecting(u, v);
+
+// These are equivalent (to each other and to the above expression). 它们是等效的（彼此之间以及与上面的表达式）。
+graphs.successors(u).contains(v);
+graphs.predecessors(v).contains(u);
+
+// This is equivalent to the expressions above if the graph is undirected. 如果图形是无向的，这等效于上面的表达式。
+graphs.adjacentNodes(u).contains(v);
+
+// This works only for Networks. 这只适用于网络。
+!network.edgesConnecting(u, v).isEmpty();
+
+// This works only if "network" has at most a single edge connecting u to v. 仅当 "network" 最多有一个边将您连接到 v 时，这才有效。
+network.edgeConnecting(u, v).isPresent(); // Java 8 only
+network.edgeConnectingOrNull(u, v) != null;
+
+// These work only for ValueGraphs. 仅适用于 ValueGraph
+valueGraph.edgeValue(u, v).isPresent(); // Java 8 only
+valueGraph.edgeValueOrDefalut(u, v, null) != null;
+```
+
+#### 基本 `Graph` 案例
+
+```jshelllanguage
+ImmutableGraph<Integer> graph = GraphBuilder
+        .directed()
+        .<Integer>immutable()
+        .addNode(1)
+        .putEdge(2, 3) // also adds nodes 2 and 3 if not already present
+        .putEdge(2, 3) // no effect; Graph does not support parallel edges
+        .build();
+Set<Integer> successorOfTwo = graph.successors(2); // returns {3}
+```
+
+#### 基本 `ValueGraph` 案例
+
+```jshelllanguage
+MutableValueGraph<Integer, Double> weightedGraph = ValueGraphBuilder.directed().build();
+weightedGraph.addNode(1);
+weightedGraph.putEdgeValue(2, 3, 1.5);  // also adds nodes 2 and 3 if not already present
+weightedGraph.putEdgeValue(3, 5, 1.5);  // edge values (like Map values) need not be unique
+// ...
+weightedGraph.putEdgeValue(2, 3, 2.0);  // updates the value for (2,3) to 2.0
+```
+
+#### 基本 `Network` 案例
+
+```jshelllanguage
+MutableNetwork<Integer, String> network = NetworkBuilder.directed().build();
+network.addNode(1);
+network.addEdge("2->3", 2, 3);  // also adds nodes 2 and 3 if not already present
+
+Set<Integer> successorsOfTwo = network.successors(2);  // returns {3}
+Set<String> outEdgesOfTwo = network.outEdges(2);   // returns {"2->3"}
+
+network.addEdge("2->3 too", 2, 3);  // throws; Network disallows parallel edges
+                                    // by default
+network.addEdge("2->3", 2, 3);  // no effect; this edge is already present
+                                // and connecting these nodes in this order
+
+Set<String> inEdgesOfFour = network.inEdges(4); // throws; node not in graph
+```
+
+#### 逐节点遍历无向图
+
+```jshelllanguage
+// Return all nodes reachable by traversing 2 edges starting from "node" (ignoring edge direction and edge weights, if any, and not including  "node").
+
+import java.util.HashSet;Set<N> getTwoHopNeighbors(Graph<N> graph, N node) {
+    Set<N> twoHopNeighbors = new HashSet<>();
+    for (N neighbor : graph.adjacentNodes(node)) {
+        twoHopNeighbors.addAll(graph.adjacentNodes(neighbor));
+    }
+    twoHopNeighbors.remove(node);
+    return twoHopNeighbors;
+}
+```
+
+#### 沿边遍历有向图
+
+```jshelllanguage
+// Update the shortest-path weighted distances of the successors to "node" in a directed Network (inner loop of Dijkstra's algorithm) given a known distance for {@code node} stored in a {@code Map<N, Double>}, and a {@code Function<E, Double>} for retrieving a weight for an edge.
+void updateDistancesFrom(Network<N, E> network, N node) {
+  double nodeDistance = distances.get(node);
+  for (E outEdge : network.outEdges(node)) {
+    N target = network.target(outEdge);
+    double targetDistance = nodeDistance + edgeWeights.apply(outEdge);
+    if (targetDistance < distances.getOrDefault(target, Double.MAX_VALUE)) {
+      distances.put(target, targetDistance);
+    }
+  }
+}
+```
