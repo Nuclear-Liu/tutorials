@@ -24,3 +24,41 @@
 
 > **注意：**
 > 如果不需要 `Cache` 的功能，那么 `ConcurrentHashMap` 会更节省内存。
+
+## 入口
+
+关于缓存，首先要问自己的问题是：是否有一些*可执行默认*函数来加载或计算与键相关的值？
+如果是这样，应该使用 `CacheLoader` 。
+如果没有，或者需要覆盖默认值，但仍然想要原子式的 **"get-if-absent-compute"** 语义，你就应该在 `get` 调用中传递一个 `Callable` 。
+元素可以使用 `Cache.put()` 直接插入，但**首选**自动缓存加载，因为它可以更轻松推理所有缓存内容的一致性。
+
+#### From a `CacheLoader`
+
+`LoadingCache` 是使用附加的 `CacheLoader` 构建的 `Cache` 。
+创建 `CacheLoader` 通常与实现 `V load(K key) throws Exception` 方法一样简单。
+例如：
+
+```jshelllanguage
+LoadingCache<Key, Graph> graphs = CacheBuilder.newBuilder()
+       .maximumSize(1000)
+       .build(
+           new CacheLoader<Key, Graph>() {
+             public Graph load(Key key) throws AnyException {
+               return createExpensiveGraph(key);
+             }
+           });
+
+// ...
+try {
+  return graphs.get(key);
+} catch (ExecutionException e) {
+  throw new OtherException(e.getCause());
+}
+```
+
+查询 `LoadingCache` 的标准方法是使用方法 `get(K)` 。
+该方法要么返回一个已缓存的值，要么使用缓存的 `CacheLoader` 原子式地将一个新值加载到缓存中。
+由于 `CacheLoader` 可能会引发 `Exception` 异常，因此 `LoadingCache.get(K)` 会引发 `ExecutionException` 异常。
+（如果缓存加载器抛出一个 _unchecked_ 异常）
+
+#### From a `Callable`
