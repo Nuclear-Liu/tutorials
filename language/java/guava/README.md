@@ -71,6 +71,8 @@ Guava 对 JDK 集合生态系统的扩展。
 
 ##### 7. 字符串 `Strings`
 
+[String 工具](./StringsExplained.md)
+
 ##### 8. 原语 `Primitivers`
 
 ##### 9. 范围 `Ranges`
