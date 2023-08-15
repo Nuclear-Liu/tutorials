@@ -67,7 +67,7 @@ Guava 对 JDK 集合生态系统的扩展。
 强大、简单的抽象，使编写正确的并发代码变得更加容易。
 
 * [`ListenableFuture`](./ListenableFutureExplained.md): 在完成时回调 `Futures`
-* [`Service`](): Things that start up and shut down, taking care of the difficult state logic for you.
+* [`Service`](./ServiceExplained.md): 为你处理困难（启动和关闭相关）的逻辑
 
 ##### 7. 字符串 `Strings`
 
