@@ -29,7 +29,9 @@ class CityMapperTest {
         //   * 全局配置文件和映射文件只需要在系统启动时完成加载操作（仅一次）；
         // 通过建造者模式构建复杂的 DefaultSqlSessionFactory 对象，完成如上两件任务【配置文件、Factory单例对象】
         SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
+        // 创建数据库会话
         SqlSession session = sessionFactory.openSession();
+        // 获取映射对象
         CityMapper cityMapper = session.getMapper(CityMapper.class);
         List<City> cities = cityMapper.selectCities();
         cities.forEach(LOGGER::info);
@@ -45,5 +47,14 @@ class CityMapperTest {
         City city = cityMapper.selectCityById(2);
         LOGGER.info("result: {}",city);
         session.close();
+    }
+
+    @Test
+    public void testSelect() throws IOException {
+        InputStream in = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
+        SqlSession session = sessionFactory.openSession();
+        List<City> cities = session.<City>selectList("org.hui.mapper.CityMapper.selectCities");
+        cities.forEach(LOGGER::info);
     }
 }
