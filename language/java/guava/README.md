@@ -87,4 +87,6 @@ Guava 对 JDK 集合生态系统的扩展。
 
 ##### 14. 反射 `Reflection`
 
+[Guava 用于 Java 反射的工具](./ReflectionExplained.md)。
+
 ## 使用 `ProGuard` 避免将 Guava 中不使用的部分与 JAR 捆绑
