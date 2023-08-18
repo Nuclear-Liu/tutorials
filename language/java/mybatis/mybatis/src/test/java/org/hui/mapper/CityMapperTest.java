@@ -31,7 +31,7 @@ class CityMapperTest {
         SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
         // 创建数据库会话
         SqlSession session = sessionFactory.openSession();
-        // 获取映射对象
+        // 获取映射接口代理对象
         CityMapper cityMapper = session.getMapper(CityMapper.class);
         List<City> cities = cityMapper.selectCities();
         cities.forEach(LOGGER::info);
