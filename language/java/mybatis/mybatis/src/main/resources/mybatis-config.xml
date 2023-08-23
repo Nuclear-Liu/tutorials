@@ -8,6 +8,7 @@
     <settings>
         <!-- 打印查询语句 -->
         <setting name="logImpl" value="STDOUT_LOGGING"/>
+<!--        <setting name="logImpl" value="org.hui.mybatis.log.CustomLogger"/>-->
         <!-- 控制全局缓存（二级缓存），默认 true -->
         <setting name="cacheEnabled" value="true"/>
         <!-- 延迟加载的全局开关：开启时，所有关联对象都延迟加载；默认 false -->
@@ -17,8 +18,8 @@
         <!-- MyBatis 创建具有延迟加载能力的对象所用到的代理工具；默认 JAVASSIST -->
         <!--<setting name="proxyFactory" value="CGLIB"/>-->
         <!-- STATEMENT 级别的缓存，使用一级缓存，针对当前执行的这一 statement 有效 -->
-        <setting name="localCacheScope" value="STATEMENT"/>
-        <!--<setting name="localCacheScope" value="SESSION"/>-->
+<!--        <setting name="localCacheScope" value="STATEMENT"/>-->
+        <setting name="localCacheScope" value="SESSION"/>
     </settings>
 
     <typeAliases>

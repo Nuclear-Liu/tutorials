@@ -57,4 +57,21 @@ class CityMapperTest {
         List<City> cities = session.<City>selectList("org.hui.mapper.CityMapper.selectCities");
         cities.forEach(LOGGER::info);
     }
+
+    @Test
+    public void testSessionCache() throws IOException {
+        InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = sessionFactory.openSession();
+        CityMapper cityMapper = session.getMapper(CityMapper.class);
+        List<City> cities = cityMapper.selectCities();
+        System.out.println("first query: " + cities.size());
+        cities = cityMapper.selectCities();
+        System.out.println("second query use cache:" + cities.size());
+        session.close();
+        session = sessionFactory.openSession();
+        cityMapper = session.getMapper(CityMapper.class);
+        cities = cityMapper.selectCities();
+        System.out.println("third query no use cache:" + cities.size());
+    }
 }
