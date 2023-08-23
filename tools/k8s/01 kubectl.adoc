@@ -38,7 +38,7 @@
 === 集群管理命令 Cluster Management Commands
 
 |===
-|命令 |描述 
+|命令 |描述
 
 |`certificate` |修改证书资源 
 |`cluster-info` |显示集群信息 
@@ -57,7 +57,7 @@
 |<font color=red>`describe`</font> |显示特定资源或资源组的详细信息 
 |<font color=red>`logs`</font> |在一个 Pod 中打印一个容器日志；如果 Pod 只有一个容器，容器名称是可选择 
 |`attach` |附加到一个运行的容器 
-|<font color=red>`exec`</font> |在一个容器中执行命令 
+|`exec`|[red]#在一个容器中执行命令#
 |`port-forward` |转发一个或多个本地端口到一个 Pod 
 |`proxy` |运行一个 proxy 到 Kubernetes API Server 
 |`cp` |拷贝文件或目录到容器中 
