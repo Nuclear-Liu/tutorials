@@ -27,8 +27,38 @@ Kubernetes 集群规模可能相当庞大，在应用部署时不能确定应用
 
 * 查看节点标签信息: ``kubectl get nodes --show-labels``
 
-* 设置节点标签信息: ``kubectl label node __node-name__ __label-key__=__label-value__``
+* 设置节点标签信息(设置多个标签时，标签之间通过空格分割): ``kubectl label node __node-name__ __label-key__=__label-value__``
 
-* 根据 ``label-key`` 筛选集群内节点: ``kubectl get nodes -L __label-key__``
+* 跟新指定节点的标签内容: ``kubectl label node __node-name__ __label-key__=__label-value__ --overwrite=true``
 
-* 多维度标签
+* 根据 ``label-key`` 筛选(多个 ``label-key`` 之间使用 ``,`` 分割)集群内节点: ``kubectl get nodes -L __label-key__``
+
+* 根据标签条件查询: ``kubectl get nodes -l __label-key__=__label-value__``
+
+* 删除指定节点的标签: ``kubectl label node __node-name__ __label-key__-``
+
+* 标签选择器：标签选择器主要有2类:
+
+** 等值关系: ``=`` ``!=`` ``kubectl label node __node-name__ __label=value__`` / ``kubectl get node -l __label-name__!=__label-value__``
+
+** 集合关系: ``__KEY__ in {__VALUE_1__, __VALUE_2__}`` ``kubectl get node -l "__label__ in(__label-value-1__, __label-value-2__)"``
+
+===== 多维度标签管理
+
+多维度标签用于不同的需要多个维度区分的场景。
+
+. 为节点设置多维度标签(即多个标签): ``kubectl label node __node-name__ __lk1__=__lv2__ __lk2__=__lv2__``
+
+. 查看集群中指定节点的标签信息: ``kubectl get nodes __node-name__ --show-labels``
+
+. 根据 ``label-key`` 过滤节点: ``kubectl get nodes -L __lk1__,__lk2__``
+
+. 跟新指定节点的标签内容: ``kubectl label node __node-name__ __label-key__=__label-value__ --overwrite=true``
+
+. 删除指定节点的标签: ``kubectl label node __node-name__ __label-key__-``
+
+. 标签选择器：标签选择器主要有2类:
+
+** 等值关系: ``=`` ``!=`` ``kubectl label node __node-name__ __label=value__`` / ``kubectl get node -l __label-name__!=__label-value__``
+
+** 集合关系: ``__KEY__ in {__VALUE_1__, __VALUE_2__}`` ``kubectl get node -l "__label__ in(__label-value-1__, __label-value-2__)"``
