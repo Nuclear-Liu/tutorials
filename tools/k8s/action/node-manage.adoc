@@ -1,0 +1,34 @@
+=== kubectl 管理集群节点(Node)
+
+==== 1. 查看集群信息
+
+查看集群信息:
+[source,shell]
+----
+kubectl cluster-info
+----
+
+==== 2. 查看节点信息
+
+* ``kubectl get nodes``: 查看集群节点信息
+
+* 查看集群节点**详细**信息(默认**命名空间**): ``kubectl get node -o wide``
+** ``-o``: optional
+
+* 查看集群中某一节点描述信息: ``kubectl describe nodes _node-name_``
+
+==== 3. 管理节点标签(label)
+
+节点标签：
+Kubernetes 集群规模可能相当庞大，在应用部署时不能确定应用部署的位置范围；
+通过对节点设置标签，对相关资源进行管理。
+
+标签以 `k=v` 形式标识。
+
+* 查看节点标签信息: ``kubectl get nodes --show-labels``
+
+* 设置节点标签信息: ``kubectl label node __node-name__ __label-key__=__label-value__``
+
+* 根据 ``label-key`` 筛选集群内节点: ``kubectl get nodes -L __label-key__``
+
+* 多维度标签

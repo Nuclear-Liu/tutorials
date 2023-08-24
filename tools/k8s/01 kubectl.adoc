@@ -1,4 +1,5 @@
 = Kubernetes 客户端工具: kubectl
+:toc:
 
 == 1. kubectl 命令帮助
 
@@ -90,7 +91,7 @@
 |===
 |命令 |描述 
 
-|`api-versions` |打印受支持的 API 版本 
+|`api-versions` |打印受支持的 API 版本
 |`config` |修改 kubeconfig 文件(用于访问 API，比如配置认证信息) 
 |`help` |所有命令帮助 
 |`plugin` |运行一个命令行插件 
@@ -109,14 +110,59 @@ ____
 
 . 加载环境变量:
 
-`source /usr/share/bash-completion/bash-completion`
+ source /usr/share/bash-completion/bash-completion
 
-`source &lt;(kubectl completion bash)`
+ source <(kubectl completion bash)
 
-. (避免重启失效)将 kubectl 相关命令写入文件: `kubectl completion bash &gt; ~/.kube/completion.bash.inc`
+. (避免重启失效)将 kubectl 相关命令写入文件: ``kubectl completion bash > ~/.kube/completion.bash.inc``
 
-. (避免重启失效)将命令文件添加到 profile : `vi ~/.bash_profile`
+. (避免重启失效)将命令文件添加到 profile : ``vi ~/.bash_profile``
 
-追加: `source ~/.kube/completion.bash.inc`
+. 追加: `source ~/.kube/completion.bash.inc`
 
-== 4. kubectl 最佳实践
+== 4. 在 worker 节点使用 kubectl
+
+需要的资源：
+
+. kubectl 客户端工具
+
+. 连接配置信息
+
+=== kubeasz 安装部署的集群
+
+使用 kubeasz 安装的 Kubernetes 集群默认所有节点( master 节点和 worker 节点)都可以使用 kubectl 对整个集群进行管理。
+
+=== kubeadm 安装部署的集群
+
+使用 kubeadm 安装的 Kubernetes 集群默认情况下，工作节点存在 kubectl 客户端工具，但是缺少连接集群的配置信息。
+
+. 在 worker 节点创建配置文件目录: ``mkdir ~/.kube``
+
+. 在 master 节点拷贝配置文件到 worker 节点配置文件目录: ``scp /etc/kebernetes/admin.conf __worker-node__:__USER_HOME__/.kube/config``
+
+=== 二进制安装部署的集群
+
+. 搜索 kubectl 客户端工具在 master 节点位置: ``whick kubectl``
+
+. 在 master 节点将 kubectl 客户端工具拷贝到 worker 节点相同目录: ``scp /usr/local/bin/kubectl __worker-node__:/user/local/bin/kubectl``
+
+. 在 worker 节点创建配置文件目录: ``mkdir ~/.kube``
+
+. 在 master 节点拷贝配置文件到 worker 节点配置文件目录: ``scp __kubernetes-install-path__/kube.config __worker-node__:__USER_HOME__/.kube/config``
+
+
+== 5. kubectl 最佳实践
+
+include::action/node-manage.adoc[]
+
+include::02 test.adoc[]
+
+[source,java]
+----
+include::../../language/java/disruptor/src/main/java/org/hui/Main.java[]
+----
+
+[source,java]
+----
+include::../../language/java/disruptor/src/main/java/org/hui/Main.java[lines=6..11]
+----

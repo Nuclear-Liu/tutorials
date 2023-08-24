@@ -1,0 +1,102 @@
+= Syntax Quick Reference 快速语法参考
+
+== 段落
+
+_示例1.段_
+
+段落不需要在 AsciiDoc 中使用特殊标记。
+段落由一行或多行连续的文本定义。
+不显示段落内的**换行符**。
+
+至少留一个空行以开始新段落。
+
+_示例2.文字段落_
+
+一个普通段落。
+
+ 字面意义上的段落。
+ 一个或多个连续行，至少缩进一个空格。
+
+ 文本使用固定宽度（通常为 monospace ）字体。
+ 行是预格式化的（即源文件中的格式）。
+ 空格和换行符
+ 如本句中的空格 换行符
+ 保留。
+
+_示例3.硬换行符_: `space+` / `[%hardbreaks]`
+
+玫瑰是红色的， +
+紫罗兰是蓝色的。
+
+[%hardbreaks]
+Ruby 是红色的。
+Java 是黑色的。
+
+_示例4.导语段_: `[.lead]`
+
+[.lead]
+此文本将设置为引导段落（即较大的字体）。
+
+这一段不会。
+
+== 文本格式
+
+_示例5.约束文本: 粗体 `*` 、斜体 `_` 和等宽 `*_`
+
+> `*` / `_` / `*_` / ``` 前没有空格时将会失效.
+
+It has *strong* significance to me.
+
+I _cannot_ stress this enough.
+
+Type `OK` to accept.
+
+That *_really_* has to go.
+
+Can't pick one? Let's use them `*all*`.
+
+_示例6.不受约束文本_: 粗体 `**` 、斜体 `__` 和等宽 `**__`
+
+**C**reate, **R**ead, **U**pdate, and **D**elete (CRUD)
+
+That's fan__freakin__tastic!
+
+Don't pass generic ``Object``s to methods that accept ``String``s!
+
+It was Beatle**__mania__**!
+
+_示例.7突出显示、下划线、删除线和自定义角色_ ``[.]##``
+
+Mark my words, #automation is essential#.
+
+##Mark##up refers to text that contains formatting ##mark##s.
+
+Where did all the [.underline]#cores# go?
+
+We need [.line-through]#ten# twenty VMs.
+
+A [.myrole]#custom role# must be fulfilled by the theme.
+
+_示例8.上标``^``和下标``~``_
+
+^super^script
+
+~sub~script
+
+_示例9.智能引号和撇号_
+
+"`double curved quotes
+
+'`single curved quotes`'
+
+Olaf's desk was a mess.
+
+A ``std::vector```'s size is the number of items it contains.
+
+All of the werewolves`' desks were a mess.
+
+Olaf had been with the company since the `'00s.
+
+== 连接
+
+_示例10._
