@@ -1,5 +1,8 @@
 = YAML 声明式对象管理
-:toc:
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
 
 [TIP]
 ====

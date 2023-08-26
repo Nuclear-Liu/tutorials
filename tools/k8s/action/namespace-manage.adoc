@@ -30,23 +30,23 @@ kubectl get ns
 +
 [source,shell]
 ----
-kubectl get [res] --namespace [namespace]
+kubectl get <res> --namespace <namespace>
 # or
-kubectl get [res] -n [namespace]
+kubectl get <res> -n <namespace>
 ----
 
 ** 查看指定命名空间下的所有资源
 +
 [source,shell]
 ----
-kubectl get all -n [namespace]
+kubectl get all -n <namespace>
 ----
 
 ** 查看集群所有命名空间下的指定资源
 +
 [source,shell]
 ----
-kubectl get [res] -A
+kubectl get <res> -A
 ----
 
 ==== 2. 创建命名空间(namespace)
@@ -54,7 +54,7 @@ kubectl get [res] -A
 * 使用指令式命令创建命名空间
 +
 [source,shell]
-kubectl create namespace [namespace]
+kubectl create namespace <namespace>
 
 * 使用资源对象清单文件创建命名空间:
 .. 编写资源对象文件: ``vi __namespace__.yaml``
@@ -71,9 +71,9 @@ metadata:
 +
 [source,shell]
 ----
-kubectl apply -f [namespace]
+kubectl apply -f <namespace>
 # or
-kubectl create -f [namespace]
+kubectl create -f <namespace>
 ----
 
 ==== 3. 删除命名空间(namespace)
@@ -86,9 +86,9 @@ kubectl create -f [namespace]
 * 使用指令式命令删除命名空间
 +
 [source,shell]
-kubectl delete namespace [namespace]
+kubectl delete namespace <namespace>
 
 * 使用资源对象清单文件删除命名空间(**推荐方式**):
 +
 [source,shell]
-kubectl delete -f [namespace]
+kubectl delete -f <namespace>
