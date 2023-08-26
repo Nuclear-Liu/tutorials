@@ -1,6 +1,8 @@
 = Kubernetes 客户端工具: kubectl
 Hui.Liu <mexn-0808@outlook.com>
-:toc:
+:toc: left
+:toclevels: 5
+:toc-title: 目录
 
 == 1. kubectl 命令帮助
 
@@ -155,3 +157,5 @@ ____
 == 5. kubectl 最佳实践
 
 include::action/node-manage.adoc[]
+
+include::action/namespace-manage.adoc[]
