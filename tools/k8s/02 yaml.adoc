@@ -1,0 +1,212 @@
+= YAML 声明式对象管理
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+[TIP]
+====
+YAML 是一种**标记语言**，强调以数据为中心；是一种可读性高，用来表达数据序列的格式。
+====
+
+== YAML 基本语法
+
+[WARNING]
+====
+. **低版本**缩进时不允许使用 ``Tab`` 键，只允许使用空格。
+. 缩进空格数相同的元素层级要一致(具体缩进数不重要)。
+. ``#`` 行注释，从注释当前位置开始至行尾。
+====
+
+=== 支持的数据类型
+
+* 对象(映射(mapping)、哈希(hashes)、字典(dictionary))型数据：键值对的集合
++
+对象的一组键值对，使用**冒号**结构表示:
++
+[source,yaml]
+----
+name: Steve
+age: 18
+----
++
+单行描述——使用跨括号，将键值对写在一行内:
+[source,yaml]
+hash: { name: Steve, age: 18}
+
+* 数组(序列(sequence)、列表(list))型数据：一组按次序排列的值
++
+一组**连词线**开头，构成一个数组:
++
+[source, yaml]
+----
+animal:
+- Cat
+- Dog
+----
++
+单行描述——使用方括号：
++
+[source,yaml]
+amimal: [Cat, Dog]
+
+* 纯量(scalars)：单个的，不可再分的值
+** 数值以字面量形式表示：
++
+[source,yaml]
+number: 12.30
+
+** 布尔值使用 ``true``/``false``
++
+[source,yaml]
+isSet: true
+
+** ``null``(空值)使用 ``~``
++
+[source,yaml]
+parent: ~
+
+** 时间/日期类型采用 ``ISO8601`` 格式
++
+[source,yaml]
+----
+currTime: 2001-12-14t21:59:43.10-05:00
+time: 2023-08-25
+----
+
+* 字符串：默认不需要使用**引号**包括
++
+[source, yaml]
+str: this_is_a_string
++
+如果字符串内包含空格等特殊字符可以使用引号(单引号或双引号)包裹；
++
+[source, yaml]
+str: 'this is a string'
+
++
+如果单引号包裹的字符串内容包含单引号，则内部的单引号使用两个单引号进行转义
++
+[source, yaml]
+str: 'this''s a string'
+
++
+使用一个单空格缩进，将字符串写作多行
++
+[source, yaml]
+----
+str: 这是一个
+ 多行
+ 字符串
+----
+
++
+多行字符串首使用 ``|`` 表示保留换行符，或使用 ``>`` 表示折叠换行符
+
+[TIP]
+====
+YAML *强制类型转换*: 使用两个感叹号(``!!``)
+
+[source,yaml]
+----
+e: !!str 123
+f: !!str true
+----
+====
+
+== 使用 YAML 描述 Kubernetes 资源对象
+
+*资源对象清单文件*：在 Kubernetes 中，一般使用 YAML 格式的文件创建符合期望的资源。
+
+=== 常用属性配置字段
+
+[cols="2,2,5a"]
+.常用属性配置字段
+|===
+| 属性参数字段 | 类型| 描述
+
+|``version`` | ``string`` | 指定 Kubernetes API 的版本；当前版本为: ``v1`` (可以使用 ``kubectl api-version`` 查询)
+|``kind`` | ``string`` | 指定 YAML 文件定义的资源类型
+|``metadata`` | ``Object`` | 设置所创建资源的元数据信息
+|``metadata.name`` | ``string`` | 设置所创建资源名称
+|``metadata.namespace`` | ``string`` | 设置所创建资源的命名空间
+|``spec`` | ``Object`` | 设置所创建资源的期望特征
+|``spec.containers[]`` | ``List`` | 设置期望创建容器资源的列表
+|``spec.containers[].name`` | ``string`` | 设置期望创建容器的名称
+|``spec.containers[].image`` | ``string`` | 设置期望创建容器使用的镜像名称
+|``spec.containers[].imagePullPolicy`` | ``string`` | 设置期望创建容器使用的镜像拉取策略:
+
+* ``Always``(**默认**)*: 每次都尝试重新拉取镜像
+* ``Never``: 仅使用本地镜像
+* ``IfNotPresent``: 如果本地没有才拉取镜像
+
+|``spec.containers[].command[]`` | ``List`` | 设置期望创建容器时启动命令列表，如果不指定则使用镜像构建时使用的命令
+|``spec.containers[].args[]`` | ``List`` | 设置期望创建容器时启动命令参数列表
+|``spec.containers[].workDir`` | ``string`` | 设置期望创建容器时工作目录位置
+|``spec.containers[].volumeMounts[]`` | ``List`` | 设置期望创建容器时存储卷配置列表
+|``spec.containers[].volumeMounts[].name`` | ``string`` | 设置期望创建容器时存储卷挂载的名称
+|``spec.containers[].volumeMounts[].mountPath`` | ``string`` | 设置期望创建容器时存储卷挂载的路径
+|``spec.containers[].volumeMounts[].readOnly`` | ``boolean`` | 设置期望创建容器时存储卷挂载的读写模式:
+
+* ``false``(默认): 读写模式
+* ``true``: 只读模式
+|``spec.containers[].ports[]`` | ``List`` | 设置期望创建容器时使用的端口列表
+|``spec.containers[].ports[].name`` | ``string`` | 设置期望创建容器时使用的端口名称
+|``spec.containers[].ports[].containerPord`` | ``number`` | 设置期望创建容器时使用的容器内端口号
+|``spec.containers[].ports[].hostPort`` | ``number`` | 设置期望创建容器时使用的主机端口号
+|``spec.containers[].prots[].protocol`` | ``string`` | 设置期望创建容器时使用端口的协议类型:
+
+* ``TCP``(默认)
+* ``UDP``
+|``spec.containers[].env[]`` | ``List`` | 设置期望创建容器时环境变量列表
+|``spec.containers[].env[].name`` | ``string`` | 设置期望创建容器时环境变量名称
+|``spec.containers[].env[].value`` | ``string`` | 设置期望创建容器时环境变量值
+|``spec.containers[].resources`` | ``Object`` | 设置期望创建容器运行时资源
+|``spec.containers[].resources.limits`` | ``Object`` | 设置期望创建容器运行时资源上限
+|``spec.containers[].resources.limits.cpu`` | ``number`` | 设置期望创建容器运行时使用 CPU 资源上限(单位为 core 数)
+|``spec.containers[].resources.limits.memory`` | ``string`` | 设置期望创建容器运行时使用内存资源上限(单位为 ``MiB`` ``GiB``)
+|``spec.containers[].resources.requests`` | ``Object`` | 设置期望创建容器运行时初始可用资源
+|``spec.containers[].resources.requests.cpu`` | ``number`` | 设置期望创建容器运行时初始可用 CPU 资源(单位为 core 数)
+|``spec.containers[].resources.requests.memory`` | ``string`` | 设置期望创建容器运行时初始可用内存资源(单位为 ``MiB`` ``GiB``)
+|``spec.restartPolicy`` | ``string`` | 设置资源重启策略:
+
+* ``Always``(默认): 无论容器如何终止， kubelet 服务将重启该服务
+* ``OnFailure``: 容器异常终止重启(正常终止退出码为 `0`，不会进行重启)
+|``spec.nodeSelector`` | ``Object`` | 设置期望创建资源所使用节点的节点选择器
+|``spec.imagePullSecrets`` | ``Object`` | 设置期望创建资源所使用镜像
+|``spec.hostNetwork`` | ``boolean`` | 设置期望创建的资源是否使用主机网络模式:
+
+* ``false``(默认): 不使用主机网络，使用 docker 网桥
+* ``true``: 使用主机网络
+|===
+
+[TIP]
+====
+查询可用配置信息：
+
+[source,shell]
+kubectl explain kind-value
+====
+
+=== 案例
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+----
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod1
+spec:
+  containers:
+    - name: k8sonline1
+      image: nginx:latest
+      imagePullPolicy: IfNotPresent
+----

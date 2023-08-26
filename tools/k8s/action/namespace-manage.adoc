@@ -1,0 +1,94 @@
+=== kubectl 管理集群命名空间(Namespace)
+
+[TIP]
+====
+命名空间作用：
+
+* Namespace 是对一组资源和对象的抽象集合
+
+``pod`` ``service`` ``deployment`` 等都属于某一个 Namespace 中(默认是 ``default`` 命名空间)， ``nodes`` ``persistent`` ``volume`` ``namespace`` 等不属于任何 Namespace 。
+====
+
+==== 1. 查看命名空间(namespace)与命名空间中的资源
+
+* 查看集群内所有命名空间:
++
+[source,shell]
+----
+kubectl get namespaces
+# or
+kubectl get namespace
+# or
+kubectl get ns
+----
+
+* 查看命名空间中的资源:
++
+命名空间参数不指定是为默认(``default``)命名空间。
+
+** 查看指定命名空间下的指定资源:
++
+[source,shell]
+----
+kubectl get <res> --namespace <namespace>
+# or
+kubectl get <res> -n <namespace>
+----
+
+** 查看指定命名空间下的所有资源
++
+[source,shell]
+----
+kubectl get all -n <namespace>
+----
+
+** 查看集群所有命名空间下的指定资源
++
+[source,shell]
+----
+kubectl get <res> -A
+----
+
+==== 2. 创建命名空间(namespace)
+
+* 使用指令式命令创建命名空间
++
+[source,shell]
+kubectl create namespace <namespace>
+
+* 使用资源对象清单文件创建命名空间:
+.. 编写资源对象文件: ``vi __namespace__.yaml``
++
+[source,yaml]
+----
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns1
+----
+
+.. 根据资源文件创建资源:
++
+[source,shell]
+----
+kubectl apply -f <namespace>
+# or
+kubectl create -f <namespace>
+----
+
+==== 3. 删除命名空间(namespace)
+
+[WARNING]
+====
+删除一个 ``namespace`` 会自动删除所有属于该命名空间的资源。
+====
+
+* 使用指令式命令删除命名空间
++
+[source,shell]
+kubectl delete namespace <namespace>
+
+* 使用资源对象清单文件删除命名空间(**推荐方式**):
++
+[source,shell]
+kubectl delete -f <namespace>
