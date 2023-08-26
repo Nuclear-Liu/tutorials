@@ -303,3 +303,6 @@ IDEA Keymap
 | `ctrl` + `alt` + `b`           | Navigate to implementation            |
 | `ctrl` + `alt` + `n`           | Inline...                             |
 | `ctrl` + `alt` + `v`           | Introduce Variable...                 |
+
+* 变量不同颜色
+![val_color](val_color.png)
