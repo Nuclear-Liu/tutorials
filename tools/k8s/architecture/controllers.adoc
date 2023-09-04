@@ -1,0 +1,11 @@
+== Controllers 控制器
+
+控制器又称为**工作负载**
+
+控制器类型:
+
+* Deployment 无状态应用
+* StatefulSet 有状态应用
+* DaemonSet 守护进程(每个节点都运行，资源监控、日志收集等)
+* Job 一次性的计划任务
+* CronJob 定时任务

@@ -43,7 +43,7 @@ Kubernetes 允许你存储和管理敏感信息（例如密码、 OAuth 令牌�
 
 ==== 理解 Kubernetes 对象
 
-在 Kubernetes 系统中， *Kubernetes 对象*是**持久化的实体**。
+在 Kubernetes 系统中， **Kubernetes 对象**是**持久化的实体**。
 Kubernetes 使用这些实体去表示整个集群的状态。
 Kubernetes 对象具体描述了如下信息：
 
@@ -61,9 +61,9 @@ Kubernetes 对象是一个种**意向表达**：
 
 操作 Kubernetes 对象(创建、修改、删除)——通过使用 Kubernetes API 实现。
 
-===== 对象*规约(`Spec`)*与*状态(`Status`)*
+===== 对象**规约(`Spec`)**与**状态(`Status`)**
 
-几乎每个 Kubernetes 对象包含两个嵌套的对象字段：对象 *`spec`(规约)* 和对象 *`status`(状态)* 负责管理对象的配置。
+几乎每个 Kubernetes 对象包含两个嵌套的对象字段：对象**`spec`(规约)**和对象**`status`(状态)**负责管理对象的配置。
 
 * `spec` 规约： 在**创建对象时设置**其内容，描述希望对象具有的特征(**期望状态(Desired State)**)
 * `status` 状态：描述对象的**当前状态(Current State)**，由 Kubernetes 系统和组件设置并更新
@@ -81,8 +81,8 @@ Kubernetes 系统读取 Deployment 的 `spec` 并启动期望的 3 个实例的�
 
 ===== 描述 Kubernetes 对象
 
-创建 Kubernetes 对象时，必须提供对象的 `spec` ，用来描述对象的期望状态，以及关于对象的一些基本信息。
-当使用 Kubernetes API 创建对象时（直接创建或经由 `kubectl` 创建）， API 请求必须在请求主体中包含 JSON 格式的信息。
+创建 Kubernetes 对象时，必须提供对象的``spec`` ，用来描述对象的期望状态，以及关于对象的一些基本信息。
+当使用 Kubernetes API 创建对象时（直接创建或经由``kubectl``创建），API请求必须在请求主体中包含 JSON 格式的信息。
 *大多数情况下需要提供 `.yaml` 文件为 `kubectl` 提供这些信息*（`kubectl` 将这些信息转换成 JSON 格式）。
 
 示例：
@@ -140,9 +140,9 @@ Kubernetes 对象对应的 `.yaml` 文件中，需要配置的字段：
 
 从 Kubernetes v1.25 开始， API 服务器提供服务器端**字段验证**，可以检测对象中**未被识别**或**重复的字段**。
 
-`kubectl` 工具使用 `--validate` 标志来设置字段的验证级别。
-它接受值 `ignore`(等同于 `false`)、`warn`和`strict`(等同于 `true`)。
-`kubectl` 的默认验证设置为 `--validate=true` :
+``kubectl``工具使用``--validate``标志来设置字段的验证级别。
+它接受值``ignore``(等同于``false``)、``warn``和``strict``(等同于``true``)。
+``kubectl``的默认验证设置为``--validate=true``:
 
 * `strict` : 严格的字段验证，验证失败时会报错
 * `warn` : 执行字段验证，但错误会以警告的形式提供而不是拒绝请求
@@ -150,7 +150,7 @@ Kubernetes 对象对应的 `.yaml` 文件中，需要配置的字段：
 
 [TIP]
 ====
-当 `kubectl` 无法连接到支持字段验证的 API 服务器时，它将回退为使用客户端验证。
+当``kubectl``无法连接到支持字段验证的 API 服务器时，它将回退为使用客户端验证。
 Kubernetes 1.27 及更高版本始终提供字段验证；较早的 Kubernetes 版本可能没有此功能。
 ====
 

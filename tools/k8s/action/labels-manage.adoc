@@ -1,0 +1,23 @@
+== 标签管理
+
+=== 1. 版本管控
+
+版本(``release``)标签: ``stable`` ``cancry``
+
+环境(``environment``)标签: ``dev`` ``production``
+
+架构(``tier``)标签: ``frontend`` ``backend`` ``middleware``
+
+
+
+=== 2. 环境管控
+
+=== 3. 架构管控
+
+=== 4. 分区管控
+
+分区管控(``partition``)标签: ``customerA`` ``customerB`` ...
+
+=== 5. 质量管控
+
+质量管控(``track``)标签: ``daily`` ``weekly``

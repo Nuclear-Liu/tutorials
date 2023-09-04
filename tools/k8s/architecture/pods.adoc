@@ -1,0 +1,50 @@
+== Pod 容器集
+
+
+Pod 是在 Kubernetes 中可以创建和管理的最小可部署**计算单元**。
+
+Pod 是一组（一个或多个）共享的上下文的**容器**（类似于**共享命名空间**并**共享文件系统卷**的一组容器）；
+Pod 的共享上下文包括一组 Linux 命名空间、控制组(cgroup)和可能一些其他的隔离方面，即用来隔离容器的技术。
+Pod 所建模的是特定应用的**逻辑主机**，其中包含一个或多个应用容器，这些容器相对紧密地耦合在一起。
+Pod 中的容器是**并置(``colocated``)**即在共享的上下文中一同调度运行。
+
+[TIP]
+====
+Pod 可以运行的容器类型：
+
+* **应用容器**；
+* 在 Pod 启动期间运行的 *Init 容器*
+* 为调试目的的**临时性容器**
+====
+
+[WARNING]
+====
+Pod 的前提是安装好**容器运行时**。
+====
+
+[NOTE]
+====
+*Pod* vs *Node*
+
+* Pod 是逻辑概念，表示 Kubernetes 最小可部署单元
+* Node 是物理概念，表示一台物理机器节点
+* 一个 Node 可以有多个 Pod ；一个 Pod 在一个具体的 Node 中
+====
+
+=== 使用 Pod
+
+==== 直接创建 Pod : 不推荐
+
+[source%linenums,yaml]
+----
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+----
