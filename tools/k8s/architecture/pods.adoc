@@ -1,5 +1,6 @@
-== Pod 容器集
+== Pods 容器集
 
+https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/
 
 Pod 是在 Kubernetes 中可以创建和管理的最小可部署**计算单元**。
 
@@ -35,7 +36,7 @@ Pod 的前提是安装好**容器运行时**。
 
 ==== 直接创建 Pod : 不推荐
 
-[source%linenums,yaml]
+[source,yaml,linenums]
 ----
 apiVersion: v1
 kind: Pod

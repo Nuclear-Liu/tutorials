@@ -1,0 +1,5 @@
+== Service 服务
+
+https://kubernetes.io/zh-cn/docs/concepts/services-networking/service/
+
+Kubernetes 中 Service 是将运行在一个或一组 Pod 上的网络应用程序公开为**网络服务**的**方法**。

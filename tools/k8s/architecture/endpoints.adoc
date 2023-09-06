@@ -1,0 +1,3 @@
+== Endpoints 端点
+
+为 Service 管理后端的 Pod ，当后端 Pod 被创建或销毁时， Endpoints 列表会更新 Pod 对应的 IP 地址，以便 Service 访问请求能够确保被响应。

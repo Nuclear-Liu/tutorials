@@ -1,4 +1,8 @@
-== labels 标签
+== Labels and Selectors 标签和标签选择器
+
+ref: https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/labels/#label-selectors
+
+=== 标签
 
 labels key:
 
@@ -10,3 +14,5 @@ labels value:
 
 * 长度不得超过 63 个字符
 * 起始字符必须是字母或数字，中间可以使用连字符``-``、下划线``_``和点``.``
+
+=== 标签选择器

@@ -1,5 +1,7 @@
 == Controllers 控制器
 
+https://kubernetes.io/zh-cn/docs/concepts/architecture/controller/
+
 控制器又称为**工作负载**
 
 控制器类型:
