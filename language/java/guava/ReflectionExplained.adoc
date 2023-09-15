@@ -1,0 +1,193 @@
+== 反射
+
+=== TypeToken
+
+由于类型擦除，无法在运行时传递泛型``Class``对象——可以对它们强制转换并假装它们是泛型的，但实际上并非如此。
+
+例如：
+
+[source,java]
+----
+ArrayList<String> stringList = Lists.newArrayList();
+ArrayList<Integer> intList = Lists.newArrayList();
+System.out.println(stringList.getClass().isAssignableFrom(intList.getClass())); // returns ture 
+----
+
+[TIP]
+====
+``boolean isAssignableFrom(Class<?> cls)``:
+确定此 对象所代表的类或接口是否与指定的``Class``参数所代表的类或接口**相同**，或者是其**超类**或**超接口**。
+如果是，则返回 `true` ；否则返回 `false` 。
+如果该类代表原始类型，那么如果指定的类参数正是该类对象，则该方法返回 `true` ；否则返回 `false` 。
+====
+
+`TypeToken` 使用基于反射的技巧来允许操作和查询泛型类型，即使在运行时也是如此。
+
+=== 背景：类型擦除和反射
+
+Java 在运行时不保留*对象*的通用类型信息。
+但是**反射允许检测方法和类的通用类型**。
+如果实现返回 `List` 方法，并使用反射获取该犯法的返回类型，则会返回表示 `List` 的**参数化类型**。
+
+`TypeToken` 类使用此解决方法允许最小的语法开销操作**泛型类型**。
+
+=== 简介
+
+获取基本原始类的 `TypeToken` 非常简单： `TypeToken&lt;T&gt; tok = TypeToken.of(Class&lt;T&gt; type)`
+
+为具有泛型的类型获取 `TypeToken` – 当在编译时知道泛型参数时：（使用一个空的匿名内部函数） `TypeToken&lt;List&lt;String&gt;&gt; strsTok = new TypeToken&lt;List&lt;String&gt;&gt;() {}`
+
+想特意引用通配符类型：（使用一个空的匿名内部函数） `TypeToken&lt;Map&lt;?,?&gt;&gt; mapTok = new TypeToken&lt;Map&lt;?, ?&gt;&gt;() {};`
+
+`TypeToken` 提供了一种动态解析通用类型参数的方法：
+
+[source,jshelllanguage]
+----
+static <K, V> TypeToken<Map<K, V>> mapToken(TypeToken<K> keyToken, TypeToken<V> valueToken) {
+    return new TypeToken<Map<K, V>>() {}
+            .where(new TypeParameter<K>() {}, keyToken)
+            .where(new TypeParameter<V>() {}, valueToken);
+}
+----
+
+[WARNING]
+====
+**注意：**如果 `mapToken` 只是返回 `new TypeToken&lt;Map&lt;K, V&gt;&gt;()` ，它实际上无法具体化分配 `K` 和 `V` 的类型。
+====
+
+或者，可以用一个（通常是匿名的）子类来捕获一个通用类型，然后针对一个知道的类型参数是什么的上下文来解析它： `new IType&lt;String&gt;() {}.type`
+
+[source,java]
+----
+abstract class IType<T> {
+    TypeToken<T> type = new TypeToken<T>(getClass()) {};
+}
+----
+
+通过这种技术获得知道其元素类型的类。
+
+=== 查询
+
+|===
+|方法 |描述 
+
+|``getType()`` |返回包装后的 `java.lang.reflect.Type`
+|``getRawType()`` | 返回已知的运行时类
+|``getSubtype(Class<?>)`` | 返回具体指定原始类的``this``的某个子类型；例如``this``是``Iterable<String>``，参数是``List.class``，结果将是``List<String>``
+|``getSupertype(Class<?>)`` | 将指定的原始类型生成此类型的父类；例如，如果参数是``Set<String>``和``Iterable.class``，结果就是``Iterable<String>``
+|``isSupertypeOf(type)`` | 如果此类型是给他订类型的**父类**，则返回``true``；**父类**是根据 Java 泛型引入的类型参数规则定义
+|``getTypes()`` | 返回此类型是或为某个子类型的所有类和接口的集合；返回的``Set``还提供了``classes()``和``interfaces()``方法，查看超类和超接口
+|``isArray()`` | 检查该类型是否为已知数组；如``int[]``或者``<? extends A[]>``
+|``getComponentType() | 返回数组组件类型
+|===
+
+==== ``resolveType``
+
+``resolveType``是一种功能强大单复杂的查询操作，可用于从上下文标记中替换("substitute")类型参数.
+
+[source,java,linenums]
+----
+TypeToken<Function<Integer, String>> funToken = new TypeToken<Function<Integer, String>>() {};
+
+TypeToken<?> funToken.resolveType(Function.class.getTypeParameters()[1]); // returns a TypeToken<String>
+----
+
+``TypeToken``将 Java 提供的``TypeValue``与"context"标记中的这些类型变量的值统一起来。
+这通常用于推断类型上方法的返回类型。
+
+[source,java,linenums]
+----
+TypeToken<Map<String, Integer>> mapToken = new TypeToken<Map<String, Integer>>() {};
+TypeToken<?> entrySetToken = mapToken.resolveType(Map.class.getMethod("entrySet").getGenericReturnType());
+// return a TypeToken<Set<Map,Entry<String, Integer>>>
+----
+
+==== ``Invokable``
+
+Guava 的``Invokable``是对``java.lang.reflect.Method``和``java.lang.reflect.Constructor``包装。
+简化常见的反射代码的使用。
+
+* 方法是否公有？
+** JDK: ``Modifier.isPublic(method.getModifiers()``
+** ``Invokable``: ``invokable.isPublic()``
+
+* 方法是否包内私有？
+** JDK: ``!(Modifier.isPrivate(method.getModifiers()) || Modifier.isPublic(method.getModifiers()))``
+** ``Invokable``: ``invokable.isPackagePrivate()``
+
+* 方法是否允许子类覆盖？
+** JDK: ``!(Modifier.isFinal(method.getModifiers()) || Modifiers.isPrivate(method.getModifiers()) || Modifiers.isStatic(method.getModifiers()) || Modifiers.isFinal(method.getDeclaringClass().getModifiers()))``
+** ``Invokable``: ``invokable.isOverridable()``
+
+* 方法的第一个参数是否使用``@Nullable``注解？
+** JDK:
++
+[source,java,linenums]
+----
+for (Annotation annotation : method.getParameterAnnotations()[0]) {
+    if (annotation instanceof Nullbale) {
+        return true;
+    }
+}
+return false;
+----
+** ``Invokable``: ``invokable.getParameters().get(0).isAnnotationPresent(Nullable.class)``
+
+* 如何为构造函数和工厂方法共享相同的代码？
++
+反射代码需要以同样的方式为构造函数和工厂方法工作？
+``Invokable``提供了一个抽象。
+以下代码适用于方法或构造函数：
++
+[source,java,linenums]
+----
+invokable.isPublic();
+invokable.getParameters();
+invokable.invoke(object, args);
+----
+
+* ``List<String>``的``List.get(int)``的返回类型是什么？
++
+``Invokable``提供了开箱即用的类型解析：
++
+[source,java,linenums]
+----
+Invokable<List<String>, ?> invokable = new TypeToken<List<String>>() {}.method(getMethod);
+invokable.getReturnType(); // String.class
+----
+
+=== 动态代理
+
+==== ``newProxy()``
+
+``Reflection.newProxy(Class, InvocationHandler)``是一个类型安全、方便的 API ，仅用于代理单个接口的类型的动态代理。
+
+* JDK:
++
+[source,java.linenums]
+----
+Foo foo = (Foo)Proxy.newProxyInstance(Foo.class.getClassLoader(), new Class<?>[] {Foo.class}, invocationHandler);
+----
+
+* Guava: ``Foo foo = Reflection.newProxy(Foo.class, invocationHandler);``
+
+==== ``AbstractInvocationHandler``
+
+希望动态代理以直观的方式支持``equals()`` ``hashCode()``和``toString()``，即：如果一个代理实例用于相同的接口类型并且具有相同的调用处理进程，则它们等于另一个代理实例。
+代理的``toString()``委托给调用处理进程的``toString()``，以便于自定义。
+
+``AbstractInvocationHandler``提供了相关逻辑。
+
+=== ``ClassPath``
+
+``ClassPath``提供最大努力类路径扫描工具：
+
+[source,java,linenums]
+----
+ClassPath classPath = ClassPath.from(classloader); // scans the class path used by classloader
+for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClasses("com.mycomp.mypackage")) {
+    //...
+}
+----
+
+``ClassPath``是一个尽力而为的工具类，只扫描 jar 或目录下的类；不能扫描由不是``URLClassLoader``的自定义类加载器管理的类。
