@@ -1,0 +1,9 @@
+== 插件 ``plugin``
+
+MyBatis 允许使用插件来拦截的方法调用包括：
+
+* ``Executor``
+* ``ParameterHandler``
+* ``ResultSetHandler``
+* ``StatementHandler``
+
