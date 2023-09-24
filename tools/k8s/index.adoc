@@ -6,6 +6,8 @@ Hui.Liu <mexn-0808@outlook.com>
 
 == 概述
 
+分布式容器管理工具。
+
 === Kubernetes 功能：
 
 * **服务发现**和**负载均衡**
