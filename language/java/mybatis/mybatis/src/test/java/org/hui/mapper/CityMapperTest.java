@@ -1,5 +1,6 @@
 package org.hui.mapper;
 
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -55,7 +56,10 @@ class CityMapperTest {
         SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
         SqlSession session = sessionFactory.openSession();
         List<City> cities = session.<City>selectList("org.hui.mapper.CityMapper.selectCities");
-        cities.forEach(LOGGER::info);
+        LOGGER.info("selectCities size: {}", cities.size());
+        PageHelper.startPage(0, 2);
+        cities = session.selectList("org.hui.mapper.CityMapper.selectCities");
+        LOGGER.info("selectCities with page size: {}", cities.size());
     }
 
     @Test
@@ -73,5 +77,7 @@ class CityMapperTest {
         cityMapper = session.getMapper(CityMapper.class);
         cities = cityMapper.selectCities();
         System.out.println("third query no use cache:" + cities.size());
+        session.close();
+        inputStream.close();
     }
 }

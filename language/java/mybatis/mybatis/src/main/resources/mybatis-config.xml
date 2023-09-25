@@ -28,6 +28,18 @@
     </typeAliases>
 
 <!--    <objectFactory type="org.hui.domain.MyObjectFactory"/>-->
+    <plugins>
+        <plugin interceptor="org.hui.plugin.MyInterceptor">
+            <property name="value" value="LittleHui"/>
+        </plugin>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <!-- 方言 -->
+            <property name="dialect" value="mysql"/>
+            <!-- 默认(false) -->
+            <!-- true:  -->
+            <property name="" value=""/>
+        </plugin>
+    </plugins>
 
     <environments default="development">
         <environment id="development">

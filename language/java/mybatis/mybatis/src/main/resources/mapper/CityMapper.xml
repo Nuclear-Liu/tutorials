@@ -20,7 +20,7 @@
 
     <select id="selectCities" resultMap="BaseResultMap">
         select *
-        from city limit 4
+        from city
     </select>
     <select id="selectCityById" resultMap="BaseResultMap" statementType="PREPARED" parameterType="_int">
         select * from city where Id = '${id}'
