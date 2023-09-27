@@ -6,6 +6,8 @@ Hui.Liu <mexn-0808@outlook.com>
 
 == 概述
 
+Tomcat 是基于 Java 实现的 HTTP Server。
+
 === 源码目录结构
 
 * ``java``: **Tomcat 源码**
@@ -69,17 +71,13 @@ Servlet 定义了服务端处理 HTTP 请求和响应的方式(规范)
 <?xml version="1.0" encoding="UTF-8"?>
 <Server port="8005" shutdown="SHUTDOWN">
   <Service name="Catalina">
-    <Connector port="8080" protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               redirectPort="8443" />
+    <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
     <Engine name="Catalina" defaultHost="localhost">
       <Realm className="org.apache.catalina.realm.LockOutRealm">
         <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
                resourceName="UserDatabase"/>
       </Realm>
-
-      <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="true">
+      <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
@@ -94,7 +92,7 @@ Servlet 定义了服务端处理 HTTP 请求和响应的方式(规范)
 
 ==== 配置项
 
-* Server
+* ``Server``
 ** ``GlobalNamingResources``: 全局命名空间(基本不再使用)
 
 ** ``Service``: 服务(可以有多个)
@@ -107,9 +105,13 @@ Servlet 定义了服务端处理 HTTP 请求和响应的方式(规范)
 
 **** ``Host`` 虚拟主机配置
 
-***** ``Context`` 配置外部项目路径(可以有多个)
+***** ``Context`` 配置外部项目路径(可以有多个，表示多个项目)
 
-
+``Server`` 标签内可以有多个 ``Service`` 标签；
+``Service`` 标签内可以有多个 ``Engine`` 标签；
+``Engine`` 标签内有一个 ``Host`` 标签；
+``Host`` 标签内可以有多个 ``Context`` 标签；
+每个 ``Context`` 标签表示一个项目。
 
 === Tomcat 组件架构
 
@@ -122,6 +124,7 @@ component Service #DAE8FC {
 component Connector #F5F5F5 {
 portin re
 portout rq
+port Servlet
 }
 component Engine #D5E8D4 {
 portin re2
@@ -132,14 +135,40 @@ component Context #F5F5F5
 }
 }
 }
+http --> Servlet #RED : 请求
+http <--- Servlet #BLUE : 响应
+re -- re2
 @enduml
 ----
 
-== 声明周期管理
+include::01 lifecycle.adoc[]
+
+
+== 连接器模块
+
+[TIP]
+====
+连接器作用：
+
+* 监听网络端口，接收网络请求
+* 入站解析：根据应用协议(**HTTP/AJP**)解析网络字节流，解析为统一的 Tomcat Request 对象
+* 出站解析：将 Tomcat Response 对象转换为对应协议网络字节流
+====
 
 == Servlet 规范
 
 === Servlet 作用
 
 === Servlet 核心 API
+
+==== Servlet: ``javax.servlet.Servlet``
+
+* 方法:
+
+** ``void init(ServletConfig)``
+
+** ``ServletConfig getServletConfig()``
+** ``void service(ServletRequest, ServletResponse) throws ServletException, IOException``
+** ``String getServletInfo()``
+** ``void destroy()``
 
