@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-pod-mult-c
+spec:
+  volumes:
+    - name: webapps
+      emptyDir: {}
+
+  containers:
+    - name: random-app
+      image: busybox
+      command:
+        - '/bin/sh'
+        - '-c'
+        - 'echo "web-$(date +%F)" >> /apps/index.html && sleep 30'
+      volumeMounts:
+        - mountPath: /apps
+          name: webapps
+    - name: nginx-app
+      image: nginx
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: webapps
