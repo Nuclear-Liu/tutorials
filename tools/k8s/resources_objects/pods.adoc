@@ -1,3 +1,8 @@
+= pod-tmp
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
 == Pods 容器集
 
 === Pod 引入
@@ -198,3 +203,60 @@ include::../yaml/demo-pod-mult-c.yaml[]
 ----
 
 ==== 控制器管理 Pod
+
+通常情况下 Kubernetes 使用更高级的控制器(``Controller``)来管理 Pod 实例。
+Controller 可以创建和管理多个 Pod ， 提供**副本管理**、**滚动升级**和集群级别的**自愈能力**。
+
+[plantuml, format="svg" id="controller-pod"]
+----
+@startuml
+
+rectangle DaemonSet
+rectangle Deployment
+rectangle ReplicaSet
+rectangle StatefulSet
+rectangle CronJob
+rectangle Job
+
+rectangle PA #B1D000 {
+rectangle HPA
+rectangle VPA
+}
+
+rectangle "Pod" #B1DDF0 {
+component "container" #F8CECC
+}
+
+Deployment -- ReplicaSet
+CronJob -- Job
+DaemonSet --- "Pod"
+StatefulSet --- "Pod"
+ReplicaSet --- "Pod"
+Job --- "Pod"
+HPA -- "Pod"
+VPA -- "Pod"
+@enduml
+----
+
+=== Pod 声明周期
+
+==== Pod 状态阶段
+
+[plantuml, format="svg" id="state-pod"]
+----
+@startuml
+
+state Pending
+state Running
+state Succeeded
+state Failed
+state Unknown
+
+[*] -> Pending
+Pending --> Running
+Running --> Failed
+Failed --> Running
+Running --> Succeeded
+Succeeded --> [*]
+@enduml
+----

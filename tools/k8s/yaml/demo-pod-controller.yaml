@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-pod-controller
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-pod-ctr
+  template:
+    metadata:
+      labels:
+        app: demo-pod-ctr
+    spec:
+      containers:
+        - name: controller-pod
+          image: nginx:1.24
