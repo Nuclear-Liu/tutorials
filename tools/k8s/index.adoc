@@ -8,4 +8,4 @@ include::01 overview.adoc[]
 
 include::02 install.adoc[]
 
-include::03 resources_objects.adoc[]
+include::resources_objects/03 resources_objects.adoc[]

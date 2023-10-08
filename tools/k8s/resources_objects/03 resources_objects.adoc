@@ -142,7 +142,7 @@ kubectl explain [objects.field]
 第一个部署版本镜像： ``image: nginx:latest``
 
 [source,yaml]
-include::yaml/demo-app-deploy.yaml[]
+include::../yaml/demo-app-deploy.yaml[]
 
 . 应用 Deployment 资源配置文件
 +
@@ -162,7 +162,7 @@ kubectl get deployments
 ===== 2. Service 资源
 
 [source,yaml]
-include::yaml/demo-app-service.yaml[]
+include::../yaml/demo-app-service.yaml[]
 
 . 应用 Service 资源配置文件
 +
@@ -213,7 +213,7 @@ kubectl edit deployment.apps demo-app-deploy
 +
 [source,shell]
 ----
-include::yaml/demo-app-deploy.v2.yaml[]
+include::../yaml/demo-app-deploy.v2.yaml[]
 ----
 . 重新应用资源描述文件：
 +
