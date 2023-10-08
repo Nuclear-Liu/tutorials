@@ -1,0 +1,5 @@
+@startuml
+
+state New
+state Runnable
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+
+autonumber
+
+CustomThread -> Thread: start()
+activate Thread
+Thread --> CustomThread: call run()
+activate CustomThread
+CustomThread -> Thread: return call
+deactivate CustomThread
+deactivate Thread
+
+@enduml
