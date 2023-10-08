@@ -1,0 +1,16 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component agent #F8CECC
+interface localhost
+component "adapter" #BAC8D3
+}
+
+cloud aws
+cloud aliyun
+
+agent - localhost
+localhost - adapter
+"adapter" <-> aws
+"adapter" <-> aliyun
+@enduml

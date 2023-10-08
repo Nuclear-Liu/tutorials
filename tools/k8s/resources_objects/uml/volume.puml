@@ -1,0 +1,11 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component "container-m" #F8CECC
+component "contianer-n" #BAC8D3
+file volumes
+}
+
+"container-m" -- volumes :r/w
+"contianer-n" -- volumes :r/w
+@enduml

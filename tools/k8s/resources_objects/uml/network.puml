@@ -1,0 +1,11 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component pause
+component app #F8CECC
+component db #BAC8D3
+}
+
+app --> pause :--link=pause
+db --> pause :--link=pause
+@enduml

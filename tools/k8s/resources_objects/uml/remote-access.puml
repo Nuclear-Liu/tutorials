@@ -1,0 +1,10 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component app #F8CECC
+component "ssh/ftp" #BAC8D3
+}
+
+app <-> "ssh/ftp"
+
+@enduml

@@ -14,21 +14,7 @@ Pod 是 Kubernetes 中可以创建和管理的最小可部署计算单元。
 
 [plantuml, format="svg" id="pod-arch"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-port "pod_ip"
-rectangle "PuaseContainer" #FA6800 {
-}
-rectangle "AppContainer" #B0E3E6
-rectangle "LogContainer" #B0E3E6
-}
-
-"pod_ip" ~~ "PuaseContainer"
-"PuaseContainer" ... "AppContainer" :link
-"PuaseContainer" ... "LogContainer" :link
-
-@enduml
+include::uml/pod-arch.puml[]
 ----
 
 Pod 名称: ``_deployment-name_-_replica-set-id_-_hsah-code_``
@@ -43,26 +29,7 @@ Deployment 管理 ReplicaSet 管理器，它会自动创建和销毁 ReplicaSet 
 
 [plantuml, format="svg" id="deployment-arch"]
 ----
-@startuml
-
-rectangle "Deployment" #D5E8D4
-rectangle "ReplicaSet" #FFE599
-
-rectangle "Pod" #B1DDF0 {
-port "pod_ip"
-rectangle "PuaseContainer" #FA6800 {
-}
-rectangle "AppContainer" #B0E3E6
-rectangle "LogContainer" #B0E3E6
-}
-
-"pod_ip" ~~ "PuaseContainer"
-"Deployment" -- "ReplicaSet"
-"ReplicaSet" -- "Pod" :"1:n"
-"PuaseContainer" ... "AppContainer" :link
-"PuaseContainer" ... "LogContainer" :link
-
-@enduml
+include::uml/deployment-arch.puml[]
 ----
 
 [TIP]
@@ -89,37 +56,7 @@ Service 用来将 Kubernetes 中的一个或一组 Pod 上的应用程序公开�
 
 [plantuml, format="svg" id="service-arch"]
 ----
-@startuml
-
-rectangle "Client"
-rectangle "Service\nSelect(labels:[lab_key=lab_value])" as Service {
-port "service-ip"
-}
-
-rectangle "Deployment" #D5E8D4
-rectangle "ReplicaSet" #FFE599
-
-rectangle Node {
-rectangle "Pod\nlabels:[lab_key=lab_value]" as Pod #B1DDF0 {
-rectangle "PuaseContainer" #FA6800
-rectangle "AppContainer" #B0E3E6
-rectangle "LogContainer" #B0E3E6
-port "pod_ip"
-}
-rectangle "kube-proxy\n ipvs / iptables" as KubeProxy
-}
-
-"Client" --- "service-ip"
-"Service" ... "Pod" :"lables"
-"pod_ip" ~~ "PuaseContainer"
-"service-ip" - "KubeProxy"
-"KubeProxy" - "pod_ip"
-"Deployment" -- "ReplicaSet"
-"ReplicaSet" -- "Pod" :"1:n"
-"PuaseContainer" ... "AppContainer" :link
-"PuaseContainer" ... "LogContainer" :link
-
-@enduml
+include::uml/service-arch.puml[]
 ----
 
 ==== Namespace

@@ -60,49 +60,7 @@ Kubernetes 集群构建在多台主机上， Kubernetes 集群内节点被划分
 
 [plantuml, format="svg", id="role-component"]
 -----
-@startuml
-actor "kubectl" #YELLOW
-
-node Master #E1D5E7 {
-    rectangle "ControlPlane" #FA6800 {
-        component "kube-apiserver"
-        component "kube-scheduler"
-        component "kube-controller-manager"
-        database "etcd"
-    }
-    rectangle "Addons" #FAD7AC {
-        component "coreDNS"
-        component "network"
-        component "Dashboard"
-    }
-}
-
-cloud "Cloud API" #CDEB8B
-
-node Node #D5E8D4 {
-    rectangle "DataPlane" #B0E3E6 {
-        component "kubelet"
-        component "kube-proxy"
-        component "container-runtime" #B1DDF0 {
-            rectangle "Pod" #00FF00 {
-                component "Container" #6D8764
-            }
-        }
-    }
-}
-
-"kubectl" == "kube-apiserver" #E51700
-"Cloud API" == "kube-proxy" #1BA1E2
-
-"kube-apiserver" .. "etcd"
-"kube-apiserver" . "kube-scheduler"
-"kube-apiserver" .. "kube-controller-manager"
-
-"kube-apiserver" ... "kubelet" : "watch"
-
-"kubelet" .. "Container"
-"kube-proxy" .. "Pod"
-@enduml
+include::uml/role-component.puml[]
 -----
 
 image:./components-of-kubernetes.svg[Kubernetes 集群的组件]

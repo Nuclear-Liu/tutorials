@@ -1,0 +1,14 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component app #F8CECC
+file logs
+component filebeat #BAC8D3
+}
+
+component LoggingServer
+
+app -> logs :write
+logs -> filebeat :read
+filebeat -> LoggingServer
+@enduml

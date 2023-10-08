@@ -1,0 +1,15 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+port "pod_ip"
+rectangle "PuaseContainer" #FA6800 {
+}
+rectangle "AppContainer" #B0E3E6
+rectangle "LogContainer" #B0E3E6
+}
+
+"pod_ip" ~~ "PuaseContainer"
+"PuaseContainer" ... "AppContainer" :link
+"PuaseContainer" ... "LogContainer" :link
+
+@enduml

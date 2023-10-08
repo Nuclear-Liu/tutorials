@@ -13,22 +13,9 @@
 
 ===== 案例1. 日志收集
 
-[plantuml, format="svg" id="collection-log"]
+[plantuml,format="svg",id="collection-log"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component app #F8CECC
-file logs
-component filebeat #BAC8D3
-}
-
-component LoggingServer
-
-app -> logs :write
-logs -> filebeat :read
-filebeat -> LoggingServer
-@enduml
+include::uml/collection-log.puml[]
 ----
 
 对服务模块稳定运行了一段时间，日志记录在某个目录下；希望将日志收集到统一的日志处理服务器上。
@@ -37,18 +24,9 @@ filebeat -> LoggingServer
 
 ===== 案例2. 访问容器数据：ssh/ftp
 
-[plantuml, format="svg" id="remote-access"]
+[plantuml,format="svg",id="remote-access"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component app #F8CECC
-component "ssh/ftp" #BAC8D3
-}
-
-app <-> "ssh/ftp"
-
-@enduml
+include::uml/remote-access.puml[]
 ----
 
 一般镜像并没有安装 sshd 等服务，不方便进入容器进行配置、修改、调试等。
@@ -57,24 +35,9 @@ app <-> "ssh/ftp"
 
 ===== 案例3. 适配不同 IaaS 平台
 
-[plantuml, format="svg" id="iaas-adaptor"]
+[plantuml,format="svg",id="iaas-adaptor"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component agent #F8CECC
-interface localhost
-component "adapter" #BAC8D3
-}
-
-cloud aws
-cloud aliyun
-
-agent - localhost
-localhost - adapter
-"adapter" <-> aws
-"adapter" <-> aliyun
-@enduml
+include::uml/iaas-adaptor.puml[]
 ----
 
 比如开发了一个节点管理 agent 程序，这个 agent 需要读取当前部署环境的一些信息。
@@ -83,26 +46,12 @@ localhost - adapter
 
 ===== 案例4. 提供软件发行版本仓库
 
-[plantuml, format="svg" id="sync-mirrors"]
+[plantuml,format="svg",id="sync-mirrors"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component nginx #F8CECC
-file pkg
-component "sync" #BAC8D3
-}
-
-cloud mirrors
-
-nginx <- pkg :read
-pkg <- "sync" :write
-"sync" <- mirrors :pull
-@enduml
+include::uml/sync-mirrors.puml[]
 ----
 
-Nginx 容器用来发布软件，另一个容器专门负责从源仓库同步。
-通过 Pod 将两个容器编排在一起提供软件仓库服务。
+Nginx 容器用来发布软件，另一个容器专门负责从源仓库同步。 通过 Pod 将两个容器编排在一起提供软件仓库服务。
 
 ==== Pod 共享网络
 
@@ -110,19 +59,9 @@ Nginx 容器用来发布软件，另一个容器专门负责从源仓库同步�
 
 在启动 Pod 时，**首先**启动 **``pause``** 容器，将后续所有容器都 ``--link`` 到创建的 ``pause`` 容器，实现网络共享。
 
-[plantuml, format="svg" id="network"]
+[plantuml,format="svg",id="network"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component pause
-component app #F8CECC
-component db #BAC8D3
-}
-
-app --> pause :--link=pause
-db --> pause :--link=pause
-@enduml
+include::uml/network.puml[]
 ----
 
 * Pod 内共享网络的容器可以**直接**通过 ``localhost`` 相互访问
@@ -130,30 +69,18 @@ db --> pause :--link=pause
 
 ==== Pod 共享存储
 
-默认情况下容器间的文件系统是相互隔离的；
-要实现文件共享，则需要在 Pod 层面**声明** ``volume`` 卷，然后在需要共享的容器中声明 ``VolumeMounts`` **挂载**文件系统，从而实现 Pod 内容器间文件共享。
+默认情况下容器间的文件系统是相互隔离的； 要实现文件共享，则需要在 Pod 层面**声明** ``volume`` 卷，然后在需要共享的容器中声明 ``VolumeMounts`` **挂载**文件系统，从而实现 Pod 内容器间文件共享。
 
-[plantuml, format="svg" id="volume"]
+[plantuml,format="svg",id="volume"]
 ----
-@startuml
-
-rectangle "Pod" #B1DDF0 {
-component "container-m" #F8CECC
-component "contianer-n" #BAC8D3
-file volumes
-}
-
-"container-m" -- volumes :r/w
-"contianer-n" -- volumes :r/w
-@enduml
+include::uml/volume.puml[]
 ----
 
 === Pod 管理方式
 
 ==== 自主式管理 Pod
 
-在 Kubernetes 中，部署 Pod 时，基本上都是使用控制器管理；
-直接定义的 Pod 资源属于自主式管理 Pod ，特点：
+在 Kubernetes 中，部署 Pod 时，基本上都是使用控制器管理； 直接定义的 Pod 资源属于自主式管理 Pod ，特点：
 
 * 如果删除自主管理的 Pod 将不会自动被拉起新的 Pod
 * 如果自主管理的 Pod 所在的节点需要维护，节点将会被驱逐，此时自主式 Pod 随节点驱逐被删除，并且节点重新加入集群不会重建
@@ -161,7 +88,7 @@ file volumes
 
 创建自主管理 Pod 的方式：
 
-*  通过 ``kubectl run`` 生成
+* 通过 ``kubectl run`` 生成
 +
 [source,shell]
 ----
@@ -172,6 +99,7 @@ kubectl run pod [pod-name] --image=[image-name] --dry-run=client -o yaml
 * 通过编写资源文件创建
 
 删除 Pod 将会彻底删除:
+
 [source,shell]
 ----
 kubectl delete pod [pod-name]
@@ -197,6 +125,7 @@ kubectl uncordon [node-hostname]
 ====
 
 自主管理 Demo 案例：
+
 [source,yaml]
 ----
 include::../yaml/demo-pod-mult-c.yaml[]
@@ -204,59 +133,33 @@ include::../yaml/demo-pod-mult-c.yaml[]
 
 ==== 控制器管理 Pod
 
-通常情况下 Kubernetes 使用更高级的控制器(``Controller``)来管理 Pod 实例。
-Controller 可以创建和管理多个 Pod ， 提供**副本管理**、**滚动升级**和集群级别的**自愈能力**。
+通常情况下 Kubernetes 使用更高级的控制器(``Controller``)来管理 Pod 实例。 Controller 可以创建和管理多个 Pod ， 提供**副本管理**、**滚动升级**和集群级别的**自愈能力**。
 
-[plantuml, format="svg" id="controller-pod"]
+[plantuml,format="svg" id="controller-pod"]
 ----
-@startuml
-
-rectangle DaemonSet
-rectangle Deployment
-rectangle ReplicaSet
-rectangle StatefulSet
-rectangle CronJob
-rectangle Job
-
-rectangle PA #B1D000 {
-rectangle HPA
-rectangle VPA
-}
-
-rectangle "Pod" #B1DDF0 {
-component "container" #F8CECC
-}
-
-Deployment -- ReplicaSet
-CronJob -- Job
-DaemonSet --- "Pod"
-StatefulSet --- "Pod"
-ReplicaSet --- "Pod"
-Job --- "Pod"
-HPA -- "Pod"
-VPA -- "Pod"
-@enduml
+include::uml/controller-pod.puml[]
 ----
 
-=== Pod 声明周期
+=== Pod 生命周期
 
-==== Pod 状态阶段
+Pod 创建流程
 
-[plantuml, format="svg" id="state-pod"]
+[plantuml,format="svg" id="create-pod"]
 ----
-@startuml
-
-state Pending
-state Running
-state Succeeded
-state Failed
-state Unknown
-
-[*] -> Pending
-Pending --> Running
-Running --> Failed
-Failed --> Running
-Running --> Succeeded
-Succeeded --> [*]
-@enduml
+include::uml/create-pod.puml[]
 ----
+
+Pod 创建后处于 ``Pending`` 阶段，如果至少有一个主要容器正常启动，则进入 ``Running`` 阶段； 如果 Pod 中容器运行失败或被停止运行则会进入 ``Succeeded`` 或者 ``Failed`` 阶段.
+
+Pod 在其生命周期中只会被**调度**一次； Pod 被调度到某个节点后， Pod 会**一直**在给节点运行，直到 Pod 停止或被终止。
+
+[plantuml,format="svg" id="pod-lifecycle"]
+----
+include::uml/pod-lifecycle.puml[]
+----
+
+* ``Pending``: Pod 已被 Kubernetes 系统接受，但有一个或多个容器尚未创建亦未运行。从阶段包括等待 Pod 被调度的时间和通过网络下载镜像的时间
+* ``Running``: Pod 已经被绑定到某个节点，同时 Pod 中所有的容器都已创建。至少有一个容器在运行，或处于启动、重启状态。
+* ``Succeeded``: Pod 中的所有容器都已成功终止，并且不会再重启。
+* ``Failed``: Pod 中的所有容器都已终止，并且至少有一个容器是因为失败终止。即容器以非 ``0`` 状态推出或被系统终止。
+* ``Unknown``: Pod 由于某些原因无法取得状态。通常是因为与 Pod 所在主机通信失败。
