@@ -303,3 +303,5 @@ IDEA Keymap
 | `ctrl` + `alt` + `b`           | Navigate to implementation            |
 | `ctrl` + `alt` + `n`           | Inline...                             |
 | `ctrl` + `alt` + `v`           | Introduce Variable...                 |
+
+* Linux install Idea Create Desktop Entry... : double `Shift` + Desktop or `Tools` -> `Create Desktop Entry..`
