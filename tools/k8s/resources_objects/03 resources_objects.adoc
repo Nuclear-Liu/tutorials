@@ -1,82 +1,4 @@
-
-== Kubernetes 资源与对象
-
-=== Kubernetes 资源
-
-==== Pod 容器集
-
-Pod 是 Kubernetes 中可以创建和管理的最小可部署计算单元。
-
-* Pod 由一组(一个或多个)**共享上下文**的容器构成。
-* Pod 内的所有容器调度在**同一个节点**上运行。
-* Pod 内的所有容器共享同一**网络**，有一个唯一 IP (*Pod IP*)。
-* Pod 中有一个特殊的 *Pause* 容器：优先启动然后进行 IP 分配，将其他容器都 *link* 到该容器实现网络共享。
-
-[plantuml, format="svg" id="pod-arch"]
-----
-include::uml/pod-arch.puml[]
-----
-
-Pod 名称: ``_deployment-name_-_replica-set-id_-_hsah-code_``
-
-``kubectl get pods``
-
-==== Deployment
-
-Pod 的上一层是 ReplicaSet 控制器，主要控制管理 Pod 的副本数；通常不会直接使用 ReplicaSet 管理 Pod ，而是更高一级的 Deployment 。
-
-Deployment 管理 ReplicaSet 管理器，它会自动创建和销毁 ReplicaSet 控制器，实现应用的滚动更新。
-
-[plantuml, format="svg" id="deployment-arch"]
-----
-include::uml/deployment-arch.puml[]
-----
-
-[TIP]
-====
-**滚动更新**机制：
-
-1. Deployment 创建新的 ReplicaSet 控制器
-2. 首先根据新的 ReplicaSet 创建一个新的 Pod
-3. 新 Pod 通过健康检查后；删除旧 ReplicaSet 控制器下的对应的一个 Pod
-4. 一次更新所有容器，更新过程中会保证副本数量不变
-5. 在经过一定时间后删除旧的 ReplicaSet 控制器对象
-====
-
-``kubectl get rs``
-``kubectl get replicaset``
-
-``kubectl get deployment``
-
-==== Service
-
-Service 用来将 Kubernetes 中的一个或一组 Pod 上的应用程序公开为网络服务。
-
-*实现对 Pod 负载均衡*；负载均衡的实现依赖于标签；通过在 Pod 上添加标签，再在创建 Service 时通过 Selector 选择对应的标签，最后通过节点 kube-proxy 来实现均衡的规则创建。
-
-[plantuml, format="svg" id="service-arch"]
-----
-include::uml/service-arch.puml[]
-----
-
-==== Namespace
-
-命名空间(Namespace)在 Kubernetes 中提供了一种机制，将同一个集群中的资源分为**逻辑上**相互隔离的组。
-同一命名空间内的资源名称要求**唯一**，不同命名空间可以相同。
-
-* 对资源对象进行隔离：例如 Pod Deployment Service 等对象隔离为不同组
-* 对资源配额进行隔离：例如 CPU Memory 等资源限制配额
-
-Namespace **只能**隔离带有命名空间的资源，可以通过 ``kubectl api-resources`` 查看那些资源支持命名空间隔离。
-
-[TIP]
-====
-命名空间隔离性：其实是逻辑上的隔离，并不是物理隔离。
-
-* 不隔离 PodIP 网络
-* 不隔离 ServiceIP 网络
-* 不隔离 DNS
-====
+== Kubernetes 对象与资源
 
 === Kubernetes 对象
 
@@ -132,6 +54,104 @@ kubectl explain [objects.field]
 ----
 
 ====
+
+=== Kubernetes 资源
+
+查看所有可用资源信息：
+
+[source,shell]
+----
+kubectl api-resources
+----
+
+==== Pod 资源
+
+Pod 是 Kubernetes 中可以创建和管理的最小可部署计算单元。
+
+* Pod 由一组(一个或多个)**共享上下文**的容器构成。
+* Pod 内的所有容器调度在**同一个节点**上运行。
+* Pod 内的所有容器共享同一**网络**，有一个唯一 IP (*Pod IP*)。
+* Pod 中有一个特殊的 *Pause* 容器：优先启动然后进行 IP 分配，将其他容器都 *link* 到该容器实现网络共享。
+
+[plantuml, format="svg" id="pod-arch"]
+----
+include::uml/pod-arch.puml[]
+----
+
+Pod 名称: ``_deployment-name_-_replica-set-id_-_hsah-code_``
+
+``kubectl get pods``
+
+==== Deployment 资源
+
+Pod 的上一层是 ReplicaSet 控制器，主要控制管理 Pod 的副本数；通常不会直接使用 ReplicaSet 管理 Pod ，而是更高一级的 Deployment 。
+
+Deployment 管理 ReplicaSet 管理器，它会自动创建和销毁 ReplicaSet 控制器，实现应用的滚动更新。
+
+[plantuml, format="svg" id="deployment-arch"]
+----
+include::uml/deployment-arch.puml[]
+----
+
+[TIP]
+====
+**滚动更新**机制：
+
+1. Deployment 创建新的 ReplicaSet 控制器
+2. 首先根据新的 ReplicaSet 创建一个新的 Pod
+3. 新 Pod 通过健康检查后；删除旧 ReplicaSet 控制器下的对应的一个 Pod
+4. 一次更新所有容器，更新过程中会保证副本数量不变
+5. 在经过一定时间后删除旧的 ReplicaSet 控制器对象
+====
+
+``kubectl get rs``
+``kubectl get replicaset``
+
+``kubectl get deployment``
+
+==== DeamonSet 资源
+
+==== StatefulSet 资源
+
+==== Job 资源
+
+==== CronJob 资源
+
+==== Service 资源
+
+Service 用来将 Kubernetes 中的一个或一组 Pod 上的应用程序公开为网络服务。
+
+*实现对 Pod 负载均衡*；负载均衡的实现依赖于标签；通过在 Pod 上添加标签，再在创建 Service 时通过 Selector 选择对应的标签，最后通过节点 kube-proxy 来实现均衡的规则创建。
+
+[plantuml, format="svg" id="service-arch"]
+----
+include::uml/service-arch.puml[]
+----
+
+==== Namespace 资源
+
+命名空间(Namespace)在 Kubernetes 中提供了一种机制，将同一个集群中的资源分为**逻辑上**相互隔离的组。
+同一命名空间内的资源名称要求**唯一**，不同命名空间可以相同。
+
+* 对资源对象进行隔离：例如 Pod Deployment Service 等对象隔离为不同组
+* 对资源配额进行隔离：例如 CPU Memory 等资源限制配额
+
+Namespace **只能**隔离带有命名空间的资源，可以通过 ``kubectl api-resources`` 查看那些资源支持命名空间隔离。
+
+[TIP]
+====
+命名空间隔离性：其实是逻辑上的隔离，并不是物理隔离。
+
+* 不隔离 PodIP 网络
+* 不隔离 ServiceIP 网络
+* 不隔离 DNS
+====
+
+==== Ingress 资源
+
+==== ConfigMap 资源
+
+==== Secret 资源
 
 === Kubernetes 对象资源实践
 
