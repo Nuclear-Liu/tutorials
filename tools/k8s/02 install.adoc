@@ -62,12 +62,12 @@ docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/coredns:v1.8.4
 +
 [source,shell]
 ----
-echo "192.168.111.201 m201" >> /etc/hosts
-echo "192.168.111.202 m202" >> /etc/hosts
-echo "192.168.111.203 m203" >> /etc/hosts
-echo "192.168.111.204 n204" >> /etc/hosts
-echo "192.168.111.205 n205" >> /etc/hosts
-echo "192.168.111.206 n206" >> /etc/hosts
+echo "192.168.111.111 s111" >> /etc/hosts
+echo "192.168.111.112 s112" >> /etc/hosts
+echo "192.168.111.113 s113" >> /etc/hosts
+echo "192.168.111.114 s114" >> /etc/hosts
+echo "192.168.111.115 s115" >> /etc/hosts
+echo "192.168.111.116 s116" >> /etc/hosts
 ----
 
 4. 关闭防火墙
@@ -186,6 +186,12 @@ mkdir -p /etc/docker && tee /etc/docker/daemon.json << EOF
 }
 EOF
 
+mkdir -p /etc/docker && tee /etc/docker/daemon.json << EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+EOF
+
 systemctl daemon-reload && systemctl enable docker --now
 ----
 
@@ -258,9 +264,19 @@ EOF
 or
 [source,shell]
 ----
-kubeadm config images pull --image-repository oldxu3957 --kubernetes-version v1.22.2
+kubeadm config images pull --image-repository oldxu3957 --kubernetes-version v1.22.3
 ----
 2. 集群初始胡
+
+[source,shell]
+----
+kubeadm init \
+  --apiserver-advertise-address=192.168.111.111 \
+  --image-repository registry.aliyuncs.com/google_containers \
+  --kubernetes-version v1.22.3 \
+  --service-cidr=10.1.0.0/16 \
+  --pod-network-cidr=10.244.0.0/16
+----
 
 Node:
 

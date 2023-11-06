@@ -1,0 +1,153 @@
+= Storm
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+Storm 是 Twitter 开源的**实时**数据处理框架；实现**高频数据**和**大规模数据**的实时处理。
+
+== Storm 核心概念
+
+=== 1. Topology 拓扑
+
+拓扑(*Topology*)是由**计算的节点(node)**与表示**计算结果的边(edge)**组成的图，并由提供**连续数据的数据源**来驱动。
+节点(node)st代表一些独立的计算，扮演了最简单的计算模型；
+边(edge)代表节点间的数据的传递。
+
+=== 2. Tuple 元组
+
+元组(*Tuple*)是拓扑(Topology)中节点间传输数据的格式，它本身是一个**有序**的数值序列，其中每个数值都会被赋予一个**命名**；
+一个元组只是一系列数值的**列表**，Storm 本身提供了一种机制来为列表中的每个数值**赋予命名**。
+
+发送元组到任意节点的过程被称为发射(*emit*)一个元组；
+
+同一个元组(tuple)中**值**的类型是**动态**的，并不需要提前声明；
+但 Storm 需要知道如何对元组中的值进行**序列化**，以便让它可以在拓扑(topology)节点间实现元组的传递。
+如果是自定义类型，则需要提供对应自定义的序列化方法。
+
+=== 3. Stream 流
+
+流(*Stream*)是一个无边界的元组(tuple)序列。
+
+在拓扑(topology)中，一个流(stream)是拓扑(topology)中两个节点间一个无边界的元组序列；
+一个拓扑(topology)可以包含任意数量的流(stream)，除了拓扑的第一个节点(spout)是从数据源读取数据外，每个节点(bolt)可以接收一个或多个流(steam)作为输入。
+
+=== 4. Spout 数据源
+
+数据源(*Spout*)是拓扑(topology)的流(stream)数据源头；通常是外部数据源读取数据向拓扑(topology)中发射(emit)元组(tuple)。
+
+数据源(spout)没有对数据的处理过程，仅仅作为数据流的源头，从数据源读取数据，向数据处理者(*bolt*)类型的节点发射(emit)元组。
+
+=== 5. Bolt 数据处理者
+
+数据处理者(Bolt)负责完成从输入流(stream)接收元组(tuple)，对元组(tuple)进行计算或转换操作，以及可能会发射(emit)新的元组(tuple)形成新的输出流(stream)。
+
+=== 5. Grouping 流分组
+
+流分组定义了元组在数据源(spout)和数据处理者(bolt)以及数据处理者(bolt)和数据处理者(bolt)实例之间如何进行传递。
+
+==== shuffleGrouping 随机分组
+
+随机分组(shuffledGrouping)采用随机策略（不是轮询策略）确保每个 bolt 实例能够尽可能接收数量相等的元组，以便在 bolt 实例之间实现负载均衡。
+
+随机分组在**对数据分发没有特殊需求**的场景下是非常有用。
+
+==== fieldsGrouping 字段分组
+
+字段分组(fieldGrouping)更具指定的字段值，保证将含有相同字段值的元组(tuple)发射(emit)到同一个数据处理者(blot)实例。
+
+==== allGrouping 广播分组
+
+==== globalGrouping 全局分组
+
+==== noneGrouping
+
+==== directGrouping 直接分组
+
+==== localOrShuffleGrouping
+
+==== partialKeyGrouping
+
+== Storm 核心组件
+
+[TIP]
+====
+Storm 依赖：
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.storm</groupId>
+    <artifactId>storm-core</artifactId>
+    <version>1.2.4</version>
+    <scope>provided</scope>
+</dependency>
+----
+* 在本地环境中，本地运行项目是可以不设置 ``scope`` 的值；
+* 在生产环境中 ``scope``必需要设置为 ``provided`` 。
+====
+
+=== 数据源组件 Spout
+
+[plantuml,format="svg",id="spout"]
+----
+include::uml/spout.puml[]
+----
+
+* ``IComponent``: 通过拓扑( *Topology* )组件的接口 —— 定义了组件的**配置**和**输出规范**
+* ``ISport``: 定义了 *Sport* 的职责
+* ``IRichSpout``: 完整的 *Sport* 职责描述接口，包含了 ``ISport`` 和 ``IComponent``
+* ``BaseRichSpout``: ``IRichSpout`` 的部分实现，是自定义继承实现 *Sport* 的基类
+
+使用 ``BaseRichSpout`` 必须实现的方法：
+
+. ``void open(Map conf, TopologyContext context, SpoutOutputCollector collector)``: 在 Storm 准备运行时调用一次(*初始化*)
+. ``void nextTuple()``: 当 Storm 准备取下一个元组(tuple)时，由 Storm 调用
+. ``void declareOutputFields(OutputFieldsDeclarer declarer)``: 为 Sport 发射的元组所有字段**命名**
+
+=== 数据处理者 Bolt
+
+[plantuml,format="svg",id="bolt"]
+----
+include::uml/bolt.puml[]
+----
+
+* ``IBolt``: 定义了一个数据处理者(bolt)的职责
+* ``IComponent``: 拓扑(topology)的通用接口(包括spout和bolt) —— 定义了组件的配置与输出
+* ``IRichBolt``: 一个完整的数据处理者(bolt)接口(包含(IBolt)和(IComponent))
+* ``IBasicBolt``: 精简版数据处理者接口，相比较于 ``IRichBolt`` 支持部分功能
+* ``BaseRichBolt``: 部分实现 ``IRichBolt`` 是自定义继承实现数据处理者(bolt)的基类
+* ``BaseBasicBolt``: 部分实现 ``IBasicBolt`` 是自定义继承实现数据处理者(bolt)的基类
+
+使用 ``BaseBasicBolt`` 必须实现的方法：
+
+. ``void execute(Tuple input, BasicOutputCollector collector)``: 当元组(tuple)被发射到当前数据处理者(bolt)时调用
+. ``void declareOutputFields(OutputFieldsDeclarer declarer)``: 为当前数据处理者(bolt)发射(emit)出的元组定义**字段名称**
+
+=== 创建拓扑 Topology
+
+[source,text]
+----
+TopologyBuilder builder = new TopologyBuilder();
+
+builder.setSpout("commit-feeder", new CommitFeeder());
+
+builder.setBolt("email-extractor", new EmailExtractor())
+        .shuffleGrouping("commit-feeder");
+
+builder.setBolt("email-counter", new EmailCounter())
+        .fieldsGrouping("email-extractor", new Fields("email"));
+
+Config config = new Config();
+config.setDebug(true);
+
+StormTopology commitCountTopology = builder.createTopology();
+----
+
+
+
+
+
+
+
+
+

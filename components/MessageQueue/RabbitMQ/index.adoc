@@ -1,0 +1,14 @@
+= RabbitMQ
+
+== 一. 安装
+
+=== Docker 安装
+
+=== Kubernetes Operator 安装
+
+== 二. 模式
+
+
+image::RPC.png[]
+
+== 三. 交换机类型

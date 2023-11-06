@@ -1,0 +1,18 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class BaseComponent
+class BaseRichSpout
+interface IComponent << interface >>
+interface IRichSpout << interface >>
+interface ISpout << interface >>
+
+BaseComponent  -[#008200,dashed]-^  IComponent : "implements"
+BaseRichSpout  -[#000082,plain]-^  BaseComponent : "extends"
+BaseRichSpout  -[#008200,dashed]-^  IRichSpout : "implements"
+IRichSpout     -[#008200,plain]-^  IComponent : "extends"
+IRichSpout     -[#008200,plain]-^  ISpout : "extends"
+@enduml

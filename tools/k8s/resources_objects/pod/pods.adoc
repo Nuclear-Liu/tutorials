@@ -128,7 +128,7 @@ kubectl uncordon [node-hostname]
 
 [source,yaml]
 ----
-include::../yaml/demo-pod-mult-c.yaml[]
+include::../../yaml/demo-pod-mult-c.yaml[]
 ----
 
 ==== 控制器管理 Pod
