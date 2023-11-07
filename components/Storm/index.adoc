@@ -42,7 +42,7 @@ Storm 是 Twitter 开源的**实时**数据处理框架；实现**高频数据**
 
 数据处理者(Bolt)负责完成从输入流(stream)接收元组(tuple)，对元组(tuple)进行计算或转换操作，以及可能会发射(emit)新的元组(tuple)形成新的输出流(stream)。
 
-=== 5. Grouping 流分组
+=== 6. Grouping 流分组
 
 流分组定义了元组在数据源(spout)和数据处理者(bolt)以及数据处理者(bolt)和数据处理者(bolt)实例之间如何进行传递。
 
@@ -58,15 +58,27 @@ Storm 是 Twitter 开源的**实时**数据处理框架；实现**高频数据**
 
 ==== allGrouping 广播分组
 
+对每个元组(tuple)广播发送给所有的下一个数据处理者(bolt)。
+
 ==== globalGrouping 全局分组
 
-==== noneGrouping
+元组(tuple)分配给 task id 最低的 task 。
+
+==== noneGrouping 不分组
+
+Storm 不具体实现分组方式。
 
 ==== directGrouping 直接分组
 
-==== localOrShuffleGrouping
+元组(tuple)的发射时指定数据处理者(bolt)的具体 task
 
-==== partialKeyGrouping
+==== localOrShuffleGrouping 本地或随机分组
+
+如果目标数据处理者(bolt)有一个或多个 task 与发射元组(tuple)的实例在同一个工作进程中，则优先随机发射(emit)本地数据处理者(bolt)实例。
+
+==== partialKeyGrouping 关键字分组
+
+与字段分组相似，根据指定的字段进行分组；这种方式会考虑下游数据处理者(bolt)数据处理的均衡性问题，在输入数据源关键字不均衡时会有更好的性能。
 
 == Storm 核心组件
 
@@ -143,7 +155,7 @@ config.setDebug(true);
 StormTopology commitCountTopology = builder.createTopology();
 ----
 
-
+=== 心跳元组 Tick Tuple
 
 
 

@@ -305,3 +305,6 @@ IDEA Keymap
 | `ctrl` + `alt` + `v`           | Introduce Variable...                 |
 
 * Linux install Idea Create Desktop Entry... : double `Shift` + Desktop or `Tools` -> `Create Desktop Entry..`
+
+* 不同变量不同颜色标识:
+![Semantic Highlighting](Semantic_Highlighting.png)
