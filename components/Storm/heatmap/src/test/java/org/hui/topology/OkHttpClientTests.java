@@ -2,7 +2,10 @@ package org.hui.topology;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.hui.topology.domain.LatLng;
 
 import java.io.IOException;
@@ -13,7 +16,7 @@ public class OkHttpClientTests {
 
         HttpUrl.Builder queryUrlBuilder = HttpUrl.get("https://api.map.baidu.com/geocoding/v3/").newBuilder();
         queryUrlBuilder.addQueryParameter("output", "json")
-                .addQueryParameter("ak", "VK3S1ll0cPGrkur5qYRY0IztHDHBpWtU")
+                .addQueryParameter("ak", "ak")
                 .addQueryParameter("address", "浙江省杭州市西湖区湖滨路25号");
 
         Request request = new Request
