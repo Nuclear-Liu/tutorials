@@ -22,4 +22,12 @@ public class LatLng implements Serializable {
     public void setLng(BigDecimal lng) {
         this.lng = lng;
     }
+
+    public String toUrlValue() {
+        return this.toUrlValue(6);
+    }
+
+    public String toUrlValue(int precision) {
+        return this.lat.setScale(precision, 6).toString() + "," + this.lng.setScale(precision, 6).toString();
+    }
 }

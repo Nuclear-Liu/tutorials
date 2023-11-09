@@ -16,6 +16,7 @@ import org.apache.storm.tuple.Values;
 import org.hui.topology.domain.LatLng;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class GeocodeLookup extends BaseBasicBolt {
@@ -28,7 +29,7 @@ public class GeocodeLookup extends BaseBasicBolt {
         urlBuilder = HttpUrl.get("https://api.map.baidu.com/geocoding/v3/")
                 .newBuilder()
                 .addQueryParameter("output", "json")
-                .addQueryParameter("ak", "VK3S1ll0cPGrkur5qYRY0IztHDHBpWtU");
+                .addQueryParameter("ak", "ak");
     }
 
     @Override
@@ -39,7 +40,7 @@ public class GeocodeLookup extends BaseBasicBolt {
         urlBuilder.addQueryParameter("address", address);
 
         Request request = new Request.Builder().url(urlBuilder.build()).build();
-        LatLng latLng = null;
+        LatLng latLng = new LatLng();
         try {
             Response response = httpClient.newCall(request).execute();
             if (response.code() == 200) {
@@ -48,7 +49,10 @@ public class GeocodeLookup extends BaseBasicBolt {
                 latLng = jsonMapper.convertValue(jsonNode.get("result").get("location"), LatLng.class);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
+            // throw new RuntimeException(e);
+            latLng.setLng(BigDecimal.ZERO);
+            latLng.setLat(BigDecimal.ZERO);
         }
         collector.emit(new Values(time, latLng));
 
@@ -56,6 +60,6 @@ public class GeocodeLookup extends BaseBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("time","geocode"));
+        declarer.declare(new Fields("time", "geocode"));
     }
 }

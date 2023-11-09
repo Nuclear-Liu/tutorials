@@ -157,6 +157,40 @@ StormTopology commitCountTopology = builder.createTopology();
 
 === 心跳元组 Tick Tuple
 
+心跳元组(tick tuple)用于触发定时事件的元组(tuple)。
+心跳元组(tick tuple)配置后，可以按照用户定义的频率以及时间点，在 bolt 上**周期地调用** ``execute`` 方法。
+在 ``execute`` 中检查元组是否被定义为由系统周期性触发的动作（或是一个普通的元组）并处理心跳元组(tick tuple)。
+正常情况下的拓扑的元组(tuple)只负责将数据按默认的流模式，而**心跳元组**(tuple)则是基于系统的**心跳触发**来传输数据。
+
+. 重写 ``getComponentConfiguration`` 方法
++
+配置心跳元组
+. 在 ``execute`` 中判断是否为心跳元组
+
+[TIP]
+====
+心跳元组的发射频率
+
+心跳发射频率**并不精确**，这里采取的是一种最佳能效机制。
+
+发射到 bolt 的心跳元组将和其他元组一起按队列排序，排队等待前面的 bolt 完成 ``execute`` 方法的调用。
+如果流中心跳元组前的其他元组的执行存在较高的延迟，心跳元组将继续等待。
+====
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

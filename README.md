@@ -308,3 +308,7 @@ IDEA Keymap
 
 * 不同变量不同颜色标识:
 ![Semantic Highlighting](Semantic_Highlighting.png)
+
+![img.png](img.png)
+
+![img_1.png](img_1.png)
