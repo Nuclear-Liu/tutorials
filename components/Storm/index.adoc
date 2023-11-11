@@ -56,13 +56,15 @@ Storm 是 Twitter 开源的**实时**数据处理框架；实现**高频数据**
 
 字段分组(fieldGrouping)更具指定的字段值，保证将含有相同字段值的元组(tuple)发射(emit)到同一个数据处理者(blot)实例。
 
+==== globalGrouping 全局分组
+
+所有的元组(tuple)被路由到一个单独的任务(task)中，并且选择 task 的 Id 最小的；
+如果使用此策略，设置并行度来提高并发率将失去意义：
+所有的元组(tuple)将会发送到同一个Bolt处理，将成为整个拓扑的性能瓶颈。
+
 ==== allGrouping 广播分组
 
 对每个元组(tuple)广播发送给所有的下一个数据处理者(bolt)。
-
-==== globalGrouping 全局分组
-
-元组(tuple)分配给 task id 最低的 task 。
 
 ==== noneGrouping 不分组
 
@@ -80,7 +82,29 @@ Storm 不具体实现分组方式。
 
 与字段分组相似，根据指定的字段进行分组；这种方式会考虑下游数据处理者(bolt)数据处理的均衡性问题，在输入数据源关键字不均衡时会有更好的性能。
 
-== Storm 核心组件
+=== 7. executor 执行器
+
+执行器(executor)就是工作节点 JVM 上的执行数据源(spout)或数据处理者(bolt)的线程。
+
+一个工作节点(worker)可以有一个或多个执行器(executor)。
+
+
+[WARNING]
+====
+* 一个工作节点(worker)不会为多个拓扑(topology)服务。
+* 一个拓扑(topology)可以使用一个或多个工作节点(worker)运行任务。
+====
+
+=== 8. task 任务
+
+任务(task)即在执行线程(执行器)上运行的数据源(spout)或数据处理者(bolt)实例。
+
+[TIP]
+====
+每个执行器(executor)可以运行一个或多个任务(task)。
+====
+
+== 应用 Storm
 
 [TIP]
 ====
@@ -100,6 +124,7 @@ Storm 依赖：
 
 === 数据源组件 Spout
 
+.Spout class design patterns
 [plantuml,format="svg",id="spout"]
 ----
 include::uml/spout.puml[]
@@ -118,6 +143,7 @@ include::uml/spout.puml[]
 
 === 数据处理者 Bolt
 
+.Bolt class design patterns
 [plantuml,format="svg",id="bolt"]
 ----
 include::uml/bolt.puml[]
@@ -169,7 +195,7 @@ StormTopology commitCountTopology = builder.createTopology();
 
 [TIP]
 ====
-心跳元组的发射频率
+心跳元组的##**发射频率**##
 
 心跳发射频率**并不精确**，这里采取的是一种最佳能效机制。
 
@@ -177,23 +203,99 @@ StormTopology commitCountTopology = builder.createTopology();
 如果流中心跳元组前的其他元组的执行存在较高的延迟，心跳元组将继续等待。
 ====
 
+[IMPORTANT]
+====
+**##线程安全##**
+
+在使用 Storm 过程中经常需要在内存中使用数据结构(类非静态变量)；
+由于 ``execute()`` 同一时间只会执行一个元组的处理，所以在线程级是安全的。
+
+当元组在**组件中进行传递**时，如何实现元组上的值可以在不同线程上执行序列化？
+当发射内存中的数据结构时，没有复制就直接使用在另一个线程上执行序列化，而此时这个数据正在发生变化，系统将抛出 ``CurrentModificationException`` 异常。
+
+* 保证数据不可变更
+* 基于 bolt 的方法 ``execute()`` 创建自有线程，自己保证线程安全问题。
+====
+
+=== 网络化扩展
+
+[TIP]
+====
+**网络化扩展**
+
+一个具备网络化扩展的系统，需要具备**不通过停机**就可以基于网络集群化实现**运算能力的扩展**，也称为**需求的网络化扩展**。
+====
+
+==== Storm 并行性机制
+
+===== 1. 使用并行性触点
+
+使用并行性触点是在数据源(spout)和数据处理者(blot)层面通过设置数据源(spout)和数据处理者(bolt)实例的并发数量实现。
+
+* 设置数据源(spout)的并行性触点
++
+在构建拓扑(topology)时，通过构建器 ``TopologyBuilder`` 的 ``setSpout(String id, IRichSpout spout, Number parallelism_hint)`` 方法的 ``##parallelism_hint##`` 参数配置。
+
+* 设置数据处理者(bolt)的并性触点
++
+在构建拓扑时，通过构建器 ``TopologyBuilder`` 的 ``setBolt(String id, IBasicBolt bolt, Number parallelism_hint)`` 方法的 ``##parallelism_hint##`` 参数配置。
+
+===== 2. 调解执行器与任务
+
+默认情况下执行器(executor)仅有一个任务(task)。
+
+修改执行器(executor)内任务(task)数的方式有两种：
+
+* 在构建拓扑(topology)时，构建器 ``TopologyBuilder`` 调用 ``setSpout`` / ``setBolt`` 后调用 ``##setNumTasks(Number val)##`` 方法指定具体任务数；
+* 通过 Web UI 调整；
 
 
+===== 3. 调整工作节点数量
+
+默认情况下拓扑(topology)使用一个工作节点(worker)。
+
+在提交拓扑(topology)到运行环境是通过 ``Config`` 的 ``setNumWorkers(int workers)`` 执行拓扑使用的节点数量。
+
+=== 拓扑(topology)设计方法
+
+[quote, Donald Kunth]
+--
+在大约 97% 的情况下，你都应该忘掉哪些影响较小的效率问题，过早的优化时万恶之源。
+--
 
 
+设计拓扑一般可以分解为五个步骤：
 
+. 定义问题/构造一个概念上的解决方案
++
+首先清晰的理解问题，同时还要记录**任何潜在的需求**（包括**处理速度**）。
++
+然后对解决方案进行初步建模(不用于实现的)，来阐述问题的核心诉求。
 
+. 将解决方案映射到 Storm 中
++
+分解提出的问题并形成解决方案，评估将解决方案映射到 Storm 技术相关原语(即 Storm 概念)上；实现第一个拓扑(topology)设计。
 
+. 实现初始方案
++
+根据初步拓扑(topoly)设计实现相关组件并部署。
++
+.. 首先考虑流经系统的**数据特性**：考虑数据流本身施加的要求定义数据源(Spout)，确定**输入数据点**，将数据点表示为元组(tuple)
+.. 确定解决问题需要的最终数据点，并表示为元组(tuple)
+.. 在输入元组和最终元组之间，补充完整数据处理方法
 
+. 扩展拓扑(topology)
++
+利用 Storm 工具，对拓扑(topology)实施扩容。
 
+. 运行中优化
++
+观察各组件运行情况以及实际需求的变化，做出相应的调整。
 
+.. 检查每个处理点，通过调整执行器和任务的方式，不断进行尝试性调整，从而建立扩展机制；
+.. 当某些组件无法继续扩展时，回顾设计，对某些组件重新设计以便优化整体的扩展性；
 
-
-
-
-
-
-
-
-
-
+[IMPORTANT]
+====
+重要信息
+====

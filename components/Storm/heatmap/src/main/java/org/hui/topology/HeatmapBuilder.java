@@ -37,10 +37,9 @@ public class HeatmapBuilder extends BaseBasicBolt {
         if (isTickTuple(input)) {
             emitHeatmap(collector);
         } else {
-            Long time = input.getLongByField("time");
+            Long timeInterval = input.getLongByField("time-interval");
             LatLng geocode = (LatLng) input.getValueByField("geocode");
 
-            Long timeInterval = selectTimeInterval(time);
             List<LatLng> checkins = getCheckinsForInterval(timeInterval);
             checkins.add(geocode);
         }

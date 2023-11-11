@@ -54,12 +54,13 @@ public class GeocodeLookup extends BaseBasicBolt {
             latLng.setLng(BigDecimal.ZERO);
             latLng.setLat(BigDecimal.ZERO);
         }
-        collector.emit(new Values(time, latLng));
+        String city = new String("city");
+        collector.emit(new Values(time, latLng, city));
 
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("time", "geocode"));
+        declarer.declare(new Fields("time", "geocode", "city"));
     }
 }

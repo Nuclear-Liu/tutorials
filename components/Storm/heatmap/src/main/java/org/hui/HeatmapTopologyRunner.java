@@ -10,6 +10,7 @@ public class HeatmapTopologyRunner {
     public static void main(String[] args) {
         Config config = new Config();
         config.setDebug(true);
+        config.setNumWorkers(2);
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology(HeatmapTopologyBuilder.TOPOLOGY_NAME, config, HeatmapTopologyBuilder.build());
