@@ -10,6 +10,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.hui.authorization.Order;
 import org.hui.authorization.services.AuthorizationService;
+import org.hui.authorization.services.DuplicateTransactionException;
 import org.hui.authorization.services.OrderDao;
 
 import java.util.Map;
@@ -42,6 +43,9 @@ public class AuthorizationCreditCard extends BaseRichBolt {
                 orderDao.updateStatusToDenied(order);
             }
             collector.emit(input, new Values(order));
+            collector.ack(input);
+        } catch (DuplicateTransactionException e) {
+            orderDao.updateStatusToReadyToShip(order);
             collector.ack(input);
         } catch (FailedException e) {
             collector.fail(input);
