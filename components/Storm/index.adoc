@@ -82,22 +82,29 @@ Storm 不具体实现分组方式。
 
 与字段分组相似，根据指定的字段进行分组；这种方式会考虑下游数据处理者(bolt)数据处理的均衡性问题，在输入数据源关键字不均衡时会有更好的性能。
 
-=== 7. executor 执行器
+=== 7. worker 工作节点
 
-执行器(executor)就是工作节点 JVM 上的执行数据源(spout)或数据处理者(bolt)的线程。
-
-一个工作节点(worker)可以有一个或多个执行器(executor)。
-
+worker 实际上是一个 JVM **进程**；处理 Topology 的一部分(spout/bolt)。
 
 [WARNING]
 ====
-* 一个工作节点(worker)不会为多个拓扑(topology)服务。
+* 一个工作节点(worker)可以为多个拓扑(topology)服务。
 * 一个拓扑(topology)可以使用一个或多个工作节点(worker)运行任务。
 ====
+
+=== 7. executor 执行器
+
+执行器(executor)就是工作节点 JVM 上的执行数据源(spout)或数据处理者(bolt)的**线程**。
+
+一个工作节点(worker)可以有一个或多个执行器(executor)。
+允许动态调整 worker 中 executor 数量。
+
 
 === 8. task 任务
 
 任务(task)即在执行线程(执行器)上运行的数据源(spout)或数据处理者(bolt)实例。
+
+executor 内的 task 数量不允许动态改变。
 
 [TIP]
 ====
@@ -323,5 +330,141 @@ Storm 其实提供的是**追踪元组(tuple)处理状态**(成功/失败)，并
 * 一个能够感知每个元组是否已经完成处理以及广播元组处理失败信息的拓扑
 * 一个具备容错能力的 Storm 集群基础环境
 --
+
+Storm 默认提供了对前三个步骤的中消息处理保障。
+
+=== 消息处理保障
+
+**消息**(message)是元组的代名词， Storm 要做的是确保消息从 spout 以元组的形式发射，并经过拓扑中各 bolt 完成处理。
+
+_如果一个元组在数据流中某个计算节点失败了， Storm 会立刻被告知这次失败，然后重试这个元组，直到确保这个元组完成了全部的数据处理。_
+即**消息处理保障**(guaranteed message processing)。
+
+[TIP]
+--
+*元组状态*：处理完成或失败
+
+Storm 为每个有 spout 发射出的元组创建一个元组树，其中 spout 发射的元组称为**根**(root)元组，并持续跟踪这棵树的处理情况。
+
+当一棵元组树的所有叶节点都标记为已处理， Storm 才认为由 spout 发射的元组树处理完整。
+
+元组树全称为**有向非循环图**(Directed Acyclic Graph, DAG)
+--
+
+为了确保 Storm 能创建并跟踪元组树的状态，需要借助 API 完成两件事情：
+
+. 当 bolt 发射新元组时，确保其输入元组已被锚定；
+. 确保 bolt 在完成对输入元组的处理之后会通知 Storm ，即应答(acking)；
+
+[WARNING]
+--
+Storm 在元组层面上可能出现的错误：
+
+. 元组树的叶节点超时未完成；
+. 元组在 bolt 的手动运行中失败，元组树中将立刻触发错误；
+--
+
+=== bolt 锚定、应答和容错
+
+Storm 有两种方法在 bolt 中实现对元组的锚定、应答和容错：**显示**(explicit)和**隐式**(implicit)。
+Storm 中默认使用隐式方式处理。
+
+==== 隐式锚定、应答和容错
+
+``BaseBasicBolt`` 自动提供了线程**锚定**与**应答**功能：
+
+* **锚定**——在继承 ``BaseBasicBolt`` 实现 ``execute()`` 方法内，将发射一个元组到下一个 bolt 的工作。 ``BasicOutputCollector`` 将**把输入元组自动锚定到一个对应输入元组**；
+* **应答**——在继承 ``BaseBasicBolt`` 实现 ``execute()`` 方法执行完成后，发送过来的元组自动执行应答；
+* **容错**——在执行 ``execute()`` 方法时出错，系统自动抛出一个 ``FailedException`` 或 ``ReportedFailedException`` 异常通知 ``BaseBasicBolt`` 标记那个元组为**失败**(failing)；
+
+[TIP]
+--
+隐式锚定、应答和容错，简化了跟踪元组状态，但并不适用于所有场景，只适合 bolt 间消息一对一映射的场景。
+--
+
+==== 显示锚定、应答和容错
+
+显示锚定、应答和容错应用场景：
+
+* 对多个输入元组执行**聚合**或者**折叠**(collapsing)操作；
+* 连接多个输入数据流
+
+``BaseBasicBolt`` 适用于**可预测**的行为；
+
+继承 ``BaseRichBolt`` 实现的功能：
+
+* 锚定——在 bolt 的 ``execute()`` 方法中将输入的元组传到 ``outputCollector`` 的 ``emit()`` 方法中： ``outputCollector.emit(tuple, new Values(order))``
+* 应答——在 bolt 的 ``execute()`` 方法中调用 ``outputCollector`` 的 ``ack`` 方法： ``outputCollector.ack(tuple)``
+* 容错——在 bolt 的 ``execute()`` 方法内调用 ``outputCollector`` 的 ``fail`` 方法： ``throw new FailedException()`` 变成 ``outputCollector.fail(tuple)``
+
+``BaseRichBolt`` 可以替换 ``BaseBasicBolt`` 使用的所有场景。
+
+[NOTE]
+--
+``BaseRichBolt`` 在每次执行 ``execute()`` 方法时都会调用一个 ``BasicOutputCollector``。
+
+使用 ``BaseBasicBolt`` 时也需要通过 ``OutputCollector`` 来维护元组的状态：在初始化 bolt 时通过 ``prepare()`` 方法来实现。
+--
+
+``BaseBasicBolt`` 实现锚定：
+
+* 锚定—— ``outputCollector.emit(tuple, new Values(order))``
+* 非锚定—— ``outputCollector.emit(new Values(order))``
+
+==== 容错性
+
+在出现错误时，系统可以抛出 ``FailedException`` 或 ``ReportedFailedException`` 异常。
+在 ``exceute()`` 方法中使用 ``try-catche`` 对异常进行捕获，在异常处理中使用 ``fail(tuple)`` 进行显示容错。
+报错元组将导致整个元组树从 spout 开始回放重试，是消息处理**保障机制的关键**（因为这是激活重试机制的主要触发器）。
+
+[TIP]
+--
+元组在执行重试操作前还需要判断其是否**可重试(retriable)**。
+--
+
+错误类型：
+
+* 已知错误
+** 可重试错误 —— 对于已知的可重试错误，需要对失败的元组尝试**回放**和**重试**；
+** 不可重试错误 —— 对于已知的不可重试错误，应该去不断**应答**这些元组；通过增加某种日志或报告的方式，以便了解拓扑中出现了的错误；
+* 未知错误 —— 一旦出现这类错误，其实就变成了已知错误（通过日志等支撑判断），可以采取**可重试**或**不可重试**的方式处理错误；
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
