@@ -21,6 +21,11 @@
             <version>1.2.4</version>
             <!-- <scope>provided</scope> -->
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -40,11 +45,11 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <!-- <archive> -->
-                    <!--     <manifest> -->
-                    <!--         <mainClass/> -->
-                    <!--     </manifest> -->
-                    <!-- </archive> -->
+                    <archive>
+                        <manifest>
+                            <mainClass>org.hui.authorization.LocalTopologyRunner</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
                 <executions>
                     <execution>
