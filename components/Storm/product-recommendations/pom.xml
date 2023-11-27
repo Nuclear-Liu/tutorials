@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hui</groupId>
-    <artifactId>credit-card-authorization</artifactId>
+    <groupId>org.example</groupId>
+    <artifactId>product-recommendations</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -19,12 +19,7 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>1.2.4</version>
-            <!-- <scope>provided</scope> -->
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <!--<scope>provided</scope>-->
         </dependency>
     </dependencies>
 
@@ -47,19 +42,10 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.hui.authorization.LocalTopologyRunner</mainClass>
+                            <mainClass>org.hui.recommendations.RemoteTopologyRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
