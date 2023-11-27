@@ -34,8 +34,8 @@ services:
 
   supervisor:
     image: storm:1.2.4-temurin
-#    container_name: supervisor
-#    hostname: supervisor
+    #    container_name: supervisor
+    #    hostname: supervisor
     command: storm supervisor
     depends_on:
       - nimbus
