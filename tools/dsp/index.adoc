@@ -299,6 +299,43 @@ plot(y);
 
 == 3. 信号的时域分析
 
+**波形分析**是对直接记录的信号**幅值**随时间变化曲线进行分析。
+因在时间域进行，也称为**时域分析**。
+
+=== 信号波形参数识别
+
+. 周期(``T``)|频率(``f=1/T``)
+. 峰值(``P``)|双峰值(``Pp-p``)
+. 初始相位(``φ``)
+. *均值*：反应信号变化的中心趋势（绕 ``0`` 值的偏移程度），也称为**直流分量**
++
+[math,file="jz.svg"]
+--
+\begin{align}
+\ \mu_x=E[x(t)]= \lim_{T \rightarrow \infty }\frac{1}{T}\int_{0}^{T}x(t)dt
+\end{align}
+--
+. *均方值*：反映信号**强度**（能量的强弱）；其平方根称为**有效值(RMS)**(一种常用的信号能量表达方式)
++
+[math,file="jfz.svg"]
+--
+\begin{align}
+\ \psi^2_x = E[x^2(t)] = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{0}^{T} x^2(t) dt
+\end{align}
+--
+. *方差*：反映信号**绕均值的波动程度**，一般用来衡量信号强度
++
+[math,file="fc.svg"]
+--
+\begin{align}
+\ \delta^2_x = E[(x(t)-E[x(t)])^2] = E[(x(t) - \mu_x)^2] = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{0}^{T} (x(t) - \mu_x)^2 dt
+\end{align}
+--
+
+=== 信号的数字微分和数字积分算法
+
+
+
 == 4. 信号的频谱分析
 
 == 5. 信号的时差域相关分析
