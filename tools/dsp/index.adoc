@@ -332,11 +332,518 @@ plot(y);
 \end{align}
 --
 
+==== 周期(频率)、相位：*过零点检测法*
+
+> 过零点位置通常来说拥有最大斜率，所以测量精度相对高。
+
+上升沿过零点条件：
+
+[math,file="fc.svg"]
+--
+\begin{align}
+\ x(k) \le 0 \lt x(k+1)
+\end{align}
+--
+
+零点精确位置：零线和 ``k`` 点与 ``k+1`` 点的交点：
+
+[math,file="fc.svg"]
+--
+\begin{align}
+\ t_0 = k * \Delta t + \Delta t
+\end{align}
+--
+
+.过零检测：
+[source,matlab]
+--
+p = max(x);
+q = min(x);
+n = 1;
+at = 0.8*(p-q)+q;
+
+for k = 2:1:N
+    if (x(k-1)<at && x(k) <= at && x(k+1) > at && x(k+2) > at)
+        ti(n) = k;
+        n = n+1;
+    end
+end
+T = (ti(2) - ti(1))*dt; % 未做过零点精确位置计算
+F = 1.0/T;
+Q = 360*(T-ti(1)*dt)/T;
+--
+
+Matlab 标准函数：
+
+* `max` 最大值
+* `min` 最小值
+* `mean` 均值
+* `RMS` 有效值
+* `std` 标准差
+
+相邻两个过零点时间差就是**周期**，第一个过零点位置与周期的**比例**可算出**初相位**
+
 === 信号的数字微分和数字积分算法
 
+> PID（比例-积分-微分）
 
+==== 数字微分(中值法)
+
+[math,file="wf.svg"]
+--
+\begin{align}
+\ x'(t) = \frac{dx(t)}{dt}
+\ \Rightarrow
+\ x'(n) \approx \frac{x(n+1) - x(n)}{2* \Delta t}
+\end{align}
+--
+
+.微分：中值法
+[source,matlab]
+--
+for k = 1:1:N-1
+    x1(k) = (x(k+1) - x(k-1))/(2*dt);
+end
+x(0) = x(1); % 起点 特殊处理
+x(N) = x(N-1); % 终点 特殊处理
+--
+
+==== 数字积分(梯形法)
+
+[math,file="jf.svg"]
+--
+\begin{align}
+\ y(t) = \int_{0}^{t}x(t)dt
+\ \Rightarrow
+\ y(n) \approx y(n-1) + \Delta t * [x(n) + x(n-1)] /2
+\end{align}
+--
+
+.积分：梯形法
+[source,matlab]
+--
+y(0) = 0;
+for k = 1:1:N
+    y(k) = y(k+1)+dt*(x(k) + x(k-1))/2;
+end
+--
+
+[TIP]
+--
+图像边缘监测：二维数字微分 ``Sobel``
+
+二维图像数组横向微分、纵向微分；
+--
+
+.从摄像头获取图像
+[source,matlab]
+--
+vid = videoinput('winvideo',1,'YUY2_540x480');
+set(vid, 'ReturnedColorSpace','rgb');
+preview();
+pause();
+start(vid);
+
+for(i=1:10)
+    getpic = getsnapshot(vid);
+    filename = int2Str(i);
+    filename = [filename,'.jpg']
+    imwrite(getpic, filename);
+    pause(0.5);
+end
+stop(vid);
+closepreview(vid);
+delete(vid);
+clear;
+--
+
+.读取图像
+[source,matlab]
+--
+[FileName,PathName] = uigetfile('*.jpg','Select Jpg File');
+jpgFile = fullfile(PathName,FileName);
+i = imread(jpgFile);
+imshow(i);
+i1=rgb2gray(i);
+figure;
+imshow(i1);
+bw2 = edge(i1,'sobel');
+figure;
+imshow(bw2);
+--
+
+== 应用
+
+. 汽车速度监测：周期识别
+. 钢丝线缆断丝监测：峰值检测
 
 == 4. 信号的频谱分析
+
+=== 频谱分析的概念
+
+> **谱**概念来自于光学领域；一束光白光通过三棱镜，会按照光的波长，分解称为**光谱**。
+
+**频谱分析**借助于傅里叶变换，将信号转换到频率域，揭示出构成信号的不同频率成分，各频率分量的贡献曲线就称为**信号的频谱分析**。
+
+(频域)频谱图(频率-幅值)
+
+时域(波形图(时间-幅值))分析只能反映信号的幅值随时间的变化情况。
+
+频域(频谱图(频率-幅值))分析：
+
+* 可以直观看出信号的频率组成成分；
+
+* 抗干扰能力强；
+
+* 频谱分析有明确的物理意义
+
+=== 周期信号频谱分析
+
+**周期信号**经过一定时间可以重复出现，满足条件：
+
+[math,file="jf.svg"]
+--
+\begin{align}
+\ x(t) = x(t+nT); \quad & n = 1,2,3,4,...
+\end{align}
+--
+
+T: 信号周期(``F=1/T``:信号频率)
+
+==== 信号的正交分解与合成
+
+**正交函数集**定义：任意两个信号相乘积分为零
+
+[math,file="zjhs.svg"]
+--
+\begin\{cases}
+\int_{t_2}^{t_1} f_i(t)f_j(t)dt = 0 ,       \quad &i=j \\
+\int_{t_2}^{t_1} f_i(t)f_j(t)dt = K_{ij} ,  \quad &i \neq j
+\end\{cases}
+--
+
+信号的正交函数**分解与合成**：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = c_1 f_1(t) + c_2 f_2(t) + \cdots + c_n f_n(t) ,       \quad &t_1 \lt t \le t_2
+\end{align}
+--
+
+[TIP]
+--
+用正交函数集可以合成任何信号。
+--
+
+===== 三角正交函数集:
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\{ cos(2 \pi i f_0 t), sin(2 \pi i f_0 t) \} ;  \quad &i = 1,2,3,4,5, \cdots \\
+x(t) = x(t+nT) ;                                \quad & (F_0 = 1/T)
+\end{align}
+--
+
+其中**正弦函数集**之间满足**正交函数集**定义；**余弦函数集**之间满足**正交函数集**定义：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\int_{-\infty}^{\infty} sin(2 \pi f_0 t) * sin(3 \pi i f_0 t) dt = 0 \\
+\int_{-\infty}^{\infty} cos(2 \pi f_0 t) * cos(3 \pi i f_0 t) dt = 0
+\end{align}
+--
+
+针对信号使用三角函数集进行分解与合成变换：傅里叶变换
+
+===== 沃尔什正交函数集
+
+> 计算机领域使用沃尔什正交函数集比较多。
+
+沃尔什函数集： ``Walsh(i,t); i = 1,2,....,n``
+
+将信号进行频谱变换(Walsh-Hadamard变换)得到的 Walsh 频谱物理含义不是很明确。
+
+===== 周期信号的三角函数分解和合成(傅里叶级数展开)
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n 2 \pi f_0 t + b_n sin n 2 \pi f_0 t) ; (n = 1,2,3, \cdots )    \\
+\frac{a_0}{2} : 直流分量
+\end{align}
+--
+
+傅里叶级数计算公式：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+a_0 = \frac{2}{T} \int_{-T/2}^{T/2} x(t)dt ; 直流分量 \\
+a_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)cos(2 \pi f_0 t)dt, n = 1,2,3, \dots ; 正弦分量 \\
+b_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)sin(2 \pi f_0 t)dt, n = 1,2,3, \dots ; 余弦分量
+\end{align}
+--
+
+[TIP]
+--
+**三角函数辅助角公式**
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+Asin \alpha + B sin \beta = \sqrt{A^2 + B^2} sin(\alpha + \varphi) \\
+\varphi = arctg \frac{A}{B}
+\end{align}
+--
+
+--
+
+工程应用中的傅里叶一般形式：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n) \\
+A_n = \sqrt{a_n^2 + b_n^2} \\
+\varphi = arctg \frac{b_n}{a_n}
+\end{align}
+--
+
+.方波 Matlab 合成案例
+[source,matlab]
+--
+N = 1024;
+T = 2;
+x = linspace(0,T,N);
+y1 = sin(2*pi*x);
+subplot(4,1,1);
+plot(x,y1);
+
+y2 = y1 + 1/3 *sin(3*2*pi*x);
+subplot(4,1,2);
+plot(x,y2);
+
+y3 = y2 + 1/5*sin(5*2*pi*x);
+subplot(4,1,3);
+plot(x,y3);
+
+y4 = y3+ 1/7*sin(7*2*pi*x);
+subplot(4,1,4);
+plot(x,y4);
+--
+
+.三角波 Matlab 合成案例
+[source,matlab]
+--
+N = 1024;
+T = 4;
+x = linspace(0,T,N);
+y = sin(2*pi*x)
+    + 1/2*sin(2*2*pi*x)
+    + 1/3*sin(3*2*pi*x)
+    + 1/4*sin(4*2*pi*x)
+    + 1/5*sin(5*2*pi*x)
+    + 1/6*sin(6*2*pi*x);
+plot(x,y);
+--
+
+=== 频谱图
+
+工程上习惯用图形方式来表示信号各频率成分的能量大小情况，称为频谱图。
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n \omega_0 t + b_n sin n \omega_0 t) =  \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n)
+\end{align}
+--
+
+频谱图类型
+
+. 实频谱——虚频谱：数学分析领域
+.. 实频谱: an 关于 f 的函数
+.. 虚频谱: bn 关于 f 的函数
+. 幅频谱——相频谱：
+.. 幅频谱: An 关于 f 的函数
+.. 相频谱: φn 关于 f 的函数
+. 功率谱：*工程应用最多*(幅频谱An取平方)
++
+直接反应每个频率分量的能量大小。
+
+image::imgs/image-2023-11-30-17-47-25-169.png[]
+
+=== 周期信号频谱特性
+
+* *离散性*：每条谱线代表一个频率分量
+* *谐波性*；谱线出现在基波的整数信号频率上
+* *收敛性*：谐波次数越高，谐波分量越小
+
+=== 用快速傅里叶变换(FFT)计算频谱
+
+对 A/D 采样后的数字信号，无法给出函数表达式。
+因此很难导出其傅里叶级数展开式，可以用数字积分方法求出傅里叶级数。
+
+积分公式转换为求和公式：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n \omega_0 t + b_n sin n \omega_0 t) =  \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n) \\
+a_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)cos(2 \pi f_n t)dt \\
+\Rightarrow a_n = \sum_{0}^{N-1} x(n \Delta t)cos(2 \pi f_n n \Delta t) \\
+b_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)sin(2 \pi f_n t)dt \\
+\Rightarrow b_n = \sum_{0}^{N-1} x(n \Delta t)sin(2 \pi f_n n \Delta t)
+\end{align}
+--
+
+Matlab 中傅里叶变换函数： ``Y = fft(X,n)`` 数据长度 n 必须是 2 的幂方；结果 ``Yn = an + jbn`` 实部对应 cons 部分， 虚部对应 sin 部分。
+
+.傅里叶变化案例
+[source,matlab]
+--
+Fs = 5120;
+N = 1024;
+dt = 1.0/Fs;
+T = dt*N;
+t = linspace(0,T,N);
+x = 10*sin(2*pi*100*t) + 10/3*sin(3*2*pi*100*t);
+plot(t,xy);
+y = fft(x,N);
+a = real(y);
+b = image(y);
+figure;
+subplot(2,1,1);
+% 实频图
+plot(a);
+subplot(2,1,2);
+% 虚频图
+plot(b);
+
+A1 = abs(y); % 幅值
+Q1 = angle(y)*180/pi; % 相角
+figure;
+subplot(2,1,1);
+plot(A1);
+subplot(2,1,2);
+plot(Q1);
+
+% 数据矫正
+f = linspace(0,Fs/2,N/2);
+A11 = abs(y)/(N/2);
+Q11 = angle(y)*180/pi;
+figure;
+subplot(2,1,1);
+plot(A11);
+plot(f,A11(1:N/2));
+subplot(2,1,2);
+plot(f,Q11(1:N/2));
+--
+
+[TIP]
+--
+FFT 谱需要注意的问题：
+
+. 不显示负频率部分（中线对称：左边为正频率，右边为负频率）
+. X 坐标换为频率
+. 幅值量纲还原
+--
+
+[TIP]
+--
+**功率谱喝对数功率谱**
+
+工程应用上，通常对功率谱做取对数处理。
+
+分贝： ``dB=20log(P)``
+--
+
+.对数功率谱案例：
+[source,matlab]
+--
+Fs = 5120;
+N = 1024;
+dt = 1.0/Fs;
+T = dt*N;
+t = linspace(0,T,N);
+x = 10*sin(2*pi*100*t) + sin(3*2*pi*100*t);
+
+subplot(4,1,1)
+plot(t,x)
+
+y = fft(x,N);
+f = linspace(0,Fs/2,N/2);
+
+A1 = abs(y)/(N/2);
+subplot(4,1,2);
+plot(f,A1(1:N/2));
+
+A2=A1.^2;
+subplot(4,1,3);
+plot(f,A2(1:N/2));
+
+P = 20*log10(A2);
+subplot(4,1,4);
+plot(f,P(1:N/2));
+--
+
+=== 数字吸纳后的频谱计算方法
+
+==== 1. 信号的截断
+
+用计算机进行测试信号处理时，不可能对无限长的信号进行测量和运算，而是取其有限的时间片段进行分析，这个过程称为**信号截断**。
+
+为了便于数学处理，对截断信号做周期延拓（重复），得到虚拟无限长信号。
+不管原始信号是否为周期信号，都转变为以采集窗口为周期的周期信号。
+
+==== 2. 截断信号的能量泄露
+
+周期延拓后的信号与真是信号是不同的，接头处信号会有**跳变**。
+
+信号跳变导致在频谱上的现象称为能量泄露误差，即频谱信号围绕主信号周围都有能量，即能量泄露，
+
+[TIP]
+--
+**数学角度看信号截断**：
+
+相当于用一个**矩形窗**与正弦信号相乘，按傅里叶变换性质，时域相乘等价于频域**卷积**。
+而弦信号的谱是脉冲信号此，因此，截断信号的谱就是将矩形窗的谱搬移到脉冲的位置，从而谱的能量形成泄露。
+泄露的形状等于矩形窗频谱的形状。
+
+--
+
+工程实际中克服能量泄露的方法：**信号的整周期截断**。
+
+[NOTE]
+--
+旋转机械振动信号的键相信号整周期采样：通过保证截断信号为键槽信号的整数周期保证信号整周期截断。
+--
+
+==== 3. 离散傅里叶变换(DFT)
+
+Discrete Fourier Transform(DFT)一词是为适应计算机作傅里叶变换运算而引出的一个专用名词。
+
+离散信号 ``x(t)`` 按照 T 截断，周期延拓得到 ``x_T(t)
+
+转变为周期信号 ``x_T(t)`` 的傅里叶级数分解：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x_T(t) = \frac{a_0}{2} + \sum_{ n = 1 }^{ \infty } (a_n cos n 2 \pi f_0 t + b_n sin n 2 \pi f_0 t) , n=1,2,3, \dots
+\end{align}
+--
+
+展开为以周期 T 为基频(``f_0``)的一组谐波的和；
+谐波系数被称为**傅里叶系数**，得到系数即完成了离散傅里叶变换。
+
+离散化处理：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+a_0 = \frac{2}{T}
+\end{align}
+--
 
 == 5. 信号的时差域相关分析
 
