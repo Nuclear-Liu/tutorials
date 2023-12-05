@@ -1,0 +1,73 @@
+= Metrics
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+[TIP]
+--
+**依赖**: ``4.2.22``
+
+[source,xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${metrics.version}</version>
+    </dependency>
+</dependencies>
+----
+--
+
+Metrics 提供了一个强大的工具包，提供了衡量生产环境中关键组件行为的方法。
+
+== 1. Metrics Core
+
+=== 1.1 Gauges
+
+==== JMX Gauges
+
+==== Ratio Gauges
+
+==== Cached Gauges
+
+==== Derivative Gauges
+
+=== 1.2 Meters
+
+meter 用于测量一组事件发生的速率：
+
+=== 1.3 Counters
+
+=== 1.4 Histograms
+
+==== Uniform Reservoirs
+
+==== Exponentially Decaying Reservoirs
+
+==== Sliding Window Reservoirs
+
+==== Sliding Time Window Reservoirs
+
+==== Exponentially Decaying Reservoirs
+
+=== 1.5 Timers
+
+== 2. Reporters
+
+=== 2.1 Console
+
+=== 2.2 CSV
+
+=== 2.3 SLF4J
+
+=== 2.4 JMX
+
+=== 2.5 Other Reporters
+
+== 3. Health Checks
+
+== 4. Metric Sets
+
+== 5. Metrics Source Code Analysis

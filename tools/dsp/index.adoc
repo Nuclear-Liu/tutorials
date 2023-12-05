@@ -948,7 +948,22 @@ plot(f,A1(1:N/2));
 非周期信号是指在时间上不具有重复性的信号。
 非周期信号的频谱分析工具是傅里叶积分：
 
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \int_{-\infty}^{\infty} X(f) e^{j 2 \pi t} df \\
+\Rightarrow X(f) = \int_{-\infty}^{\infty} x(t) e^{-j 2\pi ft} dt
+\end{align}
+--
+
 由于采样信号截断，无论信号是周期信号，还是非周期信号，采样后都变为以截断窗口为周期的周期信号。
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+X(f) = \int_{0}^{T} x(t) e^{-j 2\pi ft} dt
+\end{align}
+--
 
 === 其他频谱相关知识
 
@@ -972,7 +987,6 @@ plot(f,A1(1:N/2));
 
 === 频谱分析的应用
 
-
 . 使用 fft 实现机器齿轮箱故障诊断
 . 螺旋桨设计
 +
@@ -983,8 +997,69 @@ plot(f,A1(1:N/2));
 
 == 5. 信号的时差域相关分析
 
+=== 5.1 概述
 
+信号的相关分析(Cross-Correlation)是一种分析两个信号之间或一个信号自身的**时间依存关系**和**相似程度**的方法。
 
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy}(\tau) = \frac{\int_{-\infty}^{\infty} x(t)y(t-\tau) dt }{[\int_{-\infty}^{\infty} x^2(t)dt \int_{-\infty}^{\infty} y^2(t)dt ]^{1/2} }
+\end{align}
+--
+
+上半部分是卷积分，下半部分是归一化处理。
+
+. 变量相关概念：
++
+统计学中用相关系数来描述变量 `x` 和 `y` 之间的相关性，它是两随机变量之积的数学期望，表征了 `x` 和 `y` 间的关联程度。
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy} = \frac{c_{xy}}{\sigma_x \sigma_y} = \frac{E[x-\mu_x)(y-\mu_y)]}{\{ E[(x-\mu_x)^2] E[(y-\mu_y)^2] \}^{1/2}}
+\end{align}
+--
+
+. 波形相关的概念(相关函数)
++
+如果所研究的变量 `x` `y` 是与时间有关的函数，即 `x(t)` 与 `y(t)` ，则其相关系数也是随其相对时刻变化的函数。
++
+通过固定 `x(t)` 移动 `y(t)` (向右：正时差 向左：负时差)（相乘再积分）得到在不同的时差时刻两者之间的相似程度（相关函数）。
+
+这时引入一个与相对时间差有关的量，称为**函数的相关系数**或**相关函数**：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy}(\tau) = \frac{\int_{-\infty}^{\infty} x(t)y(t-\tau) dt }{[\int_{-\infty}^{\infty} x^2(t)dt \int_{-\infty}^{\infty} y^2(t)dt ]^{1/2} }; \tau:时间差
+\end{align}
+--
+
+相关函数的峰值即：最相似点即可获取两个相似信号之间的时间差。
+
+工程上，关心的信号不同时刻的相似程度，不关心具体值，则相关函数可简化为：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+R_{xy}(\tau)= \int_{-\infty}^{\infty} x(t)y(t-\tau) dt; x=y:自相关 x!=y 互相关
+\end{align}
+--
+
+. 已知速度测距离
+. 已知距离测速度
+
+Matlab 相关函数计算： ``xcorr()``
+
+=== 5.2 相关函数的性质
+
+相关函数描述了信号间或信号自身不同时刻的相似程度。
+
+* 自相关函数时偶函数 ``R_x(t)=R_x(-t)``
+* 当 ``t=0`` 时，自相关函数具有最大值
+* 周期信号的自相关函数仍然是同频率的周期信号，但不保留原信号的相位信息
+* 随机噪声信号的自相关函数将离开 `t = 0` 时快速衰减
 
 == 6. 信号的幅值域分析
 
