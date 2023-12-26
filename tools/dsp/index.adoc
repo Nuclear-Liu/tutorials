@@ -1283,6 +1283,193 @@ image::imgs/image-2023-12-05-17-39-45-295.png[]
 
 实际使用中，调整两个参数符合自己的应用场景。
 
+信号滤波的数学描述：
+原始信号：`x(t)` 滤波器：`H(f)` 滤波信号：`y(t)`
+
+* 频率域 `Y(f)=X(f)H(f)`
+* 时间域 `y(t)=x(t)*h(t)`
+
+=== 7.2 频率域滤波
+
+输入信号： `x(t)`
+
+滤波器： `H(f)`
+
+滤波信号： `y(t)`
+
+频率域： `Y(f)=X(f)H(F)`
+
+滤波信号：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+y(t) = F^{-1}[Y(f)]  ; IFFT
+\end{align}
+--
+
+.FFT频域低通滤波
+[source,matlab]
+--
+Fs = 2048;
+dt = 1.0/Fs;
+T = 1;
+N = T /dt;
+t = [0:N-1]/N;
+x1 = sin(2*pi*50*t)+sin(2*pi*300*t)+sin(2*pi*500*t);
+subplot(4,1,1);
+plot(t,x1);
+axis([0,0.1,-2,2])
+
+P = fft(x1,N);
+Pyy = 2*sqrt(P.*conj(P))/N;
+f=linspace(0,Fs/2,N/2);
+subplot(4,1,2);
+plot(f,Pyy(1:N/2));
+
+for k = 1: N
+    P1(k) = real(P(k)) + i*imag(P(k));
+end
+for k = 200: N-200
+    P1(K)=0;
+end
+
+Pyy=2*sqrt(P1.*conj(P1))/N;
+f=linspace(0,Fs/2,N/2);
+subplot(4,1,3);
+plot(f,Pyy(1:N/2));
+
+x2 = ifft(P1);
+subplot(4,1,4);
+plot(t,x2);
+axis([0,0.1,-2,2]);
+--
+
+* 长数据信号的 FFT 频域滤波
++
+为了避免滤波器**暂态**过程的影响，采用**帧数据重迭**技术，对重叠部分进行掐头去尾处理，将滤波数据头部和尾部的 64 点或 128 点舍去。
+
+=== 7.3 时域滤波
+
+信号：`x(t)`
+
+滤波器：`H(f)`
+
+滤波信号：`y(t)`
+
+时间域： `y(t)=x(t)*h(t)`
+
+离散公式： `y(n)=x(n)*h(n)`
+
+滤波公式： `y(k)=h(0)x(k)+h(1)x(k+1)+h(2)x(k+2)+...+h(m)x(k+m)`; k= 0,1,2,3...
+
+[TIP]
+--
+**Z变换**
+
+Z变换(Z-transformation)是一种离散系统分析方法，其作用如同连续系统分析中的拉普拉斯变换。
+在离散采集信号的数字滤波分析中，Z变换是一个主要的数学工具。
+--
+
+时域滤波的关键是得到 Z 变换形式的滤波器。
+
+. 数字差分=简单的高通滤波器
++
+.时域差分滤波
+[source,matlab]
+--
+Fs=5000;
+a=5;
+f=2;
+T=1;
+dt=1.0/Fs;
+N=T/dt;
+t=linspace(0,T,N);
+y=a*sin(2*pi*f*t)+0.3*sin(100*pi*f*t);
+subplot(2,1,1);
+plot(t,y);
+
+x(1)=0;
+x(N)=0;
+for i =2:N-1
+    x(i)=(y(i+1)-y(i-1))/2;
+end
+subplot(2,1,2);
+plot(t,x);
+--
+
+. 数据平滑=简单的低通滤波器
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+y(t) = \frac{1}{M} \sum_{i=0}^{M-1}x(k+i)
+\end{align}
+--
++
+.时域数据平滑高频滤波
+[source,matlab]
+--
+Fs=5000;
+a=5;
+f=2;
+T=1;
+dt=1.0/Fs;
+N=T/dt;
+t= linspace(0,T,N);
+y=a*sin(2*pi*f*t) + 0.8*sin(1000*pi*f*t);
+subplot(2,1,1);
+plot(t,y,'linewidth',2);
+
+x=y;
+for i = 1:N-5;
+    x(i)=[y(i)+y(i+1)+y(i+2)+y(i+3)+y(i+4)]/5;
+end
+subplot(2,1,2);
+plot(t,x,'linewidth',2);
+--
+
+. 高斯平滑滤波器
++
+高斯平滑滤波的滤波器系数是一个**高斯函数**。
++
+matlab : ``gausswin()``
+
+==== 数字滤波器设计和数字滤波概念
+
+时域数字滤波器是将信号与滤波器的单位脉冲响应(Z域滤波器系数)进行卷积分；
+寻找所需的滤波器单位脉冲响应的过程称为滤波器设计，信号卷积分过程称为滤波。
+
+=== 7.4 FIR 滤波器
+
+FIR 滤波器又称为有限脉冲响应滤波器，FIR就是来源于名词**有限脉冲响应**—— Finite Impulse Response 的英文单词首字母缩写。
+传递函数：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+H(z) = \sum_{k=0}^{N}a_k Z^{-k}
+\end{align}
+--
+
+脉冲响应函数：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+h(k) = a_k,k = 0,1,2,\dots,N
+\end{align}
+--
+
+`h(k)` 是一个**有限长度的序列**，故 FIR 滤波器又称为有限脉冲响应滤波器。
+
+. FIR 滤波器脉冲响应函数设计法：
+
+. FIR 滤波器窗函数设计法：
++
+理想滤波器单位脉冲响应 Cn 是无限长序列，但 FIR 系数长度 h(n) 是有限的，只能截取有限长度，但截断造成时域跳变，导致滤波器特性震荡。
+
+
 == 8. 信号的时-频分析技术
 
 
