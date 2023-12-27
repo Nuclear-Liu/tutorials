@@ -1,0 +1,56 @@
+== 反射 ``reflection``
+
+单独将反射操作进一步封装，简化操作。
+
+关键对象：
+
+* ``Reflector``
+* ``ReflectorFactory``
+* ``TypeParameterResolver`` 类型参数解析器
+* ``invoker`` 实现相关调用-属性/方法
+* ``wrapper`` 增强
+
+=== ``TypeParameterResolver``
+
+参数类型解析器：
+
+1. 解析字段类型 {@link TypeParameterResolver#resolveFieldType(Field, Type)}；
+2. 方法返回值类型 {@link TypeParameterResolver#resolveReturnType(Method, Type)}；
+3. 方法参数的类型 {@link TypeParameterResolver#resolveParamTypes(Method, Type)}.
+
+
+* ``java.lang.reflect.Type``
+** ``interface ParameterizedType extends Type`` #参数化类型#
++
+例如： ``List<String>`` ``Map<String,Object>`` ``Service<String>``
+
+** ``interface TypeVariable<D extends GenericDeclaration> extends Type, AnnotatedElement`` #类型变量#
++
+泛型信息： ``List<T>``最终要被转换为一个具体类型才能使用
+
+** ``interface GenericArrayType extends Type`` #数组类型，且组成元素是``ParameterizedType``或``TypeVariable``类型#
++
+例如： ``List<String>[]`` ``T[]``
+
+** ``interface WildcardType extends Type`` #通配符泛型#
++
+例如： ``? extends Number`` ``? super Integer``
+
+** ``class Class<T> implements java.io.Serializable,
+                              GenericDeclaration,
+                              Type,
+                              AnnotatedElement,
+                              TypeDescriptor.OfField<Class<?>>,
+                              Constable``
+
+=== ``ObjectFactory``
+
+自定义对象工厂： 继承``DefaultObjectFactory``默认类，实现``create``方法即可，配置文件配置自定义的实现类。
+
+=== property 属性
+
+对属性表达式进行解析。
+
+* ``PropertyTokenizer``: 属性分词器
+* ``PropertyNamer``: 处理属性的工具类
+* ``PropertyCopier``: 属性拷贝工具类

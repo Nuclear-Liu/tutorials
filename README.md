@@ -312,3 +312,6 @@ IDEA Keymap
 ![img.png](img.png)
 
 ![img_1.png](img_1.png)
+
+* 变量不同颜色
+![val_color](val_color.png)

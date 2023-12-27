@@ -1,0 +1,21 @@
+== Integration Spring 集成 Spring
+
+[TIP]
+====
+核心是：将 MyBatis 的核心对象交给 Spring 容器管理。
+====
+
+[plantuml, format="svg", id="myId"]
+----
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: another authentication Response
+@enduml
+----
