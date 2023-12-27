@@ -1,0 +1,18 @@
+== Labels and Selectors 标签和标签选择器
+
+ref: https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/labels/#label-selectors
+
+=== 标签
+
+labels key:
+
+* 长度不得超过 63 个字符
+* 可以使用前缀(使用``/``分隔，前缀必须是DNS子域，不得超过 253 个字符)
+* 起始字符必须是字母或数字，中间可以使用连字符``-``、下划线``_``和点``.``
+
+labels value:
+
+* 长度不得超过 63 个字符
+* 起始字符必须是字母或数字，中间可以使用连字符``-``、下划线``_``和点``.``
+
+=== 标签选择器

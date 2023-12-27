@@ -1,0 +1,76 @@
+version: '3.1'
+
+services:
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    hostname: zookeeper
+    restart: always
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: "500M"
+
+  nimbus:
+    image: storm:1.2.4-temurin
+    container_name: nimbus
+    hostname: nimbus
+    command: storm nimbus
+    depends_on:
+      - zookeeper
+    links:
+      - zookeeper
+    restart: always
+    ports:
+      - "6627:6627"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: "1G"
+
+  supervisor:
+    image: storm:1.2.4-temurin
+    #    container_name: supervisor
+    #    hostname: supervisor
+    command: storm supervisor
+    depends_on:
+      - nimbus
+      - zookeeper
+    links:
+      - nimbus
+      - zookeeper
+    restart: always
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: "2G"
+
+  ui:
+    image: storm:1.2.4-temurin
+    container_name: ui
+    hostname: ui
+    command: storm ui
+    depends_on:
+      - nimbus
+      - zookeeper
+    links:
+      - nimbus
+      - zookeeper
+    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: "500M"
+#        reservations:
+#          memory:
+#          cpus:

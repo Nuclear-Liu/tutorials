@@ -1,0 +1,288 @@
+== Kubernetes 对象与资源
+
+=== Kubernetes 对象
+
+在 Kubernetes 系统中所操作的**资源**就是**对象**；
+而**对象是一个持久化的实体**，即将对资源的操作**记录**下来。
+Kubernetes 更具实体记录的信息管理整个集群的状态。
+对象描述的信息：
+
+* 哪些容器化应用正在运行（以及在哪些节点上运行）
+* 可以被应用使用的**资源**
+* 应用运行时的**行为策略**（比如重启策略、升级策略、以及容错策略）
+
+[TIP]
+====
+Kubernetes 对象是一个种**意向表达**：
+
+一旦创建该对象， Kubernetes 系统将不断工作以确保该对象存在。
+本质上是在告知 Kubernetes 系统想要的集群工作负载状态看起来是什么样子，即 Kubernetes 集群所谓的**期望状态**。
+====
+
+==== 对象规范与状态
+
+在 Kubernetes 中几乎每个对象都包含两个嵌套的对象字段：对象 spec(规范) 与对象 status(状态)。
+
+* ``spec`` 规范：在**创建**对象时设置其内容，描述希望对象所具有的特征(*期望状态(Desired State)*)
+* ``status`` 状态：描述对象的**当前状态(Current State)**，由 Kubernetes 系统和组件设置并更新
+
+在任何时刻， Kubernetes **控制平面**都一直积极管理对象的实际状态(status)以使之达成期望状态(spec)。
+
+创建 Kubernetes 对象时**必须**提供对象的 spec(规范) ，用来描述对该对象的期望状态，以及对象的一些基本信息(元数据)。
+
+使用 Kubernetes API 创建对象时必须在请求体中包含 JSON 格式的信息。
+大多数情况下是使用 YAML 格式来创建资源，在 YAML 格式文件中描述对象的 spec 规范。
+在 kubectl 发起 API 请求时，将 YAML 转化为 JSON 格式。
+
+==== 对象必选字段
+
+Kubernetes 对象对应的 ``.yaml`` 文件中的必选字段：
+
+* ``apiVersion``: 创建该对象所使用的 Kubernetes API 的版本
+* ``kind``: 创建对象的类别
+* ``metadata``: 唯一标识对象的一些数据(``name`` ``UUID`` ``namespace``)
+* ``spec``: 期望对象的状态
+
+[TIP]
+====
+查询对象描述字段信息:
+
+[source,shell]
+----
+kubectl explain [objects.field]
+# kubectl explain pod.spec
+----
+
+====
+
+=== Kubernetes 资源
+
+查看所有可用资源信息：
+
+[source,shell]
+----
+kubectl api-resources
+----
+
+==== Pod 资源
+
+Pod 是 Kubernetes 中可以创建和管理的最小可部署计算单元。
+
+* Pod 由一组(一个或多个)**共享上下文**的容器构成。
+* Pod 内的所有容器调度在**同一个节点**上运行。
+* Pod 内的所有容器共享同一**网络**，有一个唯一 IP (*Pod IP*)。
+* Pod 中有一个特殊的 *Pause* 容器：优先启动然后进行 IP 分配，将其他容器都 *link* 到该容器实现网络共享。
+
+[plantuml, format="svg" id="pod-arch"]
+----
+include::uml/pod-arch.puml[]
+----
+
+Pod 名称: ``_deployment-name_-_replica-set-id_-_hsah-code_``
+
+``kubectl get pods``
+
+==== Deployment 资源
+
+Pod 的上一层是 ReplicaSet 控制器，主要控制管理 Pod 的副本数；通常不会直接使用 ReplicaSet 管理 Pod ，而是更高一级的 Deployment 。
+
+Deployment 管理 ReplicaSet 管理器，它会自动创建和销毁 ReplicaSet 控制器，实现应用的滚动更新。
+
+[plantuml, format="svg" id="deployment-arch"]
+----
+include::uml/deployment-arch.puml[]
+----
+
+[TIP]
+====
+**滚动更新**机制：
+
+1. Deployment 创建新的 ReplicaSet 控制器
+2. 首先根据新的 ReplicaSet 创建一个新的 Pod
+3. 新 Pod 通过健康检查后；删除旧 ReplicaSet 控制器下的对应的一个 Pod
+4. 一次更新所有容器，更新过程中会保证副本数量不变
+5. 在经过一定时间后删除旧的 ReplicaSet 控制器对象
+====
+
+``kubectl get rs``
+``kubectl get replicaset``
+
+``kubectl get deployment``
+
+==== DeamonSet 资源
+
+==== StatefulSet 资源
+
+==== Job 资源
+
+==== CronJob 资源
+
+==== Service 资源
+
+Service 用来将 Kubernetes 中的一个或一组 Pod 上的应用程序公开为网络服务。
+
+*实现对 Pod 负载均衡*；负载均衡的实现依赖于标签；通过在 Pod 上添加标签，再在创建 Service 时通过 Selector 选择对应的标签，最后通过节点 kube-proxy 来实现均衡的规则创建。
+
+[plantuml, format="svg" id="service-arch"]
+----
+include::uml/service-arch.puml[]
+----
+
+==== Namespace 资源
+
+命名空间(Namespace)在 Kubernetes 中提供了一种机制，将同一个集群中的资源分为**逻辑上**相互隔离的组。
+同一命名空间内的资源名称要求**唯一**，不同命名空间可以相同。
+
+* 对资源对象进行隔离：例如 Pod Deployment Service 等对象隔离为不同组
+* 对资源配额进行隔离：例如 CPU Memory 等资源限制配额
+
+Namespace **只能**隔离带有命名空间的资源，可以通过 ``kubectl api-resources`` 查看那些资源支持命名空间隔离。
+
+[TIP]
+====
+命名空间隔离性：其实是逻辑上的隔离，并不是物理隔离。
+
+* 不隔离 PodIP 网络
+* 不隔离 ServiceIP 网络
+* 不隔离 DNS
+====
+
+==== Ingress 资源
+
+==== ConfigMap 资源
+
+==== Secret 资源
+
+=== Kubernetes 对象资源实践
+
+==== demo apply
+
+===== 1. Deployment 资源
+
+第一个部署版本镜像： ``image: nginx:latest``
+
+[source,yaml]
+include::../yaml/demo-app-deploy.yaml[]
+
+. 应用 Deployment 资源配置文件
++
+[source,shell]
+----
+kubectl apply -f demo-app-deploy.yaml
+----
+
+. 查看 Deployment 资源
++
+[source,shell]
+----
+kubectl get deployments
+----
+
+
+===== 2. Service 资源
+
+[source,yaml]
+include::../yaml/demo-app-service.yaml[]
+
+. 应用 Service 资源配置文件
++
+[source,shell]
+----
+kubectl apply -f demo-app-service.yaml
+----
+
+. 查看 Service 资源
++
+[source,shell]
+----
+kubectl get services
+----
+
+===== 3. 升级 Pod
+
+* 命令行直接修改：
++
+1. 修改Pod 副本数
++
+[source,shell]
+----
+kubectl scale deployment demo-app-deploy --replicas=5
+----
+2. 查看 Pod IP
++
+[source,shell]
+----
+kubectl get pods -o wide
+----
+2. 验证 Service 的 Endpoin 关联的 Pod IP
++
+[source,shell]
+----
+kubectl describe endpoints demo-app-service
+----
+
+* kubectl edit 命令修改，推出即生效
++
+[source,shell]
+----
+kubectl edit deployment.apps demo-app-deploy
+----
+
+* 使用资源描述文件：
+. 编辑配置文件，修改镜像版本
++
+[source,yaml]
+----
+include::../yaml/demo-app-deploy.v2.yaml[]
+----
+. 重新应用资源描述文件：
++
+[source,yaml]
+----
+kubectl apply -f demo-app-deploy.v2.yaml
+----
+
+===== 4. 应用回滚
+
+* 升级
+. 命令行方式
++
+[source,shell]
+----
+kubectl set image deployment demo-app-deploy *=nginx:1.23.0 --record
+----
+
+. 资源描述文件方式
+
+
+* 回滚
++
+. 查看升级历史记录
++
+[source,shell]
+----
+kubectl rollout history deployment
+----
+
+. 回滚 Deployment 版本
++
+[source,shell]
+----
+kubectl rollout undo deploy demo-app-deploy --to-revision=5
+----
+
+===== 5. 清理创建的资源
+
+. 删除 Deployment 资源
++
+[source,shell]
+----
+kubectl delete -f demo-app-deploy.yaml
+----
+
+. 删除 Service 资源
++
+[source,shell]
+----
+kubectl delete -f demo-app-service.yaml
+----

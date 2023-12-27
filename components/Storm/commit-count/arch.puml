@@ -1,0 +1,12 @@
+@startuml
+
+state CommitFeeder
+state EmailExtractor
+state EmailCounter
+
+[*] --> CommitFeeder
+CommitFeeder --> EmailExtractor
+EmailExtractor --> EmailCounter
+EmailCounter --> [*]
+
+@enduml

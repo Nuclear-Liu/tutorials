@@ -1,0 +1,187 @@
+= Python 应用镜像制作与使用
+Hui.Liu
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== 容器化应用打包
+
+优势：
+
+* 平台无关，容器化运行基于同一的oci标准，基本屏蔽了不用环境的影响
+* 统一环境，避免因为不同主机环境差异引起的各种bug
+* 弹性与迁移，可以对应用进行横向(数量)纵向(资源：CPU、Memory、Network等)扩展，同时能够实现无感具体环境迁移
+* 实施与部署方便，可以基于不同规模的编排系统，通过资源清单文件对应用实现一键部署、更新
+
+=== 1. 创建你的 Python 项目
+
+例如创建的项目名称为： flask-project
+
+创建Python包目录，针对不同功能划分不同的包路径,使整个项目能够更容易表达各个模块的目的。
+
+[TIP]
+====
+例如使用 `src` 用来存放所有的源码，`src/api` 用来存放对外暴露的api接口。
+====
+
+例如这里启动一个简单 http server,简单创建一个py文件： `src/app.py`
+
+[source,python,number]
+----
+import numpy as np
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['POST']) # <1>
+def demoApi():
+    frames = request.json.get('frames')
+    inData = np.array(frames)
+    outData = np.mean(inData, axis=1)
+
+    print(outData)
+
+    res = outData.tolist()
+
+    result = {
+        'timestramp': 23445567,
+        'values': outData.tolist()
+    }
+    return jsonify(result) # <2>
+
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0")  # <3>
+----
+<1> 指定请求资源uri，以及方法类型
+<2> 返回为 JSON 对象类型建议使用 `jsonify` 否则需要自定义指定返回头的媒体类型 `Content-Type:application/json`
+<3> `host` 参数必须要指定外界可以访问的ip，例如这里的 `0.0.0.0` 表示允许任意IP地址访问；默认端口号为 `5000` 一般不建议修改，容器运行时可以通过修改映射端口实现对其他端口的修改。
+
+=== 2. 整理好 Python 依赖到 `requirements.txt`
+
+建议将所有的项目依赖统一维护在项目根目录的 `requirements.txt` 文件，这也是 Python 项目最佳实践的一部分；
+这样方便后面制作镜像时依赖的安装。
+
+[source,text,number]
+----
+numpy
+flask
+----
+
+[WARNING]
+====
+对于依赖的库版本，建议在实际生产中维护具体的版本，避免后期因为不同版本依赖的变化导致程序运行问题。
+====
+
+=== 3. 编写镜像描述文件 Dockerfile
+
+[source,dockerfile,number]
+----
+FROM python:3.8-slim # <1>
+
+WORKDIR /app # <2>
+ADD requirements.txt . # <3>
+ADD src ./src # <4>
+
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ # <5>
+
+EXPOSE 5000 # <6>
+
+ENTRYPOINT [ "python", "app.py" ] # <7>
+----
+
+<1> 指定基础镜像，这里使用了精简版本 ``python:3.8-slim`` 也可以选择 ``python:3.8`` 相对而言由于包含了一些基本的调试扩展组件镜像体积要大一些；
+不建议使用 ``python:3.8-alpine`` 版本镜像，尤其是使用 numpy 时，由于镜像过于精简导致使用异常。
+<2> 设置工作目录，后面所有命令都基于指定的工作目录路径运行，此处可以自定义指定，会映射到容器linux根目录下
+<3> 拷贝依赖文件到工作目录
+<4> 拷贝项目代码文件到工作目录下的 `src`
+<5> 安装 ``requirements.txt`` 的依赖
+
+* ``--no-cache-dir`` 设置不缓存，减小镜像体积
+* ``-r requirements.txt`` 指定依赖所在文件
+* ``-i https://pypi.tuna.tsinghua.edu.cn/simple/`` 指定依赖安装使用国内清华源加速，可以自定义指定，如果有内部非公开包建议指向自己的pip源
+
+<6> 指定暴露的端口，此处端口与 Flask 服务使用的端口要一致，如果在应用中指定了具体端口，此处要修改为指定的端口
+<7> 指定端点，即镜像被容器化运行时内部的默认进程，在容器被启动时会运行
+
+=== 4. 构建镜像
+
+建议 Linux 环境构建
+
+[source,shell,number]
+----
+cd
+docker build -t [image-name:image-version] .
+----
+
+* ``-t``: 指定生成镜像的名称（名称的命名建议见名知意的原则命名），建议添加镜像版本(具体版本规则建议参看三级版本命名规范：``[主版本号].[次版本号].[补丁版本号]``)，例如 ``ps-app:1.0.0``
+
+[TIP]
+====
+构建命令中 ``docker build -t [image-name:image-version] .`` 最后的 ``.`` 不能省略，指示为根据当前目录下的 Dockerfile 文件构建；
+如果 Dockerfile 名称不是默认 ``Dockerfile`` 或未在当前目录下，则可以使用参数 ``-f [dockfile-path]`` 指定。
+====
+
+=== 5. 运行容器
+
+此处构建的镜像为 HTTP server ，所以在根据镜像运行容器是为了容器外部可以访问容器暴露的服务必须对端口进行映射。
+
+[TIP]
+====
+映射端口是宿主机(即运行容器的主机)占用端口必须没有被占用，否则将不能正确暴露服务。
+====
+
+[source,shell]
+----
+docker run -d \       # <1>
+  --name ps-app       # <2>
+  -p 5000:5000        # <3>
+  ps-app:1.0.0        # <4>
+----
+
+<1> `-d` 非交互方式运行
+<2> 给运行的容器起名字
+<3> 指定端口映射 ``[主机(宿主)端口]:[容器端口] ``
+<4> 指定运行容器使用的镜像及其版本
+
+=== 6. 镜像导出
+
+[source,shell]
+----
+docker save \
+  -o [image-name_image-version.tar] \   # <1>
+  [image-name:image-version]            # <2>
+----
+
+<1> `-o` 指定导出文件名称以及路径
+<2> 指导要导出的镜像，可以同时导出多个到一个文件
+
+例如：导出 ``ps-app:1.0.0`` 镜像
+
+[source,shell]
+----
+docker save -o ps-app_1.0.0.tar ps-app:1.0.0
+----
+
+=== 7. 镜像导入
+
+[source,shell]
+----
+docker load \
+  -i [image-name_image-version.tar] # <1>
+----
+
+<1> 指定要导入的镜像文件
+
+例如导入镜像文件 ``ps-app_1.0.0.tar``
+[source,shell]
+----
+docker load -i ps-app_1.0.0.tar
+----
+
+=== 8. 集中式中央镜像管理
+
+使用 Harbor 构建镜像仓库，将镜像构建完成后推送到镜像仓库进行管理，使用者从私有的 Harbor 进行仓库拉取。
+
+参考连接: https://goharbor.io/

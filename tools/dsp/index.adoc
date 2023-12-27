@@ -1,0 +1,1475 @@
+= 数字信号处理
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== 1. 计算机测量仪器系统
+
+=== 计算机测量仪器
+
+**计算机测量仪器**(虚拟仪器)是通过计算机作为仪器主体。
+传感器经过放大和信号采集后，通过数据总线传输到计算机中，再由计算机软件进行分析、显示。
+
+=== A/D 转换(ADC)
+
+A/D 转换即模数转换，将模拟信号转换成数字信号。
+
+ADC 类型：
+
+* 积分型
+* 逐次逼近型
+* 并行比较型
+* 串并型
+
+ADC 主要参数：
+
+. 转换器位数(精度)
+. 转换时间(采样频率)
+. 电压输入范围： `0~5v` `0~10v` `+/-5v` `+/-10v`
+
+=== D/A 转换(DAC)
+
+D/A 转换即数模转换，将数字信号转换成模拟信号。
+
+DAC 主要参数：
+
+. 转换器位数(精度)
+. 转换时间(频率)
+. 电压输出范围： `0~5v` `0~10v` `+/-5v` `+/-10v`
+
+=== 采样定理
+
+在计算机化测量系统中，**采样**就是将连续的传感器模拟信号，通过 ADC 转换为计算机能够分析的离散数字量。
+
+**采样**是将离散**脉冲序列**与信号**相乘**，取离散点值的过程：
+
+``p(t) * x(t)``
+
+* 脉冲信号 p(t)
+* 连续信号 x(t)
+
+采样定理(Nyquist-Shannon)：
+为保证采集后信号能真实地保留原始模拟信号信息，信号采样频率必须至少为原信号中最高频率成分的 2 倍，即 ``Fs > 2 Fmax`` 。
+
+在工程领域，为保证采样信号质量： ``Fs > 5 Fmax``
+
+[TIP]
+--
+**采样过程中的频率混叠**
+
+频率混叠是采样频率不满足采样定理时，信号中的高频成分被不正确的采样成低频成分。
+
+频率混叠是信号离散采样所引起的一个特有现象和重要概念。
+
+例如： 1.5KHz 采样频率对 2KHz 的正弦信号进行采样时，输出是一个 500Hz 正弦信号。
+--
+
+当采样信号没有发生频率混叠时，采样信号频谱不发生重叠；
+当采样信号发生频谱混叠时，采样信号频谱发生重叠。
+
+在实际工程应用中为了放置发生频率混叠，通常在 ADC 采样前添加**低通滤波器(``0~Fs/2``)**实现添加抗混迭滤波。
+
+.Example: 声卡采集信号——AD变换
+[source,matlab]
+--
+Fs = 11025;             % 采样频率
+N= 44100;               % 采样长度
+t = [0:N-1]/N;          % 采样时长
+x = wavrecord(N, Fs);   % 声卡采样
+plot(t, x);             % 图形绘制
+set(gca,'color',[0.95, 0.95, 0.95]);
+--
+
+.Example: 声卡食输出标准信号——DA变换
+[source,matlab]
+--
+Fs = 44100;                             % 信号采样频率
+dt = 1.0 / Fs;                          % 采样间隔
+T = 2;                                  % 采样时长
+N = T / dt;                             % 采样点数
+t = [0: N - 1]/N;                       %
+x = 0.3*sin(2*pi*600*t);                % 按照采样点数生成 600Hz 正弦信号
+plot(t,x);                              %
+axis([0, 0.01, -0.5, 0.5]);             % 绘制波形
+wavplay(x,Fs);                          %
+set(gca,'color',[0.95,0.95,0.95]);      %
+--
+
+== 2. 信号函数与标准信号
+
+信号发生器是一种产生电信号的仪器，按信号波形或函数可分为正弦波信号、方波信号、三角波信号、脉冲信号和随机噪声信号等。
+
+=== 信号函数与标准信号
+
+==== 正弦波
+
+正弦波是一种单一频率成分的基本信号，在后续信号的频谱分析理论中将会学到，任何复杂信号都可以看成一组不同频率、幅值、相位的正弦波信号的组合。
+
+``y(t)=Asin(2πft+φ)``
+
+. A 幅值
+. f 频率
+. φ 初始相位
+
+正弦波的离散采样公式： ``y(nΔt) = Asin(2πfnΔt+φ)``
+
+. Fs = 1 / Δt
+. n = 0,1,2,...,N
+
+.离散采样案例：
+[source,matlab]
+--
+Fs = 11025;
+a = 10;
+f = 50;
+q = 60;
+T = 1;
+dt = 1.0/Fs;
+N = T/dt;
+t = linspace(0,T,N);
+y = a*sin(2*pi*f*t+q);
+plot(x,y);
+--
+
+应用实例： DTMF信令(Dual Tone Multi-Frequency)
+
+DTMF 双音多频信号是电话系统中电话机与交换机之间的一种用户信令，通常用于发送被叫号码
+
+应用案例： 摩尔电码
+
+==== 方波
+
+[math,file="math.svg"]
+--
+y(t)=\begin\{cases}
+A, \quad & 0 > t \ge T/2 \\
+-A,\quad & -T/2 > t \ge 0
+\end\{cases}
+--
+
+离散采样公式：
+
+[source]
+----
+y(nΔt)= ...
+Fs = 1/Δt, n = 0,1,2,...,N
+----
+
+方波信号函数：
+
+* ``square(t)``
+** 频率：``t``
+** 占空比(默认：``50%``)
+* ``square(t, duty)``
+
+.方波信号
+[source,matlab]
+--
+Fs=11025;
+f = 5;                              % 频率
+T= 1;
+dt = 1.0/Fs;
+N = T/dt;
+t = linspace(0,T,N);
+y1 = square(2*pi*f*t);              % 默认 50% 占空比
+y2 = square(2*pi*f*t,75);           % 设置 75% 占空比
+plot(t,y1);
+hold on;
+plot(t,y2);
+--
+
+==== 三角波
+
+[math,file="math.svg"]
+--
+y(t)=\begin\{cases}
+A - 2A*2t/T, \quad & 0 > t > T/2 \\
+-A+2A*2(t-T/2)/T,\quad & T/2 < t < T
+\end\{cases}
+--
+
+离散采样公式：
+
+[source]
+--
+y(nΔt)= ...
+Fs = 1/Δt, n = 0,1,2,...,N
+--
+
+==== 锯齿波
+
+[math,file="jcb.svg"]
+--
+\begin{align}
+\ y(t) = -A + 2A*t/T  ,\quad & 0 > t > T
+\end{align}
+--
+
+离散采样公式：
+
+[source]
+--
+y(nΔt)= ...
+Fs = 1/Δt, n = 0,1,2,...,N
+--
+
+Matlab函数：
+
+* ``sawtooth(t)``
+* ``sawtooth(t,width``
+
+.锯齿波与三角波
+[source,matlab]
+--
+Fs=11050;
+f=4;
+T=1;
+dt = 1.0/Fs;
+N=T/dt;
+t=linspace(0,T,N);
+y1=sawtooth(2*pi*f*t);
+y2=sawtooth(2*pi*f*t,1/2);
+y3=sawtooth(2*pi*f*t,0);
+plot(t,y1);
+hold on;
+plot(t,y2);
+plot(t,y3);
+--
+
+==== 噪声信号
+
+* 白噪声 : ``x=randn(1,n)``(1:表示一维数据，n:表示生成 n 个点)
+
+* 均匀噪声 : ``x=rand(1,n)``(1:表示一维数据，n:表示生成 n 个点)
+
+[TIP]
+----
+工程应用中**白噪声**居多。
+----
+
+.噪声
+[source,matlab]
+--
+y1=randn(1,256);
+y2=rand(1,256);
+plot(y1);
+hold on;
+plot(y2);
+--
+
+==== 其他信号
+
+* 脉冲信号
+* 阶跃信号(脉冲信号积分)
+* 斜坡信号(阶跃信号积分)
+* 加速度信号(斜坡信号积分)
+
+.其他信号demo
+[source,matlab]
+--
+% 脉冲信号
+t = linspace(0,1,101)
+y=[zeros(1,50),1,zeros(1,50)];
+plot(t,y)
+
+% 阶跃信号
+t = linspace(0,1,101);
+y=[zeros(1,50),ones(1,51)];
+plot(t,y);
+ylim([0 1.25])
+
+% 斜坡信号
+y = linspace(0,10,101)
+plot(y);
+--
+
+=== 信号发生器设计··
+
+信号的包络、泛音；
+
+* 信号的幅值调制（包络）**反映高频信号幅度变化的曲线**
++
+**基音**：一般的声音都是由发音体发出的一系列频率、振幅各不相同的振动复合而成的。
+这些振动中有一个频率**最低**的振动，由它发出的音就是**基音**。
+乐器的按键频率是多少，指的就是基音的频率，基音决定了音高。
++
+**泛音**：乐器振动时，其振动频率并不是单一的。只有基音的声音，听起来有强烈的人工感觉。
+琴弦发声时，除基音外，还有不同的**基音频率倍数的成分**，称为**泛音**。
+
+== 3. 信号的时域分析
+
+**波形分析**是对直接记录的信号**幅值**随时间变化曲线进行分析。
+因在时间域进行，也称为**时域分析**。
+
+=== 信号波形参数识别
+
+. 周期(``T``)|频率(``f=1/T``)
+. 峰值(``P``)|双峰值(``Pp-p``)
+. 初始相位(``φ``)
+. *均值*：反应信号变化的中心趋势（绕 ``0`` 值的偏移程度），也称为**直流分量**
++
+[math,file="jz.svg"]
+--
+\begin{align}
+\ \mu_x=E[x(t)]= \lim_{T \rightarrow \infty }\frac{1}{T}\int_{0}^{T}x(t)dt
+\end{align}
+--
+. *均方值*：反映信号**强度**（能量的强弱）；其平方根称为**有效值(RMS)**(一种常用的信号能量表达方式)
++
+[math,file="jfz.svg"]
+--
+\begin{align}
+\ \psi^2_x = E[x^2(t)] = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{0}^{T} x^2(t) dt
+\end{align}
+--
+. *方差*：反映信号**绕均值的波动程度**，一般用来衡量信号强度
++
+[math,file="fc.svg"]
+--
+\begin{align}
+\ \delta^2_x = E[(x(t)-E[x(t)])^2] = E[(x(t) - \mu_x)^2] = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{0}^{T} (x(t) - \mu_x)^2 dt
+\end{align}
+--
+
+==== 周期(频率)、相位：*过零点检测法*
+
+> 过零点位置通常来说拥有最大斜率，所以测量精度相对高。
+
+上升沿过零点条件：
+
+[math,file="fc.svg"]
+--
+\begin{align}
+\ x(k) \le 0 \lt x(k+1)
+\end{align}
+--
+
+零点精确位置：零线和 ``k`` 点与 ``k+1`` 点的交点：
+
+[math,file="fc.svg"]
+--
+\begin{align}
+\ t_0 = k * \Delta t + \Delta t
+\end{align}
+--
+
+.过零检测：
+[source,matlab]
+--
+p = max(x);
+q = min(x);
+n = 1;
+at = 0.8*(p-q)+q;
+
+for k = 2:1:N
+    if (x(k-1)<at && x(k) <= at && x(k+1) > at && x(k+2) > at)
+        ti(n) = k;
+        n = n+1;
+    end
+end
+T = (ti(2) - ti(1))*dt; % 未做过零点精确位置计算
+F = 1.0/T;
+Q = 360*(T-ti(1)*dt)/T;
+--
+
+Matlab 标准函数：
+
+* `max` 最大值
+* `min` 最小值
+* `mean` 均值
+* `RMS` 有效值
+* `std` 标准差
+
+相邻两个过零点时间差就是**周期**，第一个过零点位置与周期的**比例**可算出**初相位**
+
+=== 信号的数字微分和数字积分算法
+
+> PID（比例-积分-微分）
+
+==== 数字微分(中值法)
+
+[math,file="wf.svg"]
+--
+\begin{align}
+\ x'(t) = \frac{dx(t)}{dt}
+\ \Rightarrow
+\ x'(n) \approx \frac{x(n+1) - x(n)}{2* \Delta t}
+\end{align}
+--
+
+.微分：中值法
+[source,matlab]
+--
+for k = 1:1:N-1
+    x1(k) = (x(k+1) - x(k-1))/(2*dt);
+end
+x(0) = x(1); % 起点 特殊处理
+x(N) = x(N-1); % 终点 特殊处理
+--
+
+==== 数字积分(梯形法)
+
+[math,file="jf.svg"]
+--
+\begin{align}
+\ y(t) = \int_{0}^{t}x(t)dt
+\ \Rightarrow
+\ y(n) \approx y(n-1) + \Delta t * [x(n) + x(n-1)] /2
+\end{align}
+--
+
+.积分：梯形法
+[source,matlab]
+--
+y(0) = 0;
+for k = 1:1:N
+    y(k) = y(k+1)+dt*(x(k) + x(k-1))/2;
+end
+--
+
+[TIP]
+--
+图像边缘监测：二维数字微分 ``Sobel``
+
+二维图像数组横向微分、纵向微分；
+--
+
+.从摄像头获取图像
+[source,matlab]
+--
+vid = videoinput('winvideo',1,'YUY2_540x480');
+set(vid, 'ReturnedColorSpace','rgb');
+preview();
+pause();
+start(vid);
+
+for(i=1:10)
+    getpic = getsnapshot(vid);
+    filename = int2Str(i);
+    filename = [filename,'.jpg']
+    imwrite(getpic, filename);
+    pause(0.5);
+end
+stop(vid);
+closepreview(vid);
+delete(vid);
+clear;
+--
+
+.读取图像
+[source,matlab]
+--
+[FileName,PathName] = uigetfile('*.jpg','Select Jpg File');
+jpgFile = fullfile(PathName,FileName);
+i = imread(jpgFile);
+imshow(i);
+i1=rgb2gray(i);
+figure;
+imshow(i1);
+bw2 = edge(i1,'sobel');
+figure;
+imshow(bw2);
+--
+
+== 应用
+
+. 汽车速度监测：周期识别
+. 钢丝线缆断丝监测：峰值检测
+
+== 4. 信号的频谱分析
+
+=== 频谱分析的概念
+
+> **谱**概念来自于光学领域；一束光白光通过三棱镜，会按照光的波长，分解称为**光谱**。
+
+**频谱分析**借助于傅里叶变换，将信号转换到频率域，揭示出构成信号的不同频率成分，各频率分量的贡献曲线就称为**信号的频谱分析**。
+
+(频域)频谱图(频率-幅值)
+
+时域(波形图(时间-幅值))分析只能反映信号的幅值随时间的变化情况。
+
+频域(频谱图(频率-幅值))分析：
+
+* 可以直观看出信号的频率组成成分；
+
+* 抗干扰能力强；
+
+* 频谱分析有明确的物理意义
+
+=== 周期信号频谱分析
+
+**周期信号**经过一定时间可以重复出现，满足条件：
+
+[math,file="jf.svg"]
+--
+\begin{align}
+\ x(t) = x(t+nT); \quad & n = 1,2,3,4,...
+\end{align}
+--
+
+T: 信号周期(``F=1/T``:信号频率)
+
+==== 信号的正交分解与合成
+
+**正交函数集**定义：任意两个信号相乘积分为零
+
+[math,file="zjhs.svg"]
+--
+\begin\{cases}
+\int_{t_2}^{t_1} f_i(t)f_j(t)dt = 0 ,       \quad &i=j \\
+\int_{t_2}^{t_1} f_i(t)f_j(t)dt = K_{ij} ,  \quad &i \neq j
+\end\{cases}
+--
+
+信号的正交函数**分解与合成**：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = c_1 f_1(t) + c_2 f_2(t) + \cdots + c_n f_n(t) ,       \quad &t_1 \lt t \le t_2
+\end{align}
+--
+
+[TIP]
+--
+用正交函数集可以合成任何信号。
+--
+
+===== 三角正交函数集:
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\{ cos(2 \pi i f_0 t), sin(2 \pi i f_0 t) \} ;  \quad &i = 1,2,3,4,5, \cdots \\
+x(t) = x(t+nT) ;                                \quad & (F_0 = 1/T)
+\end{align}
+--
+
+其中**正弦函数集**之间满足**正交函数集**定义；**余弦函数集**之间满足**正交函数集**定义：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\int_{-\infty}^{\infty} sin(2 \pi f_0 t) * sin(3 \pi i f_0 t) dt = 0 \\
+\int_{-\infty}^{\infty} cos(2 \pi f_0 t) * cos(3 \pi i f_0 t) dt = 0
+\end{align}
+--
+
+针对信号使用三角函数集进行分解与合成变换：傅里叶变换
+
+===== 沃尔什正交函数集
+
+> 计算机领域使用沃尔什正交函数集比较多。
+
+沃尔什函数集： ``Walsh(i,t); i = 1,2,....,n``
+
+将信号进行频谱变换(Walsh-Hadamard变换)得到的 Walsh 频谱物理含义不是很明确。
+
+===== 周期信号的三角函数分解和合成(傅里叶级数展开)
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n 2 \pi f_0 t + b_n sin n 2 \pi f_0 t) ; (n = 1,2,3, \cdots )    \\
+\frac{a_0}{2} : 直流分量
+\end{align}
+--
+
+傅里叶级数计算公式：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+a_0 = \frac{2}{T} \int_{-T/2}^{T/2} x(t)dt ; 直流分量 \\
+a_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)cos(2 \pi f_0 t)dt, n = 1,2,3, \dots ; 正弦分量 \\
+b_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)sin(2 \pi f_0 t)dt, n = 1,2,3, \dots ; 余弦分量
+\end{align}
+--
+
+[TIP]
+--
+**三角函数辅助角公式**
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+Asin \alpha + B sin \beta = \sqrt{A^2 + B^2} sin(\alpha + \varphi) \\
+\varphi = arctg \frac{A}{B}
+\end{align}
+--
+
+--
+
+工程应用中的傅里叶一般形式：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n) \\
+A_n = \sqrt{a_n^2 + b_n^2} \\
+\varphi = arctg \frac{b_n}{a_n}
+\end{align}
+--
+
+.方波 Matlab 合成案例
+[source,matlab]
+--
+N = 1024;
+T = 2;
+x = linspace(0,T,N);
+y1 = sin(2*pi*x);
+subplot(4,1,1);
+plot(x,y1);
+
+y2 = y1 + 1/3 *sin(3*2*pi*x);
+subplot(4,1,2);
+plot(x,y2);
+
+y3 = y2 + 1/5*sin(5*2*pi*x);
+subplot(4,1,3);
+plot(x,y3);
+
+y4 = y3+ 1/7*sin(7*2*pi*x);
+subplot(4,1,4);
+plot(x,y4);
+--
+
+.三角波 Matlab 合成案例
+[source,matlab]
+--
+N = 1024;
+T = 4;
+x = linspace(0,T,N);
+y = sin(2*pi*x)
+    + 1/2*sin(2*2*pi*x)
+    + 1/3*sin(3*2*pi*x)
+    + 1/4*sin(4*2*pi*x)
+    + 1/5*sin(5*2*pi*x)
+    + 1/6*sin(6*2*pi*x);
+plot(x,y);
+--
+
+=== 频谱图
+
+工程上习惯用图形方式来表示信号各频率成分的能量大小情况，称为频谱图。
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n \omega_0 t + b_n sin n \omega_0 t) =  \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n)
+\end{align}
+--
+
+频谱图类型
+
+. 实频谱——虚频谱：数学分析领域
+.. 实频谱: an 关于 f 的函数
+.. 虚频谱: bn 关于 f 的函数
+. 幅频谱——相频谱：
+.. 幅频谱: An 关于 f 的函数
+.. 相频谱: φn 关于 f 的函数
+. 功率谱：*工程应用最多*(幅频谱An取平方)
++
+直接反应每个频率分量的能量大小。
+
+image::imgs/image-2023-11-30-17-47-25-169.png[]
+
+=== 周期信号频谱特性
+
+* *离散性*：每条谱线代表一个频率分量
+* *谐波性*；谱线出现在基波的整数信号频率上
+* *收敛性*：谐波次数越高，谐波分量越小
+
+=== 用快速傅里叶变换(FFT)计算频谱
+
+对 A/D 采样后的数字信号，无法给出函数表达式。
+因此很难导出其傅里叶级数展开式，可以用数字积分方法求出傅里叶级数。
+
+积分公式转换为求和公式：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \frac{a_0}{2} + \sum_{n-1}^{\infty} (a_n cos n \omega_0 t + b_n sin n \omega_0 t) =  \frac{a_0}{2} + \sum_{n-1}^{\infty} A cos(n 2 \pi f_0 t - \varphi_n) \\
+a_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)cos(2 \pi f_n t)dt \\
+\Rightarrow a_n = \sum_{0}^{N-1} x(n \Delta t)cos(2 \pi f_n n \Delta t) \\
+b_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)sin(2 \pi f_n t)dt \\
+\Rightarrow b_n = \sum_{0}^{N-1} x(n \Delta t)sin(2 \pi f_n n \Delta t)
+\end{align}
+--
+
+Matlab 中傅里叶变换函数： ``Y = fft(X,n)`` 数据长度 n 必须是 2 的幂方；结果 ``Yn = an + jbn`` 实部对应 cons 部分， 虚部对应 sin 部分。
+
+.傅里叶变化案例
+[source,matlab]
+--
+Fs = 5120;
+N = 1024;
+dt = 1.0/Fs;
+T = dt*N;
+t = linspace(0,T,N);
+x = 10*sin(2*pi*100*t) + 10/3*sin(3*2*pi*100*t);
+plot(t,xy);
+y = fft(x,N);
+a = real(y);
+b = image(y);
+figure;
+subplot(2,1,1);
+% 实频图
+plot(a);
+subplot(2,1,2);
+% 虚频图
+plot(b);
+
+A1 = abs(y); % 幅值
+Q1 = angle(y)*180/pi; % 相角
+figure;
+subplot(2,1,1);
+plot(A1);
+subplot(2,1,2);
+plot(Q1);
+
+% 数据矫正
+f = linspace(0,Fs/2,N/2);
+A11 = abs(y)/(N/2);
+Q11 = angle(y)*180/pi;
+figure;
+subplot(2,1,1);
+plot(A11);
+plot(f,A11(1:N/2));
+subplot(2,1,2);
+plot(f,Q11(1:N/2));
+--
+
+[TIP]
+--
+FFT 谱需要注意的问题：
+
+. 不显示负频率部分（中线对称：左边为正频率，右边为负频率）
+. X 坐标换为频率
+. 幅值量纲还原
+--
+
+[TIP]
+--
+**功率谱喝对数功率谱**
+
+工程应用上，通常对功率谱做取对数处理。
+
+分贝： ``dB=20log(P)``
+--
+
+.对数功率谱案例：
+[source,matlab]
+--
+Fs = 5120;
+N = 1024;
+dt = 1.0/Fs;
+T = dt*N;
+t = linspace(0,T,N);
+x = 10*sin(2*pi*100*t) + sin(3*2*pi*100*t);
+
+subplot(4,1,1)
+plot(t,x)
+
+y = fft(x,N);
+f = linspace(0,Fs/2,N/2);
+
+A1 = abs(y)/(N/2);
+subplot(4,1,2);
+plot(f,A1(1:N/2));
+
+A2=A1.^2;
+subplot(4,1,3);
+plot(f,A2(1:N/2));
+
+P = 20*log10(A2);
+subplot(4,1,4);
+plot(f,P(1:N/2));
+--
+
+=== 数字吸纳后的频谱计算方法
+
+==== 1. 信号的截断
+
+用计算机进行测试信号处理时，不可能对无限长的信号进行测量和运算，而是取其有限的时间片段进行分析，这个过程称为**信号截断**。
+
+为了便于数学处理，对截断信号做周期延拓（重复），得到虚拟无限长信号。
+不管原始信号是否为周期信号，都转变为以采集窗口为周期的周期信号。
+
+==== 2. 截断信号的能量泄露
+
+周期延拓后的信号与真是信号是不同的，接头处信号会有**跳变**。
+
+信号跳变导致在频谱上的现象称为能量泄露误差，即频谱信号围绕主信号周围都有能量，即能量泄露，
+
+[TIP]
+--
+**数学角度看信号截断**：
+
+相当于用一个**矩形窗**与正弦信号相乘，按傅里叶变换性质，时域相乘等价于频域**卷积**。
+而弦信号的谱是脉冲信号此，因此，截断信号的谱就是将矩形窗的谱搬移到脉冲的位置，从而谱的能量形成泄露。
+泄露的形状等于矩形窗频谱的形状。
+
+--
+
+工程实际中克服能量泄露的方法：**信号的整周期截断**。
+
+[NOTE]
+--
+旋转机械振动信号的键相信号整周期采样：通过保证截断信号为键槽信号的整数周期保证信号整周期截断。
+--
+
+==== 3. 离散傅里叶变换(DFT)
+
+Discrete Fourier Transform(DFT)一词是为适应计算机作傅里叶变换运算而引出的一个专用名词。
+
+离散信号 ``x(t)`` 按照 T 截断，周期延拓得到 ``x_T(t)
+
+转变为周期信号 ``x_T(t)`` 的傅里叶级数分解：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x_T(t) = \frac{a_0}{2} + \sum_{ n = 1 }^{ \infty } (a_n cos n 2 \pi f_0 t + b_n sin n 2 \pi f_0 t) , n=1,2,3, \dots
+\end{align}
+--
+
+展开为以周期 T 为基频(``f_0``)的一组谐波的和；
+谐波系数被称为**傅里叶系数**，得到系数即完成了离散傅里叶变换。
+
+离散化处理：
+[math,file="zjhs.svg"]
+--
+\begin{align}
+a_0 = \frac{2}{T} \int_{-T/2}^{T/2} x(t)dt, n = 1,2,3, \dots    \\
+\Rightarrow a_0 = \sum_{0}^{N-1} x(n \Delta t) \\
+a_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)cos(2 \pi n f_0 t)dt, n = 1,2,3, \dots \\
+\Rightarrow a_n = \sum_{0}^{N-1} x(n \Delta t)cos(2 \pi f_n n \Delta t), n = 1,2,3, \dots \\
+b_n = \frac{2}{T} \int_{-T/2}^{T/2} x(t)sin(2 \pi n f_0 t)dt, n = 1,2,3, \dots \\
+\Rightarrow b_n = \sum_{0}^{N-1} x(n \Delta t)sin(2 \pi f_n n \Delta t), n = 1,2,3, \dots
+\end{align}
+--
+
+==== 4. 快速傅里叶变换(FFT)
+
+Fast Fourier Transform 是 DFT 的一种有效算法，通过选择和排列中间结果，可有效减少运算量，其计算结果与 DFT 是相同的。
+
+不同频率点 DFT 计算公式中的冗余：
+
+FFT 的作用就是用技巧减少 cos sin 项重复计算：
+
+Coookey-Tukey 算法：利用蝶形运算，减少重复计算。
+
+FFT 约束条件：*数据长度必须是 2 的幂次*。否则不能进行蝶形运算。
+
+==== 5. FFT 谱的栅栏效应
+
+为提高效率，通常采用 FFT 算法计算信号频谱，设采样频率为 Fs ，采样数据点数为 N ，则信号的截断周期和基频为：
+
+`T = N/Fs; f0=Fs/N`
+
+FFT 计算的各傅里叶级数的频率位置为：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+f_n = i \cdot Fs /N; i = 0,1,2,3, \dots
+\end{align}
+--
+
+如果信号的频率分量与频率取样点不重合，则只能取相邻频率取样点谱线值代替，这称为栅栏效应。
+
+==== 6. 能量泄露与栅栏效应的关系
+
+频率的离散取样造成了栅栏效应，*谱峰越尖锐*，产生的**误差的可能性就越大**。
+
+  例如：余弦信号的频谱为线谱，当信号频率与频谱离散取样点不等时，栅栏效应的误差为无穷大。
+
+实际中，由于信号的截断的原因，产生了能量泄露，即使信号频率与频谱离散取样点不相等，也能得到该频率分量的一个近似值。
+
+从这个意义上说，能量泄露误差不完全是有害的。如果没有信号截断产生的能量泄露，频谱离散取样造成的栅栏效应误差将是不能接受的。
+
+==== 7. 信号截断函数(窗函数)
+
+能量泄露分主瓣泄露和旁瓣泄露，主瓣泄露可以减少因栅栏效应带来的谱峰**幅值**估计误差，是有益的一面，而旁瓣泄露则是有害的。
+
+因此可以通过控制截断信号的形状控制能量泄露的情况。进一步减少栅栏效应的误差。
+
+信号**加窗截断**就是用窗函数与信号相乘，然后截断，这样可以减少周期延拓时边界的跳变；从频谱角度看，则可以抑制旁瓣能量泄露。
+
+例如：汉宁窗-- 截断处被压缩为零；周期延拓后相当于在频谱上压缩了旁瓣。
+
+image::imgs/image-2023-12-04-10-39-00-776.png[]
+
+由于加窗截断会导致信号衰减，所以要进行**幅值系数矫正**。
+
+* 矩形窗： `1`
+* 汉宁窗： `2`
+* 海明窗： `1.852`
+* 布莱克曼窗： `2.381`
+* 平顶窗： `4.545`  (*效果最好*)
+
+Matlab 窗函数：
+
+* ``hamming(N)`` 汉宁窗
+* ``blackman(N)`` 布莱克曼窗
+* ``flattopwin(N)`` 平定窗
+
+.信号的加窗谱分析
+[source,matlab]
+--
+Fs = 5120;
+N = 1024;
+dt = 1.0/Fs;
+T = dt*N;
+t = linspace(0,T,N);
+x = 10*sin(2*pi*102*t);
+subplot(4,1,1);
+plot(t,x);
+
+w = hamming(N);
+w1 = w';
+subplot(4,1,2);
+plot(t,w1);
+
+z= 2*w1.*x;
+subplot(4,1,3);
+plot(t,z);
+
+y = fft(z,N);
+f = linspace(0, Fs/2,N/2);
+A1 = abs(y)/(N/2);
+subplot(4,1,4);
+plot(f,A1(1:N/2));
+--
+
+=== 非周期信号的频谱分析
+
+非周期信号是指在时间上不具有重复性的信号。
+非周期信号的频谱分析工具是傅里叶积分：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+x(t) = \int_{-\infty}^{\infty} X(f) e^{j 2 \pi t} df \\
+\Rightarrow X(f) = \int_{-\infty}^{\infty} x(t) e^{-j 2\pi ft} dt
+\end{align}
+--
+
+由于采样信号截断，无论信号是周期信号，还是非周期信号，采样后都变为以截断窗口为周期的周期信号。
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+X(f) = \int_{0}^{T} x(t) e^{-j 2\pi ft} dt
+\end{align}
+--
+
+=== 其他频谱相关知识
+
+. FFT Zero Padding: 改进频率分析精度的方法
++
+通过补零的方式提高信号精度；例如只有 1024 点，可以补 1024 个零，提高信号分析精度。
+
+. ZOOM-FFT: 频谱细化
++
+产看局域频谱，将观测视角集中在频谱的局部。
+
+. 谱平均技术: 针对受噪声干扰的信号
++
+通过把多次的频谱进行累加取平均值。
+
+. FFT 谱插值修正技术: 修正栅栏误差
+
+. 实信号 FFT 计算技术:
++
+传感器信号都是实信号，通过实信号计算技术可以节约一倍的计算。
+
+=== 频谱分析的应用
+
+. 使用 fft 实现机器齿轮箱故障诊断
+. 螺旋桨设计
++
+可以通过频谱分析确定螺旋桨的固有频率和临界转速，确定螺旋桨转速工作范围。
+
+. 旋转机械临界转速确定
+. 蝉的品种识别
+
+== 5. 信号的时差域相关分析
+
+=== 5.1 概述
+
+信号的相关分析(Cross-Correlation)是一种分析两个信号之间或一个信号自身的**时间依存关系**和**相似程度**的方法。
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy}(\tau) = \frac{\int_{-\infty}^{\infty} x(t)y(t-\tau) dt }{[\int_{-\infty}^{\infty} x^2(t)dt \int_{-\infty}^{\infty} y^2(t)dt ]^{1/2} }
+\end{align}
+--
+
+上半部分是卷积分，下半部分是归一化处理。
+
+. 变量相关概念：
++
+统计学中用相关系数来描述变量 `x` 和 `y` 之间的相关性，它是两随机变量之积的数学期望，表征了 `x` 和 `y` 间的关联程度。
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy} = \frac{c_{xy}}{\sigma_x \sigma_y} = \frac{E[x-\mu_x)(y-\mu_y)]}{\{ E[(x-\mu_x)^2] E[(y-\mu_y)^2] \}^{1/2}}
+\end{align}
+--
+
+. 波形相关的概念(相关函数)
++
+如果所研究的变量 `x` `y` 是与时间有关的函数，即 `x(t)` 与 `y(t)` ，则其相关系数也是随其相对时刻变化的函数。
++
+通过固定 `x(t)` 移动 `y(t)` (向右：正时差 向左：负时差)（相乘再积分）得到在不同的时差时刻两者之间的相似程度（相关函数）。
+
+这时引入一个与相对时间差有关的量，称为**函数的相关系数**或**相关函数**：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+\rho_{xy}(\tau) = \frac{\int_{-\infty}^{\infty} x(t)y(t-\tau) dt }{[\int_{-\infty}^{\infty} x^2(t)dt \int_{-\infty}^{\infty} y^2(t)dt ]^{1/2} }; \tau:时间差
+\end{align}
+--
+
+相关函数的峰值即：最相似点即可获取两个相似信号之间的时间差。
+
+工程上，关心的信号不同时刻的相似程度，不关心具体值，则相关函数可简化为：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+R_{xy}(\tau)= \int_{-\infty}^{\infty} x(t)y(t-\tau) dt; x=y:自相关 x!=y 互相关
+\end{align}
+--
+
+. 已知速度测距离
+. 已知距离测速度
+
+Matlab 相关函数计算： ``xcorr()``
+
+=== 5.2 相关函数的性质
+
+相关函数描述了信号间或信号自身不同时刻的相似程度。
+
+* 自相关函数时偶函数 ``R_x(t)=R_x(-t)``
+* 当 ``t=0`` 时，自相关函数具有最大值
+* 周期信号的自相关函数仍然是同频率的周期信号，但不保留原信号的相位信息
+* 随机噪声信号的自相关函数将离开 `t = 0` 时快速衰减
+* 两周期信号的互相关函数仍然是同频率的周期信号，且保留原始信号的相位信息（测量信号的初相位）
+* 两个非同频率的周期信号**互不相关**
+
+=== 5.3 相关函数的数字计算方法
+
+相关函数公式：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+R_{xy}(\tau)= \int_{-\infty}^{\infty} x(t)y(t+\tau) dt
+\end{align}
+--
+
+数字信号离散计算公式：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+R_{xy}(k)= \sum_{0}^{N-1} x(n)y(k+n) ; k = 0,1,2,3,\dots,N-1
+\end{align}
+--
+
+快速算法： *频域相乘等于时域卷积*
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+R_{xy}(k)= \sum_{0}^{N-1} x(n)y(k+n) \\
+\Rightarrow  x(n) \overset{FFT}{\rightarrow} x(n) \\
+y(n) \overset{FFT}{\rightarrow} Y(n) \\
+\Rightarrow R(n) = X(n)*\bar{Y}(n) \\
+\Rightarrow R(n) \overset{IFFT}{\rightarrow} r(n)
+\end{align}
+--
+
+Matlab 计算相关函数方法： ``xcorr``
+
+.自相关计算 demo
+[source,matlab]
+--
+N = 1024;
+T = 0.2;
+x = linspace(0,T,N);
+y = sin(2*pi*50*x);
+plot(x,y);
+
+s = xcorr(y,'unbiased');
+
+x1 = linspace(-T,T,2*N-1);
+plot(x1,s);
+--
+
+FFT 计算引入的周期延拓问题导致：相关函数计算过程中出现**重叠失真**。
+
+改进的周期延拓：在周期延拓信号中插入同等宽度的**零信号**，可以避免重叠失真，但会导致信号出现衰减，需要在使用时添加无偏参数(`unbiased`)，对计算的结果函数进行修正。
+
+=== 5.4 相关函数应用
+
+* 测速
+* *超声波探伤*
+* 地下漏油管道漏损位置的探测
+* *自相关滤波*
+* 传感器相位差识别，对两路信号做互相关分析获取相位差
+
+.相关滤波
+[source,matlab]
+--
+N = 1024;
+T = 0.2;
+x = linspace(0,T,N);
+y1 = 4*sin(2*pi*50*x);
+subplot(4,1,1)
+plot(x,y1);
+
+y2 = randn(1,N);
+subplot(4,1,2)
+plot(x,y2);
+
+y3 = y1 + y2;
+subplot(4,1,3);
+plot(x,y3);
+
+s = xcorr(y3,'unbiased');
+x1 = linspace(-T,T,2*N -1);
+subplot(4,1,4);
+plot(x1,s);
+xlim([-0.1 0.1]);
+--
+
+== 6. 信号的幅值域分析
+
+=== 6.1 概述
+
+幅值域分析又称为信号的概率密度曲线和概率分布曲线分析。
+
+信号的幅值域分析是随机振动等实验中不可少的一项，通过输入、输出信号的概率密度和概率密度分布曲线，用于判断信号的随机程度和正态性等。
+
+概率密度曲线积分得到概率分布曲线。
+
+计算不同强度信号出现的频次：零件损伤
+
+.相片的直方图（色彩的概率密度曲线）：可以用来判断图片质量
+三色直方图和灰度直方图(`Grey=R*0.299+G*0.587+B*0.114`)，如果照片质量比较好，直方图则相对均匀。
+
+=== 6.2 概率密度/概率分布函数/直方图
+
+在数学中，概率密度函数(Probability Density Function)是一个描述信号的取值在**某个确定的取值点附近的可能性的函数**，定义为概率分布函数的导数。
+
+概率密度函数满足下面三个条件：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+p(x) \ge 0 \\
+\int_{-\infty}^{\infty}p(x)dx = 1 \\
+P(a \lt x \le b) = \int_{a}^{b}p(x)dx
+\end{align}
+--
+
+* 概率密度函数：
++
+以幅值大小为横坐标，以**每个幅值间隔内出现的概率**为纵坐标进行统计分析的方法。
+它反映了信号落在不同幅值强度区域内的概率情况。
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+p(x) = \lim_{\Delta x \to 0} \frac{p(x \lt x(t)\le(x+\Delta x)}{\Delta x} = \lim_{\Delta x \to 0} [\lim_{T \to \infty } \frac{T_x}{T}]
+\end{align}
+--
++
+matlab 计算： `pdf=hist(y)/length(y)`
+
+* 概率分布函数：
++
+概率分布函数(Cumulative distribution function)是信号幅值小于或等于某个值 R 的概率，定义为：
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+F(x) = \int_{-\infty}^{R}p(x)dx
+\end{align}
+--
++
+概率分布函数又称为累积概率，表示了落在某一区间的概率。
++
+matlab 函数： `cdfplot()`
+
+* 直方图：没有做归一化的概率密度
++
+以幅值为横坐标，以每个幅值间隔内出现的频次为纵坐标进行统计分析，称为直方图(Histgram)。
++
+matlab函数： `hist()`
+
+* 直方图均衡：
++
+直方图均衡是一种增强图片质量的方法，其核心是用色彩的直方图变换 `T(.)` ，将原图片中非均匀分布的色彩，映射成均匀分布的色彩，从而改进相对的对比度和曝光量。
++
+主要用于提高图像的清晰度和纹理的清晰度；有可能使得色彩失真。
+
+.灰度图像均衡算法
+[source,matlab]
+--
+[FileName,PathName] = uigetfile('*.jpg','Select Jpg File');
+abc = fullfile(PathName,FileName);
+I = imread(abc);
+imshow(I);
+
+I1 = rgb2gray(I);
+figure;
+imshow(I1);
+
+J = histeq(I1);
+figure;
+imshow(J);
+--
+
+=== 6.3 应用
+
+* 概率密度曲线——齿轮箱故障诊断：故障齿轮**中心**有**凹进**
+
+image::imgs/image-2023-12-05-17-35-40-738.png[]
+
+* 概率密度曲线——水泵故障诊断：概率密度变尖锐
+
+image::imgs/image-2023-12-05-17-37-41-880.png[]
+
+* 概率密度曲线——倍频程谱：MP3播放器等
+
+image::imgs/image-2023-12-05-17-39-45-295.png[]
+
+== 7. 信号的数字滤波技术
+
+=== 7.1 概述
+
+测量中除传感器信号外，干扰也会出现，它们与信号叠加在一起，扭曲测量结果。
+滤波器是一种**选频装置**，可以使信号中**特定频率成分通过**，而**衰减其他频率成分**。
+
+滤波的前提是：信号与干扰是不同频。
+
+滤波器的种类（从频谱角度看）
+
+. 低通滤波器：低频通过，高频过滤
+. 高频滤波器：低频过滤，高频通过
+. 带通滤波器：频谱曲线峰值中间周边通过
+. 带阻滤波器：频谱曲线峰值两边部分通过
+
+模拟滤波器与数字滤波器区别：数字滤波器本质公式，没有器件成本。
+两种滤波器作用并部完全相等；
+模拟滤波器在 ADC 之前，数字滤波器在 ADC 之后。
+
+模拟滤波器：
+* 影响采样频率：低通滤波后可以降低采样频率
+* 影响采样有效AD位数：高通滤波后可以提高有效AD位数
+
+滤波器评价指标：
+
+. 过渡区(尽量)陡峭
+. 脉冲响应应紧支集(相应时间短)
+
+实际使用中，调整两个参数符合自己的应用场景。
+
+信号滤波的数学描述：
+原始信号：`x(t)` 滤波器：`H(f)` 滤波信号：`y(t)`
+
+* 频率域 `Y(f)=X(f)H(f)`
+* 时间域 `y(t)=x(t)*h(t)`
+
+=== 7.2 频率域滤波
+
+输入信号： `x(t)`
+
+滤波器： `H(f)`
+
+滤波信号： `y(t)`
+
+频率域： `Y(f)=X(f)H(F)`
+
+滤波信号：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+y(t) = F^{-1}[Y(f)]  ; IFFT
+\end{align}
+--
+
+.FFT频域低通滤波
+[source,matlab]
+--
+Fs = 2048;
+dt = 1.0/Fs;
+T = 1;
+N = T /dt;
+t = [0:N-1]/N;
+x1 = sin(2*pi*50*t)+sin(2*pi*300*t)+sin(2*pi*500*t);
+subplot(4,1,1);
+plot(t,x1);
+axis([0,0.1,-2,2])
+
+P = fft(x1,N);
+Pyy = 2*sqrt(P.*conj(P))/N;
+f=linspace(0,Fs/2,N/2);
+subplot(4,1,2);
+plot(f,Pyy(1:N/2));
+
+for k = 1: N
+    P1(k) = real(P(k)) + i*imag(P(k));
+end
+for k = 200: N-200
+    P1(K)=0;
+end
+
+Pyy=2*sqrt(P1.*conj(P1))/N;
+f=linspace(0,Fs/2,N/2);
+subplot(4,1,3);
+plot(f,Pyy(1:N/2));
+
+x2 = ifft(P1);
+subplot(4,1,4);
+plot(t,x2);
+axis([0,0.1,-2,2]);
+--
+
+* 长数据信号的 FFT 频域滤波
++
+为了避免滤波器**暂态**过程的影响，采用**帧数据重迭**技术，对重叠部分进行掐头去尾处理，将滤波数据头部和尾部的 64 点或 128 点舍去。
+
+=== 7.3 时域滤波
+
+信号：`x(t)`
+
+滤波器：`H(f)`
+
+滤波信号：`y(t)`
+
+时间域： `y(t)=x(t)*h(t)`
+
+离散公式： `y(n)=x(n)*h(n)`
+
+滤波公式： `y(k)=h(0)x(k)+h(1)x(k+1)+h(2)x(k+2)+...+h(m)x(k+m)`; k= 0,1,2,3...
+
+[TIP]
+--
+**Z变换**
+
+Z变换(Z-transformation)是一种离散系统分析方法，其作用如同连续系统分析中的拉普拉斯变换。
+在离散采集信号的数字滤波分析中，Z变换是一个主要的数学工具。
+--
+
+时域滤波的关键是得到 Z 变换形式的滤波器。
+
+. 数字差分=简单的高通滤波器
++
+.时域差分滤波
+[source,matlab]
+--
+Fs=5000;
+a=5;
+f=2;
+T=1;
+dt=1.0/Fs;
+N=T/dt;
+t=linspace(0,T,N);
+y=a*sin(2*pi*f*t)+0.3*sin(100*pi*f*t);
+subplot(2,1,1);
+plot(t,y);
+
+x(1)=0;
+x(N)=0;
+for i =2:N-1
+    x(i)=(y(i+1)-y(i-1))/2;
+end
+subplot(2,1,2);
+plot(t,x);
+--
+
+. 数据平滑=简单的低通滤波器
++
+[math,file="zjhs.svg"]
+--
+\begin{align}
+y(t) = \frac{1}{M} \sum_{i=0}^{M-1}x(k+i)
+\end{align}
+--
++
+.时域数据平滑高频滤波
+[source,matlab]
+--
+Fs=5000;
+a=5;
+f=2;
+T=1;
+dt=1.0/Fs;
+N=T/dt;
+t= linspace(0,T,N);
+y=a*sin(2*pi*f*t) + 0.8*sin(1000*pi*f*t);
+subplot(2,1,1);
+plot(t,y,'linewidth',2);
+
+x=y;
+for i = 1:N-5;
+    x(i)=[y(i)+y(i+1)+y(i+2)+y(i+3)+y(i+4)]/5;
+end
+subplot(2,1,2);
+plot(t,x,'linewidth',2);
+--
+
+. 高斯平滑滤波器
++
+高斯平滑滤波的滤波器系数是一个**高斯函数**。
++
+matlab : ``gausswin()``
+
+==== 数字滤波器设计和数字滤波概念
+
+时域数字滤波器是将信号与滤波器的单位脉冲响应(Z域滤波器系数)进行卷积分；
+寻找所需的滤波器单位脉冲响应的过程称为滤波器设计，信号卷积分过程称为滤波。
+
+=== 7.4 FIR 滤波器
+
+FIR 滤波器又称为有限脉冲响应滤波器，FIR就是来源于名词**有限脉冲响应**—— Finite Impulse Response 的英文单词首字母缩写。
+传递函数：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+H(z) = \sum_{k=0}^{N}a_k Z^{-k}
+\end{align}
+--
+
+脉冲响应函数：
+
+[math,file="zjhs.svg"]
+--
+\begin{align}
+h(k) = a_k,k = 0,1,2,\dots,N
+\end{align}
+--
+
+`h(k)` 是一个**有限长度的序列**，故 FIR 滤波器又称为有限脉冲响应滤波器。
+
+. FIR 滤波器脉冲响应函数设计法：
+
+. FIR 滤波器窗函数设计法：
++
+理想滤波器单位脉冲响应 Cn 是无限长序列，但 FIR 系数长度 h(n) 是有限的，只能截取有限长度，但截断造成时域跳变，导致滤波器特性震荡。
+
+
+== 8. 信号的时-频分析技术
+
+

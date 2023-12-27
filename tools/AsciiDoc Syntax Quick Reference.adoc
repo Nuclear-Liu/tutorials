@@ -100,3 +100,189 @@ Olaf had been with the company since the `'00s.
 == 连接
 
 _示例10._
+
+
+== 图表
+
+
+[chart,pie,file="secim-2014-pie.svg",opt="title=饼图标题"]
+--
+AKP, 45.6, orange
+CHP, 27.8, red
+MHP, 15.2
+BDP, 4.2
+SP, 2
+--
+
+[chart,area,file="area-chart.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+
+[chart,bar,file="bar.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+
+[chart,line,file="line.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+
+
+[chart,scatter,file="scatter.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+
+[chart,bubble,file="bubble.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+--
+
+[chart,"stacked-area",file="stacked-area.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+--
+
+[chart,"stacked-bar",file="stacked-bar.svg"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+
+== 提示 admonitions
+
+[NOTE]
+====
+基本信息
+====
+
+[TIP]
+====
+提示信息
+====
+
+[IMPORTANT]
+====
+重要信息
+====
+
+[CAUTION]
+====
+注意信息
+====
+
+[WARNING]
+====
+警告信息
+====
+
+== 扩展
+
+=== 数学公式
+
+[math,file="math.svg"]
+--
+\begin{align}
+\dot{x} &= \sigma(y-x) \\
+\dot{y} &= \rho x - y - xz \\
+\dot{z} &= -\beta z + xyp
+\end{align}
+--
+
+=== PlantUML
+
+.PlantUML
+[plantuml,uml.svg]
+--
+Bob -> Alice : hello
+--
+
+=== DitaaUML
+
+.UML http://plantuml.sourceforge.net/ditaa.html
+[uml,file="ditaa-diagram.png"]
+--
+@startditaa
++--------+   +-------+    +-------+
+|        +---+ ditaa +--> |       |
+|  Text  |   +-------+    |diagram|
+|Document|   |!magic!|    |       |
+|     {d}|   |       |    |       |
++---+----+   +-------+    +-------+
+    :                         ^
+    |       Lots of work      |
+    +-------------------------+
+@endditaa
+--
+

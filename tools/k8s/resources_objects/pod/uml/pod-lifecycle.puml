@@ -1,0 +1,17 @@
+@startuml
+
+state Pending
+state Running
+state Failed
+state Succeeded
+state Unknown
+
+[*] -right> Pending: start Pod
+Pending -> Running: 至少有一个容器正常运行
+Running --> Failed: 至少有一个容器非常正退出
+Failed --> Running: 重启容器
+Running -> Succeeded: 所有容器正常退出
+Unknown -> [*]: stop Pod
+Succeeded -> [*]: stop Pod
+
+@enduml

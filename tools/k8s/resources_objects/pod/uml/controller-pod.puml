@@ -1,0 +1,27 @@
+@startuml
+
+rectangle DaemonSet
+rectangle Deployment
+rectangle ReplicaSet
+rectangle StatefulSet
+rectangle CronJob
+rectangle Job
+
+rectangle PA #B1D000 {
+rectangle HPA
+rectangle VPA
+}
+
+rectangle "Pod" #B1DDF0 {
+component "container" #F8CECC
+}
+
+Deployment -- ReplicaSet
+CronJob -- Job
+DaemonSet --- "Pod"
+StatefulSet --- "Pod"
+ReplicaSet --- "Pod"
+Job --- "Pod"
+HPA -- "Pod"
+VPA -- "Pod"
+@enduml

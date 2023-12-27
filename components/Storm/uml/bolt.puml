@@ -1,0 +1,23 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class BaseBasicBolt
+class BaseComponent
+class BaseRichBolt
+interface IBasicBolt << interface >>
+interface IBolt << interface >>
+interface IComponent << interface >>
+interface IRichBolt << interface >>
+
+BaseBasicBolt  -[#000082,plain]-^  BaseComponent
+BaseBasicBolt  -[#008200,dashed]-^  IBasicBolt
+BaseComponent  -[#008200,dashed]-^  IComponent
+BaseRichBolt   -[#000082,plain]-^  BaseComponent
+BaseRichBolt   -[#008200,dashed]-^  IRichBolt
+IBasicBolt     -[#008200,plain]-^  IComponent
+IRichBolt      -[#008200,plain]-^  IBolt
+IRichBolt      -[#008200,plain]-^  IComponent
+@enduml

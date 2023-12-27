@@ -1,0 +1,257 @@
+= Matlab
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+. 例：产生正弦波信号
+[source,matlab]
+----
+x = linspace(0, 2*pi, 100);         % 在 0~2pi 之间均匀产生 100 个点
+y = sin(x);                         % 计算每个点的正弦值
+plot(x, y);                         % 绘制曲线
+----
+
+. 例：产生方波信号
+[source,matlab]
+----
+x = linspace(0, 2*pi, 100);         % 在 0~2pi 之间均匀产生 100 个点
+y = square(x);                      % 计算每个点的方波
+plot(x, y);                         % 绘制曲线
+----
+
+. 例：波形合成（傅里叶级数）
+[source,matlab]
+----
+x = linspace(0, 4*pi, 100);
+y = sin(x) + 1/3*sin(3*x) + 1/5*sin(5*x);  % 方波时正弦波的奇数傅里叶变换(1,3,5...)
+plot(x,y);
+----
+
+. 例：二维 Sinc 函数
+[source,matlab]
+----
+x = -8:0.5:8;
+y = x;
+[X,Y] = meshgrid(x,y);
+R = sqrt(X.^2+y.^2) + eps;
+z = sin(R)./R;
+mesh(z);
+----
+
+== 基本句法
+
+=== 变量
+
+* 不需要定义变量类型，由赋值语句**自动确定**；
+* 所有变量默认**双精度变量**；
+* 单变量被视为 ``1*1`` 矩阵；
+
+=== 矩阵
+
+按行定义的数组称为**矩阵**（起始索引为 ``1``），在 Matlab 中可以直接用矩阵做变量进行运算。
+
+. 矩阵赋值：
++
+[source,matlab]
+----
+x = [1 2 5 1];  % 定义一行矩阵变量
+x = [1 2 3; 5 1 4; 3 2 -1]  % 定义三行三列矩阵
+----
+. 使用函数给矩阵赋值
+
+* ``x = V1:dv:V2``: 在区间 V1 V2 之间按照 dv 增量进行赋值
++
+[source,matlab]
+----
+t = 0.1:0.3:1;      % 0.1000 0.4000 0.7000 1.0000
+----
+
+* ``linespace(A,B,N)``: 在区间 A B 之间均匀分布 N 个点
++
+[source,matlab]
+----
+x = linspace(0,1,4)     % 0 0.3333 0.6667 1.0000
+----
+
+* ``zeros(M,N)``: M*N 零矩阵
++
+[source,matlab]
+----
+x = zeros(1,3);     % 0 0 0
+----
+
+* ``ones(M,N)``: M*N 1 矩阵
++
+[source,matlab]
+----
+x = ones(1,3);      % 1 1 1
+----
+
+* ``rand(M,N)``: M*N 随机矩阵
++
+[source,matlab]
+----
+x = rand(1,3);      %
+----
+
+=== 运算符
+
+> 所有运算符都支持矩阵。
+
+* 算术运算符
+** `+` 加
+** `-` 减
+** `*` 乘
+** `/` 除
+** `^` 幂
+** `'` 复共轭转置
+
+* 逻辑运算符
+** `==` 等于
+** `~=` 不等于
+** `<` 小于
+** `>` 大于
+** `<=` 小于等于
+** `>=` 大于等于
+** `&` 与
+** `|` 或
+
+.乘法计算
+[source,matlab]
+----
+A = [1 2 3; 4 5 6; 7 8 9];
+B = [3 5 2; 5 2 8; 3 6 9];
+Z = A*B;                    % 22 27 45; 55 66 102; 88 105 159
+----
+
+=== 标准函数
+
+|===
+| function | 描述
+
+|``abs``
+|绝对值
+
+|``sign``
+|符号函数
+
+|``log`` ``log10`` ``log2``
+|对数函数
+
+|``exp``
+|指数函数
+
+|``sqrt``
+|平方根
+
+|``sin`` ``cos`` ``tan``
+|三角函数
+
+|``asin`` ``acos`` ``atan``
+|反三角函数
+
+|``max`` ``min``
+| 最大 最小
+
+|``round`` ``floor`` ``ceil`` ``fix``
+|
+
+|``mod``
+|取模
+|===
+
+.平方根
+[source,matlab]
+----
+A = [1 2 3; 4 5 6; 7 8 9];
+X = sqrt(A);
+----
+
+=== 显示函数
+
+* ``plot()``
+* ``stem()``
+
+显示函数命令：
+
+* ``title`` 设置标题
+* ``xlable``
+* ``ylable``
+* ``text``
+* ``gtext``
+* ``grid on``
+* ``grid off``
+* ``legend``
+* ``axis``
+* ``hold on`` 显示多条曲线时，实现同时在同一个画布显示
+* ``subplot`` 分割绘图区域
+
+.设置标题 显示网格
+[source,matlab]
+----
+x = linspace(0,4*pi,100);
+y = sin(x);
+plot(x,y);
+title('正弦波')
+grid on;
+----
+
+.绘制多个曲线
+[source,matlab]
+----
+t = 0:pi/10:2*pi;
+y1 = sin(t);
+y2 = cos(t);
+y3 = cos(t+pi/2);
+y4 = cos(t+pi);
+subplot(2,2,1);
+plot(t,y1);
+subplot(2,2,2);
+plot(t,y2);
+subplot(2,2,3);
+plot(t, y3);
+subplot(2,2,4);
+plot(t,y4);
+----
+
+=== 流程控制
+
+* `if`
++
+[source,matlab]
+----
+n = input('n=');
+if n>=90
+    r = 'A'
+elseif n >= 80
+    r = 'B'
+else
+    r= 'C'
+end
+----
+* `for`
++
+[source,matlab]
+----
+sum = 0;
+for i = 1:100
+    sum=sum+i;
+end
+----
+* `while`
++
+[source,matlab]
+----
+while b-a > c
+    x = a+b
+end
+----
+* `break`
+
+== GUI
+
+启动 GUI 方式：
+
+. 点击工具条 GUI 图标
+. 交互命令中使用 ``guide``

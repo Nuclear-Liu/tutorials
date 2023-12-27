@@ -1,0 +1,49 @@
+@startuml
+
+actor kubectl
+
+autonumber
+
+kubectl -> "API Server": create Pod
+activate "API Server"
+
+"API Server" -> etcd: write()
+activate etcd
+
+etcd --> "API Server"
+deactivate etcd
+
+"API Server" --> kubectl
+deactivate "API Server"
+
+"API Server" -> Scheduler: watch(create pod)
+activate Scheduler
+
+Scheduler -> "API Server": bind pod
+activate "API Server"
+
+"API Server" -> etcd: write()
+activate etcd
+
+etcd --> "API Server"
+deactivate etcd
+
+"API Server" --> Scheduler
+deactivate "API Server"
+deactivate Scheduler
+
+"API Server" -> Kubelet: watch(bound pod)
+activate Kubelet
+Kubelet -> "ContainerRuntime": create(container)
+activate "ContainerRuntime"
+"ContainerRuntime" --> Kubelet
+deactivate "ContainerRuntime"
+Kubelet -> "API Server": update pod status
+activate "API Server"
+"API Server" -> etcd: write(pod status)
+activate etcd
+etcd --> "API Server"
+deactivate etcd
+"API Server" --> Kubelet
+deactivate "API Server"
+@enduml

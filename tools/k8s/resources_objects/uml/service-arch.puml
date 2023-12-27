@@ -1,0 +1,31 @@
+@startuml
+
+rectangle "Client"
+rectangle "Service\nSelect(labels:[lab_key=lab_value])" as Service {
+port "service-ip"
+}
+
+rectangle "Deployment" #D5E8D4
+rectangle "ReplicaSet" #FFE599
+
+rectangle Node {
+rectangle "Pod\nlabels:[lab_key=lab_value]" as Pod #B1DDF0 {
+rectangle "PuaseContainer" #FA6800
+rectangle "AppContainer" #B0E3E6
+rectangle "LogContainer" #B0E3E6
+port "pod_ip"
+}
+rectangle "kube-proxy\n ipvs / iptables" as KubeProxy
+}
+
+"Client" --- "service-ip"
+"Service" ... "Pod" :"lables"
+"pod_ip" ~~ "PuaseContainer"
+"service-ip" - "KubeProxy"
+"KubeProxy" - "pod_ip"
+"Deployment" -- "ReplicaSet"
+"ReplicaSet" -- "Pod" :"1:n"
+"PuaseContainer" ... "AppContainer" :link
+"PuaseContainer" ... "LogContainer" :link
+
+@enduml

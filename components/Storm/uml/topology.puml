@@ -1,0 +1,8 @@
+@startuml
+artifact "topology" {
+boundary "spout"
+queue "stream"{
+circle "tuple"
+}
+}
+@enduml

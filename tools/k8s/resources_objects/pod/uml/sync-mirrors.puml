@@ -1,0 +1,15 @@
+@startuml
+
+rectangle "Pod" #B1DDF0 {
+component nginx #F8CECC
+file pkg
+component "sync" #BAC8D3
+}
+
+cloud mirrors
+
+nginx <- pkg :read
+pkg <- "sync" :write
+"sync" <- mirrors :pull
+
+@enduml

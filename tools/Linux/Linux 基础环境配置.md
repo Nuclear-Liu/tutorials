@@ -15,33 +15,24 @@ vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
 ```
 
 ```shell
-TYPE="Ethernet"
-PROXY_METHOD="none"
-BROWSER_ONLY="no"
-
-# config use static ip
-BOOTPROTO="static"
-# config ip address
-IPADDR=192.168.120.6
-# config netmask
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=static
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+DEVICE=ens33
+ONBOOT=yes
+IPADDR=10.0.0.100
 NETMASK=255.255.255.0
-# config gateway
-GATEWAY=192.168.120.1
-# config dns
+GATEWAY=10.0.0.2
 DNS1=114.114.114.114
-
-DEFROUTE="yes"
-IPV4_FAILURE_FATAL="no"
-IPV6INIT="yes"
-IPV6_AUTOCONF="yes"
-IPV6_DEFROUTE="yes"
-IPV6_FAILURE_FATAL="no"
-IPV6_ADDR_GEN_MODE="stable-privacy"
-NAME="enp0s3"
-UUID="9beb211c-6853-4fd3-9aea-35725697fd12"
-DEVICE="enp0s3"
-ONBOOT="yes"
-
 ```
 
 ### 重启网络服务

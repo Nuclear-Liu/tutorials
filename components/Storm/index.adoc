@@ -1,0 +1,646 @@
+= Storm
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+Storm 是 Twitter 开源的**实时**数据处理框架；实现**高频数据**和**大规模数据**的实时处理。
+
+== Storm 核心概念
+
+=== 1. Topology 拓扑
+
+拓扑(*Topology*)是由**计算的节点(node)**与表示**计算结果的边(edge)**组成的图，并由提供**连续数据的数据源**来驱动。
+节点(node)st代表一些独立的计算，扮演了最简单的计算模型；
+边(edge)代表节点间的数据的传递。
+
+=== 2. Tuple 元组
+
+元组(*Tuple*)是拓扑(Topology)中节点间传输数据的格式，它本身是一个**有序**的数值序列，其中每个数值都会被赋予一个**命名**；
+一个元组只是一系列数值的**列表**，Storm 本身提供了一种机制来为列表中的每个数值**赋予命名**。
+
+发送元组到任意节点的过程被称为发射(*emit*)一个元组；
+
+同一个元组(tuple)中**值**的类型是**动态**的，并不需要提前声明；
+但 Storm 需要知道如何对元组中的值进行**序列化**，以便让它可以在拓扑(topology)节点间实现元组的传递。
+如果是自定义类型，则需要提供对应自定义的序列化方法。
+
+=== 3. Stream 流
+
+流(*Stream*)是一个无边界的元组(tuple)序列。
+
+在拓扑(topology)中，一个流(stream)是拓扑(topology)中两个节点间一个无边界的元组序列；
+一个拓扑(topology)可以包含任意数量的流(stream)，除了拓扑的第一个节点(spout)是从数据源读取数据外，每个节点(bolt)可以接收一个或多个流(steam)作为输入。
+
+=== 4. Spout 数据源
+
+数据源(*Spout*)是拓扑(topology)的流(stream)数据源头；通常是外部数据源读取数据向拓扑(topology)中发射(emit)元组(tuple)。
+
+数据源(spout)没有对数据的处理过程，仅仅作为数据流的源头，从数据源读取数据，向数据处理者(*bolt*)类型的节点发射(emit)元组。
+
+=== 5. Bolt 数据处理者
+
+数据处理者(Bolt)负责完成从输入流(stream)接收元组(tuple)，对元组(tuple)进行计算或转换操作，以及可能会发射(emit)新的元组(tuple)形成新的输出流(stream)。
+
+=== 6. Grouping 流分组
+
+流分组定义了元组在数据源(spout)和数据处理者(bolt)以及数据处理者(bolt)和数据处理者(bolt)实例之间如何进行传递。
+
+==== shuffleGrouping 随机分组
+
+随机分组(shuffledGrouping)采用随机策略（不是轮询策略）确保每个 bolt 实例能够尽可能接收数量相等的元组，以便在 bolt 实例之间实现负载均衡。
+
+随机分组在**对数据分发没有特殊需求**的场景下是非常有用。
+
+==== fieldsGrouping 字段分组
+
+字段分组(fieldGrouping)更具指定的字段值，保证将含有相同字段值的元组(tuple)发射(emit)到同一个数据处理者(blot)实例。
+
+==== globalGrouping 全局分组
+
+所有的元组(tuple)被路由到一个单独的任务(task)中，并且选择 task 的 Id 最小的；
+如果使用此策略，设置并行度来提高并发率将失去意义：
+所有的元组(tuple)将会发送到同一个Bolt处理，将成为整个拓扑的性能瓶颈。
+
+==== allGrouping 广播分组
+
+对每个元组(tuple)广播发送给所有的下一个数据处理者(bolt)。
+
+==== noneGrouping 不分组
+
+Storm 不具体实现分组方式。
+
+==== directGrouping 直接分组
+
+元组(tuple)的发射时指定数据处理者(bolt)的具体 task
+
+==== localOrShuffleGrouping 本地或随机分组
+
+如果目标数据处理者(bolt)有一个或多个 task 与发射元组(tuple)的实例在同一个工作进程中，则优先随机发射(emit)本地数据处理者(bolt)实例。
+
+==== partialKeyGrouping 关键字分组
+
+与字段分组相似，根据指定的字段进行分组；这种方式会考虑下游数据处理者(bolt)数据处理的均衡性问题，在输入数据源关键字不均衡时会有更好的性能。
+
+=== 7. worker 工作节点
+
+worker 实际上是一个 JVM **进程**；处理 Topology 的一部分(spout/bolt)。
+
+[WARNING]
+====
+* 一个工作节点(worker)可以为多个拓扑(topology)服务。
+* 一个拓扑(topology)可以使用一个或多个工作节点(worker)运行任务。
+====
+
+=== 7. executor 执行器
+
+执行器(executor)就是工作节点 JVM 上的执行数据源(spout)或数据处理者(bolt)的**线程**。
+
+一个工作节点(worker)可以有一个或多个执行器(executor)。
+允许动态调整 worker 中 executor 数量。
+
+
+=== 8. task 任务
+
+任务(task)即在执行线程(执行器)上运行的数据源(spout)或数据处理者(bolt)实例。
+
+executor 内的 task 数量不允许动态改变。
+
+[TIP]
+====
+每个执行器(executor)可以运行一个或多个任务(task)。
+====
+
+== 集群角色
+
+Storm 集群中的角色： *主(master)节点*、**工作(worker)节点**和**分布式协调(Zookeeper)**。
+
+image::images/storm-cluster.png[]
+
+* 主节点：运行一个 **Nimbus** 守护进程，集群中可以有多个主节点，但是只有一个是激活状态。
++
+**Nimbus** 围绕集群发布代码，将任务指派给工作节点，监控异常情况，并执行 Storm 的UI
+* 从节点：运行一个 **Supervisor** 守护进程
++
+**Supervisor** 通过监听 **Nimbus** 分配到工作节点上的任务去启动或结束**工作进程**；
+每个**工作进程**都是一个 JVM ，用于执行拓扑中 spout 和 bolt 的业务逻辑。
+* 分布式协调(Zookeeper)：协调 Nimbus 与 Supervisor 之间的通信，存储集群协调状态信息，实现对主节点(Nimbus)的快速失败的支持；
+
+[TIP]
+--
+* **工作进程**是一个 **JVM** 进程
+* **执行器**是 JVM 进程中的一个(组)执行**线程**
+* **任务**是 JVM 进程中一个执行**线程中的 spout 或 bolt 上运行的实例**
+--
+
+== Storm 内核
+
+=== spout 执行器的细节
+
+执行器由两个线程和一个队列组成：
+
+* **主线程**：运行由用户自定义的代码，即 ``nextTuple`` 中的功能部分；
+* **发射线程**：用于将元组发射到拓扑中下一个 bolt 中；
+* **发射队列**(LAMX Disruptor)：用于将元组从执行器发射出来，解耦主线程与发射线程，同时在执行器之间执行高性能消息发送。
+
+[TIP]
+--
+**Spout 主线程：执行流程**
+
+. spout 从队列中**读取**包含提交数据的消息；
+. 主线程用于处理发射元组；
+. 主线程将需要发送的元组数据分发到对外的 Disruptor 队列；
+--
+
+==== 两个执行器之间传输元组：在同一个 JVM 中
+
+在同一个 JVM 中时，数据源 spout 和下游 bolt 位于同一个 JVM 上，传输方法在本地执行器之间执行一个**本地传输**(local transfer)方法；
+由于两个执行器在同一 JVM 中，所以发射的过程不会由任何瓶颈；
+
+[TIP]
+--
+**Spout 发送线程：执行流程(同一 JVM)**
+
+. 发送线程从输出队列中**取出**元组提交给下一个执行器；
+. 直接置入到**分发队列**，传输给同一个 JVM 中的另一个执行器；
+--
+
+==== 两个执行器之间传输元组：在不同 JVM 间
+
+当一个元组发射到运行在另一个 JVM 上的执行器时，发射的线程将执行**传输功能**方法来调用**远程传输**。
+
+Storm 发射元组时，首先将需要发射的元组执行序列化（Storm首先为对象寻找 Krvo 序列化容器，如果 Krvo 资源不足，回退使用 Java 对象序列化方式）；如果看重徐丽华环节的性能优化，就需要为元组做序列化的自定义配置。
+执行线程将序列化后元组置入另一个**分发队列(整个 JVM 的传输队列)**中。
+
+[TIP]
+--
+**Spout 发送线程：执行流程(跨 JVM)**
+
+. 发送线程将元组置入执行器的**对外分发队列**
+. 发送线程将元组置入 JVM 的**对外分发队列**
+. JVM 的发送和传输线程从**对外分发队列**中读取元组
+. JVM 的发送和传输线程将读取的元组发送到另外一个 JVM 接收线程
+. 另外一个 JVM 的接收线程收到元组后，将其置入相应执行器的**输入分发队列**
+--
+
+=== bolt 执行器的细节
+
+bolt 执行器由两个线程两个队列组成：
+
+* **输入分发队列**：专门处理输入元组；
+* **主线程**：从分发队列**读取**元组，运行由用户自定义的代码，即 ``execute`` 中的功能部分；
+* **发射线程**：用于将元组发射到拓扑中下一个 bolt 中；
+* **发射队列**(LAMX Disruptor)：用于将元组从执行器发射出来，解耦主线程与发射线程，同时在执行器之间执行高性能消息发送。
+
+[TIP]
+--
+**Bolt 主线程：执行流程**
+
+. 元组置入到分发队列
+. 主线程将元组从队列中提取出来
+. 主线程将元组发送到 bolt 实例中，用于处理数据并生成待发射的元组
+. 主线程将待发射元组置入输出的分发队列
+--
+
+=== 路由
+
+路由在上下文中担负着控制工作进程的接收线程(远程传输)，或者是控制执行器的发送线程(本地传输)发射一个元组到下一个任务的正确地址，是一个多进程化的组件。
+
+[TIP]
+--
+元组**路由**
+
+. 执行器的传输方法，基于 bolt 的流分组方式，查找目的下游组件的任务
+. 任务的 ID 和元组进行配对(*任务、元组*)，然后发布到执行器的对外分发队列
+. 构建对外分发队列，执行器的**发送线程**将选取配对后的任务元组，选择是由本地 JVM 来处理该任务，还是将其寄存到另外一个远程 JVM 中
+. 对于一个处于本地 JVM 的任务，配对后的任务将发布到对内分发队列，由任务的执行器来接手下一步的处理
+. 对于一个处于远程 JVM 上的任务，将首先为任务寻找节点的端口，然后将配对的消息任务推入工作节点的对外分发队列
+--
+
+== 应用 Storm
+
+[TIP]
+====
+Storm 依赖：
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.storm</groupId>
+    <artifactId>storm-core</artifactId>
+    <version>1.2.4</version>
+    <scope>provided</scope>
+</dependency>
+----
+* 在本地环境中，本地运行项目是可以不设置 ``scope`` 的值；
+* 在生产环境中 ``scope``必需要设置为 ``provided`` 。
+====
+
+=== 数据源组件 Spout
+
+.Spout class design patterns
+[plantuml,format="svg",id="spout"]
+----
+include::uml/spout.puml[]
+----
+
+* ``IComponent``: 通过拓扑( *Topology* )组件的接口 —— 定义了组件的**配置**和**输出规范**
+* ``ISport``: 定义了 *Sport* 的职责
+* ``IRichSpout``: 完整的 *Sport* 职责描述接口，包含了 ``ISport`` 和 ``IComponent``
+* ``BaseRichSpout``: ``IRichSpout`` 的部分实现，是自定义继承实现 *Sport* 的基类
+
+使用 ``BaseRichSpout`` 必须实现的方法：
+
+. ``void open(Map conf, TopologyContext context, SpoutOutputCollector collector)``: 在 Storm 准备运行时调用一次(*初始化*)
+. ``void nextTuple()``: 当 Storm 准备取下一个元组(tuple)时，由 Storm 调用
+. ``void declareOutputFields(OutputFieldsDeclarer declarer)``: 为 Sport 发射的元组所有字段**命名**
+
+=== 数据处理者 Bolt
+
+.Bolt class design patterns
+[plantuml,format="svg",id="bolt"]
+----
+include::uml/bolt.puml[]
+----
+
+* ``IBolt``: 定义了一个数据处理者(bolt)的职责
+* ``IComponent``: 拓扑(topology)的通用接口(包括spout和bolt) —— 定义了组件的配置与输出
+* ``IRichBolt``: 一个完整的数据处理者(bolt)接口(包含(IBolt)和(IComponent))
+* ``IBasicBolt``: 精简版数据处理者接口，相比较于 ``IRichBolt`` 支持部分功能
+* ``BaseRichBolt``: 部分实现 ``IRichBolt`` 是自定义继承实现数据处理者(bolt)的基类
+* ``BaseBasicBolt``: 部分实现 ``IBasicBolt`` 是自定义继承实现数据处理者(bolt)的基类
+
+使用 ``BaseBasicBolt`` 必须实现的方法：
+
+. ``void execute(Tuple input, BasicOutputCollector collector)``: 当元组(tuple)被发射到当前数据处理者(bolt)时调用
+. ``void declareOutputFields(OutputFieldsDeclarer declarer)``: 为当前数据处理者(bolt)发射(emit)出的元组定义**字段名称**
+
+=== 创建拓扑 Topology
+
+[source,text]
+----
+TopologyBuilder builder = new TopologyBuilder();
+
+builder.setSpout("commit-feeder", new CommitFeeder());
+
+builder.setBolt("email-extractor", new EmailExtractor())
+        .shuffleGrouping("commit-feeder");
+
+builder.setBolt("email-counter", new EmailCounter())
+        .fieldsGrouping("email-extractor", new Fields("email"));
+
+Config config = new Config();
+config.setDebug(true);
+
+StormTopology commitCountTopology = builder.createTopology();
+----
+
+=== 心跳元组 Tick Tuple
+
+心跳元组(tick tuple)用于触发定时事件的元组(tuple)。
+心跳元组(tick tuple)配置后，可以按照用户定义的频率以及时间点，在 bolt 上**周期地调用** ``execute`` 方法。
+在 ``execute`` 中检查元组是否被定义为由系统周期性触发的动作（或是一个普通的元组）并处理心跳元组(tick tuple)。
+正常情况下的拓扑的元组(tuple)只负责将数据按默认的流模式，而**心跳元组**(tuple)则是基于系统的**心跳触发**来传输数据。
+
+. 重写 ``getComponentConfiguration`` 方法
++
+配置心跳元组
+. 在 ``execute`` 中判断是否为心跳元组
+
+[TIP]
+====
+心跳元组的##**发射频率**##
+
+心跳发射频率**并不精确**，这里采取的是一种最佳能效机制。
+
+发射到 bolt 的心跳元组将和其他元组一起按队列排序，排队等待前面的 bolt 完成 ``execute`` 方法的调用。
+如果流中心跳元组前的其他元组的执行存在较高的延迟，心跳元组将继续等待。
+====
+
+[IMPORTANT]
+====
+**##线程安全##**
+
+在使用 Storm 过程中经常需要在内存中使用数据结构(类非静态变量)；
+由于 ``execute()`` 同一时间只会执行一个元组的处理，所以在线程级是安全的。
+
+当元组在**组件中进行传递**时，如何实现元组上的值可以在不同线程上执行序列化？
+当发射内存中的数据结构时，没有复制就直接使用在另一个线程上执行序列化，而此时这个数据正在发生变化，系统将抛出 ``CurrentModificationException`` 异常。
+
+* 保证数据不可变更
+* 基于 bolt 的方法 ``execute()`` 创建自有线程，自己保证线程安全问题。
+====
+
+=== 网络化扩展
+
+[TIP]
+====
+**网络化扩展**
+
+一个具备网络化扩展的系统，需要具备**不通过停机**就可以基于网络集群化实现**运算能力的扩展**，也称为**需求的网络化扩展**。
+====
+
+==== Storm 并行性机制
+
+===== 1. 使用并行性触点
+
+使用并行性触点是在数据源(spout)和数据处理者(blot)层面通过设置数据源(spout)和数据处理者(bolt)实例的并发数量实现。
+
+* 设置数据源(spout)的并行性触点
++
+在构建拓扑(topology)时，通过构建器 ``TopologyBuilder`` 的 ``setSpout(String id, IRichSpout spout, Number parallelism_hint)`` 方法的 ``##parallelism_hint##`` 参数配置。
+
+* 设置数据处理者(bolt)的并性触点
++
+在构建拓扑时，通过构建器 ``TopologyBuilder`` 的 ``setBolt(String id, IBasicBolt bolt, Number parallelism_hint)`` 方法的 ``##parallelism_hint##`` 参数配置。
+
+===== 2. 调解执行器与任务
+
+默认情况下执行器(executor)仅有一个任务(task)。
+
+修改执行器(executor)内任务(task)数的方式有两种：
+
+* 在构建拓扑(topology)时，构建器 ``TopologyBuilder`` 调用 ``setSpout`` / ``setBolt`` 后调用 ``##setNumTasks(Number val)##`` 方法指定具体任务数；
+* 通过 Web UI 调整；
+
+
+===== 3. 调整工作节点数量
+
+默认情况下拓扑(topology)使用一个工作节点(worker)。
+
+在提交拓扑(topology)到运行环境是通过 ``Config`` 的 ``setNumWorkers(int workers)`` 执行拓扑使用的节点数量。
+
+=== 拓扑(topology)设计方法
+
+[quote, Donald Kunth]
+--
+在大约 97% 的情况下，你都应该忘掉哪些影响较小的效率问题，过早的优化时万恶之源。
+--
+
+
+设计拓扑一般可以分解为五个步骤：
+
+. 定义问题/构造一个概念上的解决方案
++
+首先清晰的理解问题，同时还要记录**任何潜在的需求**（包括**处理速度**）。
++
+然后对解决方案进行初步建模(不用于实现的)，来阐述问题的核心诉求。
+
+. 将解决方案映射到 Storm 中
++
+分解提出的问题并形成解决方案，评估将解决方案映射到 Storm 技术相关原语(即 Storm 概念)上；实现第一个拓扑(topology)设计。
+
+. 实现初始方案
++
+根据初步拓扑(topoly)设计实现相关组件并部署。
++
+.. 首先考虑流经系统的**数据特性**：考虑数据流本身施加的要求定义数据源(Spout)，确定**输入数据点**，将数据点表示为元组(tuple)
+.. 确定解决问题需要的最终数据点，并表示为元组(tuple)
+.. 在输入元组和最终元组之间，补充完整数据处理方法
+
+. 扩展拓扑(topology)
++
+利用 Storm 工具，对拓扑(topology)实施扩容。
+
+. 运行中优化
++
+观察各组件运行情况以及实际需求的变化，做出相应的调整。
+
+.. 检查每个处理点，通过调整执行器和任务的方式，不断进行尝试性调整，从而建立扩展机制；
+.. 当某些组件无法继续扩展时，回顾设计，对某些组件重新设计以便优化整体的扩展性；
+
+==== 设计方法：分解为功能组件
+
+通过为每个 bolt 设置指定任务的方式，将拓扑分解为独立的 bolt 符合单一职责()的设计原则，即每个 bolt 都成为了一个功能模块。
+
+设计的时候可以做到更简洁更聚焦，也容易对独立的 bolt 执行扩展优化。
+
+==== 设计方法：基于重分配来分解组件
+
+侧重的时不同组件之间的分割点，基于这种拓扑设计，需要尽可能减少重分配的次数，减少序列化与于网络的开销，减少对于执行器的数量需求。
+
+== 拓扑的健壮可靠性
+
+在一些场景下，必须保证每个元组(tuple)都能被处理，此时**可靠性**比实时性更重要。
+
+在可靠性优先的场景下，元组的价值不会因为重试或随时间推移而降低。
+
+Storm 提供了保证元组被处理的能力，可以依赖这种能力保证**功能的完整**和**执行的准确**。
+Storm 其实提供的是**追踪元组(tuple)处理状态**(成功/失败)，并不断重试失败元组直至成功，以此来保障整体计算的可靠性。
+
+[TIP]
+--
+支持**可靠性**的**组成**部分：
+
+* 一个可靠的数据源和与之相应可靠的数据源组件(Spout)
+* 一个**锚定**的元组(tuple)流
+* 一个能够感知每个元组是否已经完成处理以及广播元组处理失败信息的拓扑
+* 一个具备容错能力的 Storm 集群基础环境
+--
+
+Storm 默认提供了对前三个步骤的中消息处理保障。
+
+=== 消息处理保障
+
+**消息**(message)是元组的代名词， Storm 要做的是确保消息从 spout 以元组的形式发射，并经过拓扑中各 bolt 完成处理。
+
+_如果一个元组在数据流中某个计算节点失败了， Storm 会立刻被告知这次失败，然后重试这个元组，直到确保这个元组完成了全部的数据处理。_
+即**消息处理保障**(guaranteed message processing)。
+
+[TIP]
+--
+*元组状态*：处理完成或失败
+
+Storm 为每个有 spout 发射出的元组创建一个元组树，其中 spout 发射的元组称为**根**(root)元组，并持续跟踪这棵树的处理情况。
+
+当一棵元组树的所有叶节点都标记为已处理， Storm 才认为由 spout 发射的元组树处理完整。
+
+元组树全称为**有向非循环图**(Directed Acyclic Graph, DAG)
+--
+
+为了确保 Storm 能创建并跟踪元组树的状态，需要借助 API 完成两件事情：
+
+. 当 bolt 发射新元组时，确保其输入元组已被锚定；
+. 确保 bolt 在完成对输入元组的处理之后会通知 Storm ，即应答(acking)；
+
+[WARNING]
+--
+Storm 在元组层面上可能出现的错误：
+
+. 元组树的叶节点超时未完成；
+. 元组在 bolt 的手动运行中失败，元组树中将立刻触发错误；
+--
+
+=== bolt 锚定、应答和容错
+
+Storm 有两种方法在 bolt 中实现对元组的锚定、应答和容错：**显示**(explicit)和**隐式**(implicit)。
+Storm 中默认使用隐式方式处理。
+
+==== 隐式锚定、应答和容错
+
+``BaseBasicBolt`` 自动提供了线程**锚定**与**应答**功能：
+
+* **锚定**——在继承 ``BaseBasicBolt`` 实现 ``execute()`` 方法内，将发射一个元组到下一个 bolt 的工作。 ``BasicOutputCollector`` 将**把输入元组自动锚定到一个对应输入元组**；
+* **应答**——在继承 ``BaseBasicBolt`` 实现 ``execute()`` 方法执行完成后，发送过来的元组自动执行应答；
+* **容错**——在执行 ``execute()`` 方法时出错，系统自动抛出一个 ``FailedException`` 或 ``ReportedFailedException`` 异常通知 ``BaseBasicBolt`` 标记那个元组为**失败**(failing)；
+
+[TIP]
+--
+隐式锚定、应答和容错，简化了跟踪元组状态，但并不适用于所有场景，只适合 bolt 间消息一对一映射的场景。
+--
+
+==== 显示锚定、应答和容错
+
+显示锚定、应答和容错应用场景：
+
+* 对多个输入元组执行**聚合**或者**折叠**(collapsing)操作；
+* 连接多个输入数据流
+
+``BaseBasicBolt`` 适用于**可预测**的行为；
+
+继承 ``BaseRichBolt`` 实现的功能：
+
+* 锚定——在 bolt 的 ``execute()`` 方法中将输入的元组传到 ``outputCollector`` 的 ``emit()`` 方法中： ``outputCollector.emit(tuple, new Values(order))``
+* 应答——在 bolt 的 ``execute()`` 方法中调用 ``outputCollector`` 的 ``ack`` 方法： ``outputCollector.ack(tuple)``
+* 容错——在 bolt 的 ``execute()`` 方法内调用 ``outputCollector`` 的 ``fail`` 方法： ``throw new FailedException()`` 变成 ``outputCollector.fail(tuple)``
+
+``BaseRichBolt`` 可以替换 ``BaseBasicBolt`` 使用的所有场景。
+
+[NOTE]
+--
+``BaseRichBolt`` 在每次执行 ``execute()`` 方法时都会调用一个 ``BasicOutputCollector``。
+
+使用 ``BaseBasicBolt`` 时也需要通过 ``OutputCollector`` 来维护元组的状态：在初始化 bolt 时通过 ``prepare()`` 方法来实现。
+--
+
+``BaseBasicBolt`` 实现锚定：
+
+* 锚定—— ``outputCollector.emit(tuple, new Values(order))``
+* 非锚定—— ``outputCollector.emit(new Values(order))``
+
+==== 容错性
+
+在出现错误时，系统可以抛出 ``FailedException`` 或 ``ReportedFailedException`` 异常。
+在 ``exceute()`` 方法中使用 ``try-catche`` 对异常进行捕获，在异常处理中使用 ``fail(tuple)`` 进行显示容错。
+报错元组将导致整个元组树从 spout 开始回放重试，是消息处理**保障机制的关键**（因为这是激活重试机制的主要触发器）。
+
+[TIP]
+--
+元组在执行重试操作前还需要判断其是否**可重试(retriable)**。
+--
+
+错误类型：
+
+* 已知错误
+** 可重试错误 —— 对于已知的可重试错误，需要对失败的元组尝试**回放**和**重试**；
+** 不可重试错误 —— 对于已知的不可重试错误，应该去不断**应答**这些元组；通过增加某种日志或报告的方式，以便了解拓扑中出现了的错误；
+* 未知错误 —— 一旦出现这类错误，其实就变成了已知错误（通过日志等支撑判断），可以采取**可重试**或**不可重试**的方式处理错误；
+
+=== spout 消息保障
+
+spout 消息保障：
+
+. Storm 通过调用 spout 中的 ``nextTuple()`` 请求一个元组；
+. spout 通过 ``SpoutOutputCollector`` 发射一个元组到其中一个数据流中；
+. 当 spout 发射出元组，它将提供一个 ``messageId`` 用于标识发射的元组；
+. 通过各个 bolt 中的锚定喝应答 Storm 实现跟踪构建的消息元组树；能够让 Storm 具备持续构建树并且标记叶子是否已被处理的能力；
+. 如果 Storm 检测到元组已被完整处理，将基于 ``messageId`` 在初始的 spout 中调用 ``ack`` 方法，其中 ``messageId`` 则是 spout 提供给 Storm ；
+. 如果元组超时或 bolt 中处理失败， Storm 将基于 ``messageId`` 在初始的 spout 中调用 ``fail()`` 方法；
+
+> 3、5、6 是 spout 能够实现消息处理保障机制的关键；
+发射一个元组时，系统都会分配一个 ``messageId`` （否则意味着 Storm 无法跟踪元组树的状态）。
+
+[TIP]
+--
+**spout 最佳实践**
+
+* 应该在 ``ack`` 方法中添加一部分代码，用于对已经完全处理的元组执行相应的**清理工作**；
+* 应该在 ``fail`` 方法中添加一部分代码，用于实现元组的重放；
+--
+
+==== Storm 的 acker 任务
+
+Storm 使用特殊的 ``acker`` 任务类保持对元组树的跟踪，以便能监测一个 spout 元组是否经历了完整的处理过程。
+如果一个 acker 任务发现一棵元组树已经执行完成，则发射一个消息到最初发射该元组的 spout 并促使 spout 调用其 ack 方法。
+
+为了保障消息能被有效地处理，必须使用一个可以支持元组回放的可靠数据源。
+
+=== Storm 可靠性级别
+
+
+工作单元执行步骤：
+
+. 执行工作单元
+. 记录完成的工作单元
+
+在**仅一次处理**机制中，必须保证这两个步骤作为原子操作来执行；
+
+在**至少一次处理**机制中，不需要按照原子操作来执行这两个步骤，在执行期间发生失败后，系统执行重试，并重新纪律结果；
+但是如果不允许执行重试就需要：工作单元的输出结果必须保证**幂等**。
+
+[TIP]
+--
+**幂等(idempotent)**
+
+一个幂等的动作意味着这个动作在执行多次后，相比第一次执行都不会对操作对象产生任何影响。
+--
+
+==== 最多一次处理
+
+当需要确保单个元组**不会被处理一次以上**的时候，使用**最多一次处理**机制。
+
+这种情况下，不会发生任何**重放**事务，如果处理失败，元组将被丢弃。
+这种语义是最简单的选项，不能为任何操作提供可靠性保障；适用于对可靠性要求不高的场景。
+
+对于**最多一次处理**可靠性级别，不需要在 Storm 中增加任何可靠性操作，即默认。
+
+==== 至少一次处理
+
+当需要确保单个元组**至少能被成功处理一次**的时候，使用**至少一次处理**机制。
+
+这种情况下，对单一元组进行多次重放，并且确保在某种情况下可以让它成功执行一次。
+
+在 Storm 中实现**至少一次处理**：
+
+. 一个可靠的 spout 和一个可靠的数据源
+. 带有**锚定**的**数据流**
+. 具备**应答**和**容错**能力的**元组**
+
+==== 仅一次处理
+
+当需要确保单个元组**仅且仅一次被成功处理**的时候，使用**仅一次处理**机制。
+
+在 Storm 中实现**仅一次处理**：
+
+. 一个可靠的 spout 和一个可靠的数据源
+. 带有**锚定**的**数据流**
+. 具备**应答**和**容错**能力的元组
+. 确保所有 bolt 处理逻辑**仅对每个元组进行一次**
+
+=== 处理 Storm 内部缓冲区溢出
+
+* 调整生产与消耗的比例
+** 元组生产速度放慢
+** 提高元组消费速度
+* 提升所有拓扑的缓冲区大小
++
+通过调整 storm.yaml 中的参数，修改拓扑默认缓冲区大小（必须是 2 的指数， LMAX Disruptor）：
+
+** 执行器输出队列大小： ``topology.executor.receive.buffer.size``
+** 执行器输入队列大小： ``topology.executor.send.buffer.size``
+** 一个工作进程的输出传输队列尺寸： ``topology.transfer.buffer.size``
+
+* 提升指定拓扑的缓冲区大小
++
+对集群中独立的拓扑独立配置：
+可以在提交拓扑时，将 ``Config`` 类中的值传到 ``StormSubmitter`` 中：
++
+[source,jshelllanguage]
+--
+Config config = new Config();
+//
+config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, new Integer(16384));
+config.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE, new Integer(16384));
+config.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE, new Integer(32));
+--
+
+* 设置 spout 的最大待定数

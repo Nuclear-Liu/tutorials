@@ -1,0 +1,14 @@
+== 整体架构关系
+
+* Pod 与 Controller
++
+Pod 通过 Controller 实现应用的运维(伸缩、滚动升级等)。
+Pod 和 Controller 通过标签建立关系。
+
+* Pod 与 Service
++
+Service 通过 Selector 来管理对应的 Pod ，通过 Service 实现对 Pod 的负载均衡。
+
+* Service 与 DNS
++
+通过 DNS 实现对 Service 名称解析，实现对后端 Pod 的访问。
