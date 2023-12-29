@@ -1,0 +1,6 @@
+== 类型转换模块 ``type``
+
+* ``TypeHandler``
+
+setParameter()
+getResult()

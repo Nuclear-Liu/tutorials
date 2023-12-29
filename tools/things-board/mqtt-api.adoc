@@ -1,0 +1,78 @@
+=== 遥测上传API：
+
+发布数据到服务器节点
+
+``v1/devices/me/telemetry``
+
+=== 属性API：
+
+* **客户端**属性**上传**服务器: 将客户端设备属性发布到服务器节点
++
+``PUBLIC``消息风发送到主题：
++
+``v1/devices/me/attributes``
++
+Payload：
++
+** 对象格式: ``{"key1":"value1","key2":"value2"}``
+** 数组格式: ``[{"key1":"value1"},{"key2":"value2"}]``
+** 如果可以从设备获取时间戳: ``{"ts": 111111,"values":{"key1":"value1","key2":"value2"}}``
+
+* 从服务器**请求****客户端**和**共享设备属性**
++
+``v1/devices/me/attributes/request/$request_id``
+
+** 客户端属性标识: ``clientKyes``
+** 共享属性标识: ``sharedKeys``
+
+* 从服务器订阅**共享设备属性**
++
+``v1/devices/me/attributes``
+
+=== 远程过程调用API
+
+* 服务端 RPC ：服务端远程调用客户端
++
+客户都安为了从服务器订阅 RPC 命令，将 ``SUBSCRIBE`` 消息发送到主题：
++
+``v1/devices/me/rpc/request/+``
++
+订阅后，客户端将收到各个命令主题：
++
+``v1/devices/me/rpc/request/$request_id``
++
+客户端发布响应到主题：
++
+``v1/devices/me/rpc/response/$request_id``
+
+* 客户端 RPC : 客户端远程调用服务端
++
+客户端向服务器发送 RPC 命令请求主题：
++
+``v1/devices/me/rpc/request/$request_id``
++
+服务器响应将发布到以下主题：
++
+``v1/devices/me/rpc/response/$request_id``
+
+=== 认领设备
+
+``v1/devices/me/claim``
+
+=== 设备配置
+
+``/provision``
+
+=== 固件 API
+
+当启动 MQTT 固件更新时，Cloud 会设置 ``fw_title``、``fw_version``、``fw_checksum``、``fw_checksum_algorithm``共享属性。
+要接收共享属性更新，设备必须订阅：
+
+``v1/devices/me/attributes/response/+``
+
+当 MQTT 设备收到 ``fw_title`` 和 ``fw_version`` 共享属性的更新时，它必须将 ``PUBLISH`` 消息发送到：
+
+``v2/fw/request/${requestId}/chunk/${chunkIndex}``
+
+* ``${requestId}`` : 与固件更新次数相对的数字；每个固件更新的 ``${requestId}`` 必须不同。
+* ``${chunkIndex}`` : 对应于固件块**索引的数字**； ``${chunkID}`` 从 0 开始计数；设备必须为每个请求递增快索引

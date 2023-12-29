@@ -1,0 +1,6 @@
+== 事务 ``transaction``
+
+``transactionManager``配置选项:
+
+* ``JDBC`` 使用 jdbc 事务管理器
+* ``MANAGED`` 使用 MyBatis 容器事务管理器

@@ -1,0 +1,45 @@
+= 并发编程
+
+Java 中只有一个类 ``Thread`` 描述线程。
+
+[TIP]
+====
+Java 应用启动时，启动一个 JVM 进程，其中 ``main()`` 函数是主（非守护）线程入口，线程名称为 ``main`` 。
+JVM 运行一个应用时会默认创建一系列的默认守护线程：
+
+* 垃圾回收
+
+====
+
+== 概述
+
+=== 创建线程
+
+. 继承 ``Thread`` 类，实现 ``run()`` 方法；调用 ``start()`` 方法启动。
++
+[source,java]
+----
+include::src/main/java/org/hui/concurrency/Main.java[]
+----
+
+. 实现 ``Runnable`` 接口，实例化接口类，传递给创建的 ``Thread`` 类并调用 ``start()`` 方法启动。
++
+将可执行并行单元于线程控制逻辑分离。
+类似于策略模式实现。
+
+
+=== 线程生命周期
+
+[plantuml,format="svg",id="thread-lifecycle"]
+----
+include::thread-lifecycle.puml[]
+----
+
+``Thread`` 设计上使用了模板方法，``Thread`` 定义了抽象模板类，具体线程子类实现重写 ``run()`` 方法。
+
+[plantuml,format="svg",id="threa-class"]
+----
+include::thread-class.puml[]
+----
+
+* 使用静态变量，多线程共享变量

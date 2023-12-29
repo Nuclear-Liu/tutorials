@@ -1,0 +1,58 @@
+== CQL
+
+``cqlsh [ip] [port]``
+
+=== 基本命令
+
+|===
+| 命令 | 描述
+| ``HELP`` | 显示 cqlsh 命令帮助主题
+| ``CAPTURE`` | 捕获命令的输出并将其添加到文件
+| ``CONSISTENCY`` | 显示当前一致性级别，或设置新的一致性级别
+| ``COPY`` | 将数据复制到 Cassandra 并从 Cassandra 复制数据
+| ``DESCRIBE`` | 描述 Cassandra 及其对象的当前集群
+| ``EXPAND`` | 纵向扩展查询的输出
+| ``EXIT`` | 终止 cqlsh
+| ``PAGING`` | 启用或禁用查询分页
+| ``SHOW`` | 显示当前 cqlsh 会话的详细信息，如 Cassandra 版本，主机或数据类型假设
+| ``SOURCE`` | 执行包含 CQL 语句的文件
+| ``TRACING`` | 启用或禁用请求跟踪
+|===
+
+* ``help`` 获取帮助信息
+
+* ``describe``
+
+=== DDL 数据定义
+
+|===
+| 命令 | 描述
+| ``CREATE KEYSPACE`` | 在 Cassandra 中创建 KeySpace
+| ``ALTER KEYSPACE`` | 更改 KeySpace 的属性
+| ``DROP KEYSPACE`` | 删除 KeySpace
+| ``USE`` | 连接到已创建的 KeySpace
+| ``CREATE TABLE`` | 在 KeySpace 中创建表
+| ``ALTER TABLE`` | 修改表的列属性
+| ``DROP TABLE`` | 删除表
+| ``CREATE INDEX`` | 在表的单个列上定义新的索引
+| ``DROP INDEX`` | 删除命名索引
+|===
+
+=== DML 数据操作
+
+|===
+| 命令 | 描述
+| ``INSERT`` | 在表中插入行
+| ``UPDATE`` | 更新行的列
+| ``DELETE`` | 从表中删除数据
+| ``BATCH`` | 一次执行多个 DML 语句
+|===
+
+=== 查询指令
+
+|===
+| 命令 | 描述
+| ``SELECT`` |
+| ``WHERE`` |
+| ``ORDERBY`` |
+|===
