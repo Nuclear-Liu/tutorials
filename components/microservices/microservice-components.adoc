@@ -1,0 +1,261 @@
+= 技术组件
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== Spring Boot
+
+Spring Framework v1.0 发布于 2001年，其主要目标之一是解决过于复杂的 J2EE(Java 2 Platform Enterprise Edition) 标准及其重量级部署描述符。
+Spring Framework 提供了基于**依赖注入**概念的更加轻量级的开发模型。
+2014 年 Spring Boot v1.0发布，解决 Spring Framework 越来越复杂的使用。
+
+[NOTE]
+--
+J2EE 于 2006 年更名为 Java EE(Java Platform Enterprise Edition)。
+2017 年甲骨文向 Eclipse 基金会托管开源 Java EE。
+2018 年 2 月 Java EE 更名为 Jakarta EE。
+--
+
+=== 约定优于配置
+
+Spring Boot 的目标是快速开发生产就绪的 Spring 应用程序；
+Spring Boot 通过默认应用约定来最大限度地减少配置，针对具体情况可以编写配置来覆盖默认约定；这种设计模式称为**约定优于配置**。
+
+[TIP]
+--
+当需要配置是，最好使用 Java 和注解来编写，而不是使用基于 XML 的配置方式。
+--
+
+=== 胖 JAR 文件
+
+Spring Boot 支持基于独立 JAR 文件(也称为**fat JAR**)的运行时模型。
+启动一个胖 JAR 不需要单独安装 Java EE Web 服务器，使用简单的命令 `java -jar _app.jar_` 即可启动应用。
+这使其称为在 Docker 容器中运行的完美选择。
+
+[NOTE]
+--
+胖 JAR 文件不仅包含应用程序本身的类和资源文件，同时包含了应用程序依赖的所有 JAR 文件。
+即**胖 JAR**文件是运行应用程序所需的唯一JAR文件。
+--
+
+[TIP]
+--
+在依赖注入时，优先推荐使用**构造注入**来保持组件中的状态不可变。
+如果希望组件在多线程环境时运行，不可变状态则非常重要。
+--
+
+=== Spring Boot 3.0 新特性
+
+* 可观测性：
++
+新的分布式追踪支持基于 Spring Framework v6.0 中新的 ``Observability`` API 和名为 Micrometer Tracing 的新模块。
+
+* 原生编译：
++
+支持将 Spring Boot 应用程序编译为本机独立可执行文件。
+
+* 虚拟线程：
++
+Spring Boot 3.0 支持轻量级线程。
+
+== Spring WebFlux
+
+Spring Boot 3.0 基于 Spring Framework 6.0 内置了对开发反应式应用程序的支持。
+Spring Framework 使用 Project Reactor 作为反应式支持的基本实现，并附带了一个新的 Web 框架 **Spring WebFlux**：
+支持响应式（非阻塞）HTTP客户端和服务器开发。
+
+Spring WebFlux 支持两种不同的编程模型：
+
+* 基于注解的命令式风格：类似于现有 Spring Web MVC，支持反应式服务
+* 基于路由和处理程序的面向功能模型
+
+Spring WebFlux 提供了完全响应式 HTTP 客户端 ``WebClient`` 作为 ``RestTemplate`` 的补充。
+
+== 接口文档工具 springdoc-openapi
+
+开发 API(RESTful服务) 一个非常重要的方面是：如何记录它们已使其易于使用。
+
+2015 年，SmartBear Software 在 OpenAPI Initiative 下向 Linux 基金会捐赠了 Swagger 规范，并创建了 OpenAPI 规范。
+SmartBear Software 提供的工具仍使用 Swagger 该名称。
+
+``springdoc-openapi`` 是一个独立于 Spring 框架的开源项目，可以在运行时创建基于 OpenAPI 的 API 文档。
+
+== Spring Data
+
+Spring Data 是一个通用的编程模型，用于保存数据到各种类型的数据引擎，支持从传统关系数据库到各类 NoSQL 数据库引擎。
+
+[TIP]
+--
+**JPA**:
+
+JPA 代表 Jakarta Persistence API，是关于如何处理关系数据。
+Jakarta EE 9 基于 Jakarta Persistence 3.0 。
+最新规范：https://jakarta.ee/specifications/persistence/
+--
+
+Spring Data 中编程模型的两个核心概念是**entity(实体)**和**repositories(存储库)**。
+实体和存储库概括了如何从各种类型的数据存储和访问数据。
+它们提供了一个通用的抽象。
+
+[TIP]
+--
+尽管 Spring Data 为不同类型数据库提供了通用的编程模型，并不意味着能够编写可移植的源代码。
+--
+
+Spring Data 提供了一个响应式接口 ``ReactiveCrudRepository`` 支持响应式数据库。
+该接口中方法不返回对象或对象集合；它们返回 `Mono` `Flux` 对象。
+
+基于反应式的接口只能支持反应式数据库驱动程序的 Spring Data 子项目使用；
+即它们基于非阻塞 I/O。
+
+== Spring Cloud Stream
+
+Spring Cloud Stream 基于**发布/订阅**模式，提供了消息传递的流式抽象。
+Spring Cloud Stream 目前内置支持 Apache Kafka 和 RabbitMQ。
+
+Spring Cloud Stream 中的核心概念：
+
+* **Message**_消息_: 用于描述在**消息传递系统**中流转的**数据的结构**
+* **Publisher**_发布者_: 发送消息到消息传递系统，也称为**生产者**
+* **Subscriber**_订阅者_: 接受来自消息传递系统的消息，也称为**消费者**
+* **Destination**_目的地_: 用于与消息系统通信；发布者使用_输出目的地_，订阅者使用_输入目的地_；目的地由特定**绑定器**映射到基础消息系统的队列和主题
+* **Binder**_绑定器_: 绑定器提供与特定消息传递系统的实际集成
+
+使用的实际消息传递系统是在运行时确定。
+Spring Cloud Stream 对于如何传递消息由默认的约定；
+可以通过指定消息传递功能(例如：消费者组、分区、持久性、错误处理等)的配置覆盖约定配置。
+
+Spring Cloud Stream 支持两种编程模型：
+
+* 基于注解(`@EnableBinding` `@Output` `@StreamListener`)的较旧现已弃用的模型
+* 基于函数的编程模型
+
+=== 发送和接收消息示例
+
+* 发布者：
++
+需要将 `java.util.function.Supplier` 功能接口实现为 Spring Bean
++
+[source,jshelllanguage]
+----
+@Bean
+publice Suplier<String> myPublisher() {
+    return () -> new Data().toString();
+}
+----
+
+* 订阅者：
++
+需要将 `java.util.function.Consumer` 功能接口实现为 Spring Bean
++
+[source,jshelllanguage]
+----
+@Bean
+public Consumer<String> mySubscriber() {
+    return s -> System.out.println("ML RECEIVED: " + s);
+}
+----
+
+* 发布者&订阅者：
++
+可以通过将 `java.util.function.Function` 接口实现为 Spring Bean，既可以是发布者也可以实订阅者。
++
+[source,jshelllanguage]
+----
+@Bean
+public Function<String,String> myProcessor() {
+    return s -> "ML PROCESSED: " + s;
+}
+----
+
+* Spring Cloud Stream 函数属性配置
++
+为了使 Spring Cloud Stream 能识别这些函数，需要使用 ``spring.cloud.function.definition`` 属性来声明：
+[source,properties]
+----
+spring.cloud.function:
+  definition: myPublisher;mySubscriber;myProcessor
+----
+
+* 目的地配置
++
+告诉 Spring Cloud Stream 每个函数使用的目的地。
+例如：连接三个函数，以便我们的处理器使用来自发布者的消息并且订阅者使用来自处理器的消息，配置如下：
++
+[source,properties]
+----
+spring.cloud.stream.bindings:
+  myPublisher-out-0:
+    destination: myProcesor-in
+  myProcessor-in-0:
+    destination: myProcessor-in
+  myProcessor-out-0:
+    destination: myProcessor-out
+  mySubscriber-in-0:
+    destination: myProcessor-out
+----
++
+以上配置导致的数据流： ``myPublisher->myProcessor->mySubscriber``
+
+* 触发方式：
++
+默认情况下 Spring Cloud Stream 每秒触发一次供应商，因此如果启动包含示例的应用，将每秒一次输出。
++
+如果供应商由外部事件触发(不是使用计时器)，则可以使用 ``StreamBridge`` 辅助类。
+例如：在调用 REST API 时将消息发布到处理器 `sampleCreateAPI` ，则代码如下：
++
+[source,jshelllanguage]
+----
+@Autowired
+private StreamBridge streamBridge;
+@PostMapping
+void sampleCreateAPI(@RequestBody String body) {
+    streamBridge.send("myProcessor-in-0",body);
+}
+----
+
+== Docker
+
+Docker 将容器作为虚拟机的轻量级替代方案。
+容器实际上是 Linux 主机的一个进程。
+
+将微服务作为 Docker 容器运行所需的是 `Dockerfile` 。
+例如：
+
+[source,dockerfile]
+----
+FROM openjdk:17
+MAINTAINER Hui Liu <mexn-0808@outlook.com>
+EXPOSE 8080
+ADD ./build/libs/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+----
+
+如果启动和停止多个容器， Docker Compose 是一个完美工具。
+Docker Compose 使用 YAML 文件来描述要管理的容器。
+
+对于微服务，例如：
+
+* ``build`` 指令用于指定每个微服务使用的具体 `Dockerfile` Docker Compose 使用指定的 `Dockerfile` 构建 Docker 镜像，然后基于构建的镜像启动容器
+* ``ports`` 用于指定容器对外开放的端口
+
+[source,yaml]
+----
+product:
+  build: microservices/product-service
+recommendation:
+  build: microservices/recommendation-service
+review:
+  build: microservices/review-service
+composite:
+  build: microservices/product-composite-service
+  ports:
+    - "8080:8080"
+----
+
+Docker Compose 相关命令(完整命令列表: https://docs.docker.com/compose/reference/ )：
+
+* ``docker-compose up -d``: 启动所有容器； `-d`: 容器在后台运行，不锁定执行终端
+* ``docker-compose down``: 停止并删除所有容器
+* ``docker-compose logs -f --tail=0``: 打印所有容器的日志消息； `-f`: 该命令不会结束，等待新日志消息；`--tail=0`: 不看以前的日志，只看最新日志消息
