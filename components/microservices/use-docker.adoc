@@ -1,0 +1,211 @@
+= 使用 Docker 部署微服务
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== Docker 中运行 Java
+
+Java 在内存和 CPU 的使用方面并不太擅长遵守为 Docker 容器设置的限制。
+
+在 Java SE 9 中，提供了对基于容器的 CPU 和内存约束的初始支持，在 Java SE 10 中得到了很大改进。
+当前最新为 Java SE 17
+
+=== 限制可用 CPU
+
+在 Java CLI 工具中使用 ``Runtime.getRuntime().availableprocessors()`` 获取可用 CPU 数。
+
+在 Docker cli 中使用参数 ``--cpus=_n_`` 设置容器可用 CPU 数。
+
+=== 限制可用内存
+
+可以使用 Java 选项向 JVM 请求额外的运行时信息 ``-XX:+PrintFlagsFinal`` 然后使用 `grep` 过滤 `MaxHeapSize` 参数获取。
+
+如果没有 JVM 内存限制，Java 将为其分配容器可用内存的**四分之一**。
+JVM 使用 ``-Xmx`` 指定可用内存大小。
+
+== Docker 运行微服务
+
+=== Dockerfile
+
+每个微服务在单独的容器中运行，并不存在端口冲突的问题，因此在 ``application.yml`` 中添加 Docker 的 Spring 配置：
+
+[source,yaml]
+----
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+server:
+  port: 8080
+----
+
+创建 Dockerfile 文件：
+
+[source,dockerfile]
+----
+FROM openjdk:17
+EXPOSE 8080
+ADD ./build/libs/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+----
+
+这种简单方法的缺点：
+
+* 使用 Java SE 17 的完成 JDK
+** 镜像体积角度：使得 Docker 镜像变得庞大，包括编译器和其他工具
+** 安全角度：引入更多的工具对镜像是不必要的
++
+更有意愿使用 Java SE 17 JRE 的基础镜像，不幸的是，Open JDK 项目没有提供 Java SE 17 JRE 的 Docker 镜像。
+* 容器启动时 fat jar 需要一些时间解包；更好的方法是**在构建时解压 fat JAR**
+* fat JAR 文件非常大，如果想在开发过程中对镜像中的应用程序代码可以重复更改，将导致 ``docker build`` 命令使用不理想
++
+由于 Docker 镜像分层构建的，每次需要替换一个非常大的层。
+* 更好的方式是将内容分为不同的层，其中不经常更改的文件添加到第一层，更改最多的文件放置在最后一层；可以充分利用 Docker 的层缓存机制，加快构建速度
+
+关于 OpenJDK 项目中缺少 Java SE 17 JRE 的 Docker 镜像，有其他开源项目提供。
+使用最广泛的是 *Eclipse Temurin*(https://adoptium.net/temurin/) 。
+
+Docker 镜像中 fat JAR 文件的次优打包，在 Spring Boot v2.3.0 中解决，JAR 文件被放入多个文件夹中。
+默认情况下 Spring Boot 在提取 fat JAR 文件后会创建以下文件：
+
+* ``dependencies``: 包含所有依赖项
+* ``spring-boot-loader``: 包含知道如何启动应用程序的 Spring Boot 类
+* ``snapshot-dependencies``: 快照依赖项
+* ``application``: 应用程序类文件和资源
+
+Spring Boot 文档建议按照上面列出的顺序为每个文件夹创建一个 Docker 层。
+将基于 JDK 的镜像替换为基于 JRE 的镜像，并添加 fat JAR 文件分解到 Docker 镜像的中间层。
+
+.Dockerfile构建文件
+[source,dockerfile]
+----
+FROM eclipse-temurin:17.0.5_8-jre-focal as builder
+WORKDIR extracted
+ADD ./build/libs/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
+
+FROM eclipse-temurin:17.0.5_8-jre-focal
+WORKDIR application
+COPY --from=builder extracted/dependencies/ ./
+COPY --from=builder extracted/spring-boot-loader/ ./
+COPY --from=builder extracted/snapshot-dependencies/ ./
+COPY --from=builder extracted/application/ ./
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+----
+
+为了处理 Dockerfile 中 fat JAR 文件提取，使用了多阶段构建；
+即第一阶段名为 `builder` 处理提取；
+第二阶段将构建在第一阶段基础上从第一阶段选择文件。
+使用这种技术，可以处理 Dockerfile 中所有打包逻辑，但同时将最终 Docker 镜像的大小保持在最小：
+
+. 第一阶段：该阶段被命名为 ``builder``
++
+[source,dockerfile]
+----
+FROM eclipse-temurin:17.0.5_8-jre-focal as builder
+----
+. 将 ``builder`` 阶段的工作目录设置为 ``extracted`` 并添加构建的 fat JAR 文件到工作目录
+. 在 ``builder`` 阶段运行命令 ``java -Djarmode=layertools -jar app.jar extract`` 该命令会将 fat JAR 文件提取到其工作目录 ``extracted`` 文件夹
+. 第二阶段从： ``FROM eclipse-temurin:17.0.5_8-jre-focal`` 开始，将 ``application`` 文件夹作为工作目录；将 ``builder`` 分解的文件复制到 ``application`` 文件夹中，使用参数 ``--from=builder`` 用于指定 Docker 在 ``builder`` 阶段文件系统中选取文件
+. 暴露正确的端口 `EXPOSE 8080` 并高速 Docker 已分解格式运行哪个 Java 类： `org.springframework.boot.loader.JarLauncher`
+
+=== 构建镜像
+
+``docker build -t product-service .``
+
+=== 运行容器
+
+``docker run --rm -p8080:8080 -e "SPRING_PROFILES_ACTIVE=docker" product-service``
+
+== 使用 Docker Compose 管理微服务
+
+创建 `docker-compose.yml` 文件：
+
+[source,yaml]
+----
+version: '2.1'
+services:
+  product:
+    build: microservices/product-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  recommendation:
+    build: microservices/recommendation-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  review:
+    build: microservices/review-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  product-composite:
+    build: microservices/product-composite-service
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+----
+
+=== 启动
+
+启动： ``docker-compose up -d``
+
+=== 查看日志
+
+全部：``docker-compose logs -f``
+
+指定容器： ``docker-compose log [_container-name_]``
+
+=== 关闭
+
+关闭: ``docker-compose down``
+
+== 故障排除
+
+. 查看正在运行的微服务状态：
++
+[source,shell]
+----
+docker-compose ps
+----
+. 如果任何微服务状态不为 `Up` ，请使用 `logs` 命令检查日志输出是否有错误：
++
+[source,shell]
+----
+docker-compose logs product
+----
++
+如果需要，可以使用命令 ``restart`` 命令重新启动失败的容器：
++
+[source,shell]
+----
+docker-compose restart product
+----
++
+如果容器丢失（例如，崩溃），可以使用命令启动它：
++
+[source,shell]
+----
+docker-compose up -d --scale product=1
+----
++
+如果日志输出错误表明磁盘空间不足，可以使用以下命令回收部分磁盘空间：
++
+[source,shell]
+----
+docker system prune -f --volumes
+----
+. 删除构建的环境：
++
+[source,shell]
+----
+docker-compose down
+----

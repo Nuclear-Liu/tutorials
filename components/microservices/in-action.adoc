@@ -64,6 +64,33 @@ image::images/the-microservice-landspace.png[]
 . 指定产品的产品评论列表：如评论服务中所述
 . 指定产品的推荐列表：如推荐服务中所述
 
-== 生成微服务骨架
+== 添加 RESTful API
 
+添加两个项目 `api` 和 `util` 包含微服务共享的代码项目。
+
+* `api` 项目：
+** API 定义：使用接口描述 RESTful API，并使用模型来描述在API请求响应中使用的数据
+** 异常处理类：描述 API 可能返回的错误类型
+
+[NOTE]
+--
+在 Java 接口中描述 RESTful API 时将 API 定义与实现分离的好方法。
+--
+
+* `util` 项目：容纳微服务共享的帮助器类
+
+[TIP]
+--
+从 Spring Boot v2.5.0 开始，运行 `./gradlew build` 命令会创建两个 JAR 文件：
+* fat JAR 文件
+* 仅包含项目类文件的普通 JAR 文件
+
+在 `build.gradle` 中添加禁用新的普通 JAR 文件
+[source,groovy]
+----
+jar {
+    enabled = false
+}
+----
+--
 

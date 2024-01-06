@@ -1,0 +1,34 @@
+= 使用 Open API 添加 API 描述
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== springdoc-openapi 介绍
+
+使用 springdoc-openapi 实现了将 API 文档与 API 实现源码保存在一起，可以通过代码中的 Java 注解创建 API 文档。
+
+[TIP]
+--
+在 springdoc-openapi 之前，有 SpringFox 项目提供类似功能；
+今年 SpringFox 没有得到积极维护，作为对此的反应，创建了 springdoc-openapi 项目。
+--
+
+[NOTE]
+--
+尽管 Swagger UI 在开发和测试阶段非常有用，处于安全原因，通常不会在生产环境中针对 API 对外公开。
+在许多情况下， API 使用 API 网关公开。
+当前大多数 API 网关支持基于 Open API 文档(由 springdoc-openapi 生成)以安全的方式发布 API 文档。
+
+配置 Swagger UI 获取 OAuth 2.1 访问令牌，并在用户通过 Swagger UI 尝试 API 时使用它们。
+--
+
+== 使用 springdoc-openapi
+
+依赖：
+[source,groovy]
+----
+implementation 'org.springdoc:springdoc-openapi-starter-common:2.3.0'
+implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0'
+----
+
