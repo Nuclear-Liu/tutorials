@@ -1,0 +1,55 @@
+= Spring Cloud
+
+使用 Spring Cloud 实现：
+
+* 服务发现： Netflix Eureka、 Spring Cloud LoadBalancer
+* 服务网关 Spring Cloud Gateway、Spring Security OAuth
+* 配置中心 Spring Cloud Config
+* 熔断 Resilience4j
+* 分布式追踪 Micrometer Tracing and Zipkin
+
+== Netflix Eureka
+
+[TIP]
+--
+**DNS 服务发现**：
+
+微服务的每个实例都在 DNS 服务器中以相同的名称注册其 IP 地址。
+当客户端请求 DNS 名称的 IP 地址时，DNS 服务器返回已注册实例的 IP 地址列表。
+客户端使用此 IP 地址列表以循环方式向微服务实例发送请求。
+
+DNS 客户端逐个尝试接收到的 IP 地址，直到找到一个有效的 IP 地址（通常是列表中的第一个）。
+DNS 客户端通常会保留**一个**工作 IP 地址；它不对每个请求应用循环方法。
+典型的 DNS 服务器实现和 DNS 协议本身都不适合处理不断出现和消失的易失性微服务实例。
+--
+
+当跟踪许多微服务实例时，必须考虑以下因素：
+
+* 新实例可以在任何时间点启动
+* 现有实例可能在任意时间点停止响应并最终崩溃
+* 一些失败的实例可能在一段时间后恢复正常，并且应该再次开始接受流量，而未恢复实例则不会，而是直接重路由中删除
+* 某些微服务实例可能需要一段时间才能启动：仅仅因为它们可以接受 HTTP 请求并不意味着流量应该路由到它们
+* 意外的网络分区和其他与网络相关的错误随时可能发生
+
+=== Spring Cloud 的 Netflix Eureka 服务发现
+
+服务发现流程：
+
+. 每当微服务实例启动时，它都会将自己**注册**到其中一台 Eureka 服务器；
+. 每个微服务实例会定期向 Eureka 服务器发送**心跳**消息，告诉 Eureka 服务器微服务实例可以正常接受请求
+. 客户端使用 Eureka 客户端库，该库定期向 Eureka 服务询问有关可用服务的信息
+. 当客户端需要向另一个微服务发送请求时，客户端库中已经有可用实例的列表，并且可以选择其中一个，而无需询问发现服务器；通常，可用实例以循环的方式选择
+
+Spring Cloud 抽象了如何与发现服务(Netflix Eureka 等)进行通信，并提供了一个名为 ``DiscoveryClient`` 的接口。
+``DiscoveryClient`` 用于与发现服务交互，以获取有关可用服务和实例的信息。
+``DiscoveryClient`` 接口实现能够自动向发现服务注册 Spring Boot 应用进程。
+
+Netflix Eureka 客户端依赖： ``spring-cloud-starter-netflix-eureka-client``
+
+Spring Cloud 带有一个抽象(``LoadBalancerClient`` 接口)，用于希望通过**负载均衡器**向发现服务中注册的实例发出请求的客户端。
+可以将标准反应式 HTTP 客户端 ``WebClient`` 配置为使用 ``LoadBalancerClient`` 实现。
+通过将 ``@LoadBalanced`` 注解添加到返回 ``WebClient.Builder`` 对象的 ``@Bean`` 声明中， ``LoadBalancerClient`` 实现将作为 ``ExchangeFilterFunction`` 注入到 ``Builder`` 实例中。
+
+==== 设置 Netflix Eureka 服务器
+
+
