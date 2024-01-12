@@ -1,4 +1,8 @@
 = Spring Cloud
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
 
 使用 Spring Cloud 实现：
 
@@ -144,3 +148,90 @@ server:
     key-store-password: password
     key-alias: localhost
 ----
+
+=== 保护对服务发现服务器的访问
+
+使用 HTTP 基本身份验证限制对服务发现 Netflix Eureka 上的 API 和网页的访问。
+即要求用户提供用户名和密码才可以访问。
+
+==== Eureka 服务器
+
+. 添加 Spring Security 依赖：
++
+[source,groovy]
+----
+implementation 'org.springframework.boot:spring-boot-starter-security'
+----
+
+. 添加 ``SecurityConfig`` 安全配置类
+.. 用户定义：
++
+[source,jshelllanguage]
+----
+@Bean
+public InMemoryUserDetailsManager userDetailsManager() {
+    UserDetails user = User.withDefaultPasswordEncoder()
+            .username(username)
+            .password(password)
+            .roles("USER")
+            .build();
+    return new InMemoryUserDetailsManager(user);
+}
+----
+.. 将 `username` 和 `password` 从配置文件构造注入：
++
+[source,jshelllanguage]
+----
+private final String username;
+private final String password;
+
+public SecurityConfig(
+        @Value("${app.eureka-username}") String username,
+        @Value("${app.eureka-password}") String password) {
+    this.username = username;
+    this.password = password;
+}
+----
+.. 配置 API 需要使用 HTTP 基本身份验证：
++
+[source,jshelllanguage]
+----
+@Bean
+public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests(authorize ->
+                    authorize.anyRequest().authenticated())
+            .httpBasic(Customizer.withDefaults())
+            .formLogin(Customizer.withDefaults());
+
+    return http.build();
+}
+----
+.. 将用户凭证添加到配置文件 `application.yml` :
++
+[source,yaml]
+----
+app:
+  eureka-username: u
+  eureka-password: p
+----
+
+==== Eureka 客户端
+
+凭证可以在 Eureka 服务器的连接 URL 中指定。
+在客户端配置文件 `application.yml` 中设置：
++
+[source,yaml]
+----
+app:
+  eureka-username: u
+  eureka-password: p
+  eureka-server: localhost
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
+----
+
+=== 添加授权服务器
+
+
