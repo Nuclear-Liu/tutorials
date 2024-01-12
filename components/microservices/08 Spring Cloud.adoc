@@ -53,3 +53,94 @@ Spring Cloud 带有一个抽象(``LoadBalancerClient`` 接口)，用于希望通
 ==== 设置 Netflix Eureka 服务器
 
 == Spring Cloud Gateway
+
+== 保护 API 访问
+
+如何使用 HTTPS 放置外部访问 API ；
+如何使用 OAuth 2.0 和 OpenID Connect 验证和授权用户和客户端应用进程访问 API ；
+
+[TIP]
+--
+**认证**vs**授权**
+
+身份认证是通过验证用户提供的凭证(如用户名和密码)来识别用户。
+授权是关于向经过身份验证的用户授权对 API 各个部分的访问权限。
+--
+
+OAuth 2.0 是一个开放的**授权委托**标准；
+OpenID Connect 是 OAuth 2.0 的附加组件，使的客户端应用进程能够根据**授权服务器**执行的身份验证来验证用户身份。
+
+=== OAuth 2.0
+
+OAuth 2.0 是一个广泛公认的**开放授权标准**，使用户能够同意第三方客户端应用程序以用户的名义访问受保护的资源。
+
+授予第三方客户端应用进程以用户名义执行操作的权限称为**授权委派**。
+
+概念：
+
+* **资源所有者(Resource Owner)**：最终用户
+* **客户端(Client)**：想以最终用户名义调用受保护 API 的第三方客户端应用程序
+* **资源服务器(Resource Server)**：公开的需要保护的 API 资源
+* **授权服务器(Authorization Server)**：授权服务器在资源所有者(**最终用户**)通过身份验证后向客户端颁发令牌；用户信息的管理和用户身份验证通常在后台委托给**身份提供商(Identity Provider IdP)**
+
+客户端在授权服务器中注册，并被赋予**客户端 ID**和**客户端密码**。
+客户端密码必须像密码一样受到客户端的保护。
+客户端使用一组允许的重定向 URI 进行注册，在用户通过身份验证后，授权服务器将使用 URI 将已颁发的授权代码和令牌发送会客户端应用。
+
+用户永远不必向客户端应用透露其**凭证**。
+用户可以同一客户端应用代表用户访问特定 API 。
+**访问令牌**表示一组受时间限制的访问权限，在 OAuth 2.0 术语中表示为**范围**。
+授权服务器可以向客户端应用颁发**刷新令牌**；客户端应用使用刷新令牌获取新的令牌，而无需用户参与。
+
+=== OpenID Connect (OIDC)
+
+OpenID Connect (OIDC) 是 OAuth 2.0 的一个附加组件使客户端应用程序能够验证用户身份。
+OIDC 添加了一个额外的令牌(ID token)，客户端应用进程**在完成授权流程后从授权服务器获取该令牌**。
+
+ID token 编码为 JSON Web Token(JWT)，并包含许多声明(例如：用户 ID和电子邮件地址)。
+ID token 使用 JSON web 签名进行数字签名。
+即：客户端应用可以通过使用来自__授权服务器__的**公钥**验证数字签名来信任 ID token 中的信息。
+
+根据规范，访问令牌也可以按照与 ID token 相同的方式进行编码和签名，是非强制性的。
+重要的是： OIDC 定义了一个端点，一种重建端点 URL 的标准化方法，例如请求授权码和令牌或获取公钥以验证数字签名的 JWT 。
+最后，定义了一个 `user-info` 端点，可用于获取经过身份验证的用户的额外信息。
+
+出于测试目的，将向系统环境中添加本地 OAuth 2.0 授权服务器。
+与授权服务器的所有外部通信都将通过网关进行路由。
+网关和产片复合服务充当 OAuth 2.0 资源服务器，即需要有效的 OAuth 2.0 访问令牌才能允许访问。
+
+为了减少验证访问令牌的开销，假设它们被编码为已签名的 JWT ，并且授权服务器公开了一个端点，资源服务器可以使用该端点来访问验证签名所需的公钥，也称为 **JSON Web Key Set**(简称：**`jwk-set`**)。
+
+image::images/image-2024-01-12-14-26-36-328.png[]
+
+=== 使用 HTTPS 加密通信
+
+. 创建证书：创建自签证书
++
+自签证书：
++
+[source,shell]
+----
+keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore edge.p12 -validity 3650
+----
+
+. 配置网关：使用证书配置网关使用 HTTPS
++
+配置 ``application.yml`` 使用 HTTPS：
++
+[source,yaml]
+----
+server:
+  port: 8443
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/edge.p12
+    key-store-password: password
+    key-alias: localhostserver:
+  port: 8443
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/edge.p12
+    key-store-password: password
+    key-alias: localhost
+----
