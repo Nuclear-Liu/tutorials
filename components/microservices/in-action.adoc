@@ -1,0 +1,96 @@
+= In Action
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== 案例产品组件服务
+
+用于学习的微服务案例：
+
+image::images/the-microservice-landspace.png[]
+
+产品组件服务由三个核心微服务组成，即 `Product`(产品) `Review`(评价) `Recommendation`(推荐) ，所有这些服务都处理一种类型的资源和一个复合的资源。
+微服务称为 `ProductComposite` 服务，聚合来自三个核心微服务的信息。
+
+=== 产品(Product)服务
+
+产品服务管理产品信息并描述每个产品的以下属性：
+
+.产品信息
+|===
+|Field|Describe
+
+|Product ID |产品主键
+|Name |产品名称
+|Weight |产品重量
+|===
+
+=== 评论(Review)服务
+
+评论服务管理产品评论，存储有关每个评论信息：
+
+.评论信息
+|===
+|Field |Describe
+
+|Product ID |产品主键
+|Review ID |评价主键
+|Author |评价人
+|Subject |主题
+|Content |内容
+|===
+
+=== 推荐(Recommendation)服务
+
+推荐服务管理产品推荐并存储以下信息关于每条建议：
+
+.推荐信息
+|===
+|Field |Describe
+
+|Product ID |产品主键
+|Recommendation ID |推荐主键
+|Author |推荐人
+|Rate |推荐率
+|Content |推荐内容
+|===
+
+=== 产品组件服务
+
+产品组件服务聚合三大核心服务的信息，呈现有关产品如下信息：
+
+. 产品信息：如产品服务中所述
+. 指定产品的产品评论列表：如评论服务中所述
+. 指定产品的推荐列表：如推荐服务中所述
+
+== 添加 RESTful API
+
+添加两个项目 `api` 和 `util` 包含微服务共享的代码项目。
+
+* `api` 项目：
+** API 定义：使用接口描述 RESTful API，并使用模型来描述在API请求响应中使用的数据
+** 异常处理类：描述 API 可能返回的错误类型
+
+[NOTE]
+--
+在 Java 接口中描述 RESTful API 时将 API 定义与实现分离的好方法。
+--
+
+* `util` 项目：容纳微服务共享的帮助器类
+
+[TIP]
+--
+从 Spring Boot v2.5.0 开始，运行 `./gradlew build` 命令会创建两个 JAR 文件：
+* fat JAR 文件
+* 仅包含项目类文件的普通 JAR 文件
+
+在 `build.gradle` 中添加禁用新的普通 JAR 文件
+[source,groovy]
+----
+jar {
+    enabled = false
+}
+----
+--
+

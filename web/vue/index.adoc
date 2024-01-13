@@ -1,0 +1,279 @@
+= Vue In Action
+:toc:
+
+[TIP]
+--
+Vue 3 亮点：
+
+* 打包体积减小(41%)
+* 内存占用减少(51%)
+* 组合式 API
+* 更好的支持 TS(TypeScript)
+
+--
+
+[NOTE]
+--
+**项目初始化：**
+`npm create vue@latest`
+--
+
+== 1. 语法特性
+
+=== 1.1。 ``Setup`` 语法糖
+
+解决相同的代码出现多次，给维护带来不便，为各个组件写**跨域**逻辑代码提供一个入口。
+
+本质上是一个语法糖，在生命周期中 ``setup()`` 执行早于 ``beforeCreate`` 。
+
+=== 1.2. ``ref`` ``reactive`` 响应式
+
+使用 ``ref`` 对数据进行响应式绑定， ``ref`` 接受参数并返回它包装在一个带有 ``value`` 属性的对象中，实现数据的响应式绑定。
+
+* ``ref`` 实现**基础类型** / **对象类型**数据的响应式
+* ``reactive`` 实现**对象类型**数据响应式
+
+=== 1.3. 模版应用
+
+* ``<template>``: 实现界面UI
++
+每个模版中必须要有一个根 ``div`` 元素
+* ``<script>``: 实现界面逻辑
+* ``<style>``: 实现界面UI样式
+
+==== 插值
+
+页面插值使用 ``{{}}`` 包裹要插入的变量。 变量需要在 ``setup()`` 函数中返回暴露。
+
+``{{}}`` 支持三元运算符与简单表达式
+
+* ``v-html`` 当插入的值中含有 HTML 语法需要解析时使用。
+* ``v-if``/``v-else-if``/``v-else`` 分支判断
+* ``v-show``
+* ``v-for`` 遍历数据(item,index)
+
+==== 样式
+
+* ``v-bind:class``/``:class`` 样式动态绑定
+
+=== 1.4. 属性计算 `computed`
+
+实时变量计算 ``computed`` 接受一个函数，函数的返回值返回计算的结果。
+
+=== 1.5. 监听属性 ``watch``
+
+``watch`` 位于 vue 包中(``import { watch } from 'vue'``)，Vue 3 中允许定义多个 watch 针对不同的对象进行监听。
+
+===== 监听变量
+
+参数:
+
+* 需要监听的变量；如果需要同时监听多个变量，可以将监控变量以**数组**的形式传递到 ``watch``
+* 回调函数(新值、旧值):将变化的新旧值传递给回调函数参数；如果同时监听多个对象，回调函数新值与旧值对应为数组， ``watch`` 中监听数组顺序对应回调函数新旧值变换顺序
+
+===== 监听对象
+
+如果监听对象的单一属性：将监听对象以函数方式传入，在函数内返回监听的对象的属性。
+
+如果监听对象的多个属性：将监听的多个对象以函数数组方式传入。回调函数对象属性于监听变量使用相同。
+
+=== 1.6. watchEffect 监听
+
+在 ``watchEffect`` 不需要指定需要监听的对象属性，在监听回调函数中使用了对象的哪个属性将监听该属性。
+
+=== 1.7. 动态样式
+
+==== 1.7.1 `:class` 属性动态绑定
+
+`v-bind:class`/`:class` 实现动态绑定，
+
+===== 对象模式
+
+当有多个样式需要动态绑定，通过 `,` 分割添加多个样式于对应是否启动的布尔变量
+
+`:class="{ : }"`
+
+===== 数组模式
+
+当有多个样式需要动态绑定，通过将样式名称放入数组方式实现。
+
+``:class="[,]"``
+
+==== 1.7.2 `:style` 属性动态绑定
+
+只能通过对象形式动态绑定。
+
+``:style="{k:v,k:v}"``
+
+=== 1.8. 事件绑定
+
+`v-on: _event_name_=_methodName_` / `@ _event_name_=_methodName_` 实现事件绑定
+
+如果事件中绑定多个函数，通过 ``,`` 分割不同的事件函数。
+
+==== 事件修饰符
+
+* `once`: 仅触发一次
+* `stop`: 阻止冒泡
+* `prevent`: 阻止默认事件
+* `left`: 鼠标左键触发
+* `right`: 鼠标右键触发
+* `middle`: 鼠标滚轮触发
+
+=== 1.9. 表单: `v-model`
+
+使用 `<form>` 设计表单，通过 `v-model` 实现属性绑定。
+
+==== 表单数据验证
+
+`form` 表单元素本身有一个 `@submit` 事件； 在事件中完成对表单数据验证，当验证通过是返回 `true` ，否则调用 `e.preventDefault()` 阻止事件提交。
+
+=== 1.10. 组件间传值
+
+==== 父子间传值： `prop` `context`
+
+传值总结： `prop` 向下传递，事件向上传递。 父组件通过 `prop` 给子组件下发数据，子组件通过给父组件发送消息 `context.emit()` 。
+
+数组方式或对象方式；
+
+数组方式：在子组件中声明需要传递的属性。
+
+==== 父子间传值：槽 `slot`
+
+===== 父组件传递参数到子组件
+
+子组件在模版文件中通过 ``<slot>`` 标签为父组件提供一个槽位； 多个插槽是通过 `<slot>` 标签的 `name` 标记不同的槽位； 父组件传递参数时：
+
+. 通过在子组件标签内使用 `<template #_标签名_>{{_传递的变量_}}</template>` 制定参数传递的槽位；
+. 通过在子组件标签内使用 `<template v-slot:_标签名_>{{_传递的变量_}}</template` 制定参数传递槽位
+
+===== 子组件传递参数到父组件
+
+在子组件的 `<slot>` 标签中通过 `:` 执行传递的变量名称与变量： `<slot :_tranVale_="_value_" ` ； 父组件获取传递参数：
+
+. 通过父组件中使用子组件内添加 `<template #_标签名_="_valueName_"></template>` 获取子组件传递给父组件的变量。
+. 通过父组件中使用子组件内添加 `<template v-slot:_标签名_="valueName"></template>` 获取子组件传递给父组件的变量。
+
+==== 并列组件传值
+
+通过第三方模块发布订阅模型实现 ``pubsub.js``
+
+==== watch 监测传值
+
+==== 全局组件
+
+==== 全局属性和方法
+
+== 2. 路由
+
+[TIP]
+--
+**安装：**
+
+``npm install vue-router --save-dev``
+``npm install vue-router@4``
+--
+
+=== 2.2 导入
+
+=== 2.3. 使用
+
+嵌套路由，通过 ``children`` 配置嵌套子页面，在父页面中要使用 ``<router-view/>`` 确保正确页面跳转。
+
+路由参数传递：
+
+* 查询参数
+. 通过 href 添加需要传递的参数信息
+. 子组件通过使用 `vue-route` 包中的 `useRouter` 创建路由对象；通过 ``userRouter().currentRoute.value.quary`` 获取参数
+* Path 参数
+. 通过 href 路径添加路径参数
+. 在路由配置中的 `path` 添加 `: _valueName_`
+. 子组件通过使用 `vue-route` 包中的 `useRouter` 创建路由对象，通过 ``userRouter().currentRoute.params._valueName_`
+
+=== 2.4. 错误页面
+
+. 在路由中将不存在的路径使用 `redirect: _redirect-path_` 配置到重定义页面
+. 在路由中将不存在的路径使用 `redirect: { name: _name_, query: {_k_: _v_} }` (**对象**)配置到重定义页面，并支持携带查询参数
+. 在路由中将不存在的路径使用 `redirect: ()=>{ return '_redirect-path_'} ` 配置重定向页面（例如：不同用户，跳转不同的页面）
+
+==== 404 页面配置
+
+在路由配置文件中配置 `path` 使用 `pathMatch` 进行匹配。
+
+[source,text]
+----
+{
+    path: '/:pathMatch(.*)*',
+    name: 'NotFindPage',
+    component: () => import('@/components/NotFind.vue')
+}
+----
+
+==== 路由守卫
+
+通过路由对象的钩子函数(跳转之前，跳转之中，跳转之后)的跳转之前钩子函数中判断实现。
+
+== 3. Element Plus
+
+[TIP]
+--
+**安装：**
+
+``npm install element-plus --save``
+--
+
+=== 3.1. 全局导入 Element Plus
+
+.配置：`main.ts`
+[source,typescript]
+----
+import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import App from './App.vue'
+
+const app = createApp(App)
+
+app.use(ElementPlus)
+app.mount('#app')
+----
+
+== 4. HTTP: axios
+
+[TIP]
+--
+**安装**：
+
+``npm i axios -S``
+--
+
+=== 4.1 配置
+
+== 5. 全局状态数据： Pinia
+
+全局状态管理：实现全局数据的共享可见。
+
+Pinia 是 Vuex 的替代。
+
+[TIP]
+--
+**安装**：
+
+``npm i -S pinia``
+--
+
+=== 5.1 配置
+
+将 Pinia 配置到应用对象：
+
+``app.use(createPinia())``
+
+=== 5.2 使用
+
+通过 `storeToRefs` 将状态数据转为响应式数据。
+
+=== 5.3 缓存插件
+
+缓存插件 `pinia-plugin-persist` 实现对刷新页面的数据缓存。
+
+``npm i pinia-plugin-persist -S``
