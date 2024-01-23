@@ -175,12 +175,12 @@ image::image-2024-01-20-16-28-15-598.png[]
 
 Spring Security 6 中可用的过滤器在 ``org.springframework.security.config.http.SecurityFilters`` 中定义为枚举：
 
-* `CHANNEL_FILTER`:
-* `CONCURRENT_SESSION_FILTER`:
-* `SECURITY_CONTEXT_FILTER`:
-* `LOGOUT_FILTER`:
-* `X509_FILTER`:
-* `PRE_AUTH_FILTER`:
+* `CHANNEL_FILTER`: 确保请求由正确的信道处理，这意味着大多数情况下，它决定是否由 HTTPS 处理请求
+* `CONCURRENT_SESSION_FILTER`: 并发会话处理机制的一部分；主要功能是查询会话以查看它是否已过期
+* `SECURITY_CONTEXT_FILTER`: 使用新的或现有的安全上下文 ``SecurityContextHandler`` 供框架的其余部分使用
+* `LOGOUT_FILTER`: 默认情况下，基于特定的 URL 调用(`/logout`) 处理注销过程，包括清理 Cookie、删除_记住我_信息以及清理 `SecurityContext`
+* `X509_FILTER`: 使用 `java.security.cert.X509Certificate` 从 X509 证书中提取主体和凭证，并尝试使用这些预认证值进行认证
+* `PRE_AUTH_FILTER`: 与 J2EE 认证机制一起使用；
 * `FORM_LOGIN_FILTER`:
 * `LOGIN_PAGE_FILTER`:
 * `DIGEST_AUTH_FILTER`:
@@ -235,18 +235,120 @@ Spring Security 仅从外部系统的消息中提取主体(用户)信息。
 如果存在具有此值的 `ConfigAttribute` 则 `RunAsManager` 会将新的 `GrantedAuthorities` 添加到与 `RUN_AS` 值对应的经过身份验证的用户。
 
 ==== SecurityContext 和 SecurityContextHolder
-==== 认证提供者
-==== 访问决策管理器
-===== 基于肯定性
-===== 基于共识
-===== 一致的
-==== 访问决策投票者
+
+Spring Security 身份验证模型的核心是 `SecurityContextHolder` 。
+`SecurityContextHolder` 包含 `SecurityContext` 。
+
+`SecurityContextHolder` 是 Spring Security 存储身份验证者详细信息的位置。
+Spring Security 不关心 `SecurityContextHolder` 的填充方式。
+如果包含值，则将其用作当前经过身份验证的用户。
+
+接口 `org.springframework.security.core.context.SecurityContext` (实现类为 `SecurityContextImpl`) 是 Spring Security 存储有效 `Authentication` 对象的地方，*并将其与当前线程关联*。
+
+`org.springframework.security.core.context.SecurityContextHolder` 是用于从框架的许多部分访问 `SecurityContext` 的类。
+主要由静态方法构建，用于存储和访问 `SecurityContext` ，将其委托给可配置的策略来处理此 `SecurityContext` 。
+
+.`SecurityContext` 和 `SecurityContextHolder`
+image::images/image-2024-01-22-11-16-39-626.png[]
+
+==== `AuthenticationProvider` 认证提供者
+
+`AuthenticationProvider` 是验证 `Authentication` 对象的主要入口点。
+
+`AuthenticationProvider` 接口的每个实现类都与一个特定的外部提供者打交道以进行身份验证。
+如果遇到不支持的特定提供程序并且需要对其进行身份验证，可能需要使用所需的功能来实现此接口。
+
+.`AuthenticationProvider` 层次结构
+image::images/image-2024-01-22-11-25-20-989.png[]
+
+==== `AccessDecisionManager` 访问决策管理器
+
+`AccessDecisionManager` 负责决定是否允许特定 `Authentication` 对象访问特定资源的类。
+
+在 `AccessDecisionManager` 主要实现中，它委托给 `AccessDecisionVoter` 对象；
+`AccessDecisionVoter` 将 `Authentication` 对象中的 `GrantedAuthorities` 与所访问资源所需的 `ConfigAttribute` 进行比较，决定是否授予访问权限。
+他们投票决定是否允许访问。
+`AccessDecisionManager` 实现考虑投票者的输出，并应用确定的策略来决定是否授予访问权限。
+
+.`AccessDecisionManager` 层次结构
+image::images/image-2024-01-22-11-31-07-173.png[]
+
+===== AffirmativeBased
+
+此访问决策管理器调用其所有已配置的投票者(voters)；
+如果其中任何一个投票者投票决定应授予访问权限，则这足以使访问决策管理器允许访问受保护的资源。
+如果没有跳票这授予访问权限，或者至少有一个投票者投票不授予访问权限，则访问管理器将抛出决绝访问的 `AccessDeniedException` 。
+如果弃权投票者，则根据 `AccessDecisionManager` 的实例变量 `allowIfAllAbstainDecision` (默认 `false` 的布尔值)做出决定，确定当所有投票者弃权时是否应授予访问权限。
+
+===== ConsensusBased
+
+此访问决策管理器实现调用其所有配置的投票者来决定授予或拒绝对资源的访问。
+
+与 AffirmativeBased 决策管理器不同在于：
+只有当更多的选民授予访问权限而不是拒绝权限时，基于 ConsensusBased 决策管理器才会决定授予访问权限（**人数多获胜**）。
+如果授予投票数和拒绝投票数相同，则使用实例变量 `allowIfEqualsGrantedDeniedDecisions` 来决定。
+默认变量值为 `true` 授予访问权限。
+当所有选民弃权时，访问决定的决定方式与 AffirmativeBased 方式相同。
+
+===== UnanimousBased
+
+仅当所有配置的投票者都投票允许访问资源时，此访问决策管理器才会授予对资源的访问女权。
+
+如果任何投票者投票拒绝访问，则会引发 `AccessDeniedException` 。
+全部弃权时处理方式与其他实现方式(AffirmativeBased)相同。
+
+==== `AccessDecisionVoter` 访问决策投票者
+
+`AccessDecisionVoter` 与 `AccessDecisionManager` 配合使用，最终确定特定的身份验证对象是否有足够的权限来访问特定的资源。
+
+`AccessDecisionVoter` 接口主要方法是 `vote` 根据是否满足所需的条件返回三种响应： `ACCESS_GRANTED` `ACCESS_ABSTAIN` `ACCESS_DENIED`
+
+当前 `AccessDecisionVoter` 的实现：
+
+* `org.springframework.security.access.annotation.Jsr250Voter`
+* `org.springframework.security.access.annotation.`
+
 ==== UserDetailsService 和 AuthenticationUserDetailsService
-==== 用户详细信息
-==== ACL
+
+接口 `org.springframework.security.core.userdetails.UserDetailsService` 负责当身份验证请求到达应用程序时，从底层用户存储(内存/数据库等)加载用户信息。
+
+`UserDetailsService` 仅提供了一个方法 `loadUserByUsername` 使用提供的用户名从数据存储中检索用户数据。
+
+.`UserDetailsService` 层次结构
+image::images/image-2024-01-22-14-44-59-204.png[]
+
+接口 `org.springframework.security.core.userdetails.AuthenticationUserDetailsService` 更通用；
+允许使用 `Authentication` 对象检索 `UserDetails` 。
+`AuthenticationUserDetailsService` 实现类 `UserDetailsByNameServiceWrapper` 的实现只是 `UserDetailsService` 从 `Authentication` 对象中提取用户名。
+
+==== `UserDetails` 用户详细信息
+
+接口 `UserDetails` 用于表示 Spring Security 上下文中的完整用户。
+
+可以从系统中任何可以访问 `SecurityContext` 的点访问它。
+
+通常开发人员实现此接口来存储他们需要或者想要的用户详细信息。
+这些信息被封装在 `Authentication` 对象中，通过调用 `getPrincipal` 方法获取。
+
+==== ACL 访问控制列表
+
+ACL 负责在**单个域对象**级别上以精细的粒度级别保护应用程序的模块。
+
+即，为应用程序中的每个域对象分配一个 ID ，并在这些对象和应用程序的不用用户之间创建关系。
+这些关系确定是否允许确定的用户访问特定域。
+
+ACL 模型提供了细粒度的访问级别配置，可以根据试图访问对象的人来定义访问对象的不同规则。
+
+当前对 ACL 的支持被配置为从关系数据库获取配置规则。
+用于配置数据库的数据定义语言(DDL)随框架一起提供，位于 ACL 模块中。
+
 ==== JSP 标签库
 
+框架的 taglib 组件用于根据用户权限隐藏或显示页面中某些元素的组件。
+
 == Spring Security 中的良好设计和模式
+
+框架的可插卡性和模块化很大一部分是由于策略模式的广泛使用而实现的。
 
 === 策略模式
 === 装饰模式
