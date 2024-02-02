@@ -1,0 +1,12 @@
+= GitLab Runner
+
+GitLab Runner 与 GitLab 独立安装；
+目的时接收 GitLab 发布的新 CI/CD 作业，并遵循 `.gitlab-ci.yml` 文件中指定的作业说明。
+
+== GitLab Runner 与 CI / CD 关系
+
+== GitLab Runner 的架构和支持的平台
+
+== 安装 GitLab Runner
+
+== GitLab Runner 注意事项

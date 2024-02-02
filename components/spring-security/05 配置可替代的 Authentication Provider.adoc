@@ -19,7 +19,24 @@ Spring Security 6 支持的身份验证机制：
 
 == Database(数据库)
 
+以 H2 数据库为例。
 
+. 在配置文件中启用和配置 H2 内存数据库
++
+[source,properties]
+----
+spring.h2.console.enabled=true
+spring.datasource.name=security-db
+spring.datasource.url=jdbc:h2:mem:security-db
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.datasource.driverClassName=org.h2.Driver
+----
+
+. 添加 HTML 页面（例如 `welcome.html` ）
+
+. 添加 API 控制器（例如 `UserController.java`）
+
+. 添加 Spring Security 配置类（例如 `SecurityConfig.java` ） 配置使用 H2 数据库
 
 == LDAP 认证
 
