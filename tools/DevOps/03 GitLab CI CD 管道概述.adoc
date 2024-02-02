@@ -64,7 +64,7 @@ GitLab 对所有测试环境都有一个特殊的**审查环境**：
 当完成分支并删除或将其合并到稳定分支时，审查环境会自动销毁。
 
 .GitLab CI/CD 管道架构图
-image::images/image-2024-02-02-11-10-57-468.png[]
+image::images/gitlab-ci-cd-arch.png[]
 
 == 管道组成 —— 阶段、作业和命令
 

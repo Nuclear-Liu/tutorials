@@ -5,6 +5,9 @@ GitLab Runner 与 GitLab 独立安装；
 
 == GitLab Runner 与 CI / CD 关系
 
+
+
+
 == GitLab Runner 的架构和支持的平台
 
 == 安装 GitLab Runner

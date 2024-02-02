@@ -65,7 +65,7 @@ GitLab 组最多可以有 20 个级别的子组。
 iOS 和 Android 都属于移动端，将这些平台在一个致力于移动开发的小组(**Mobile**)下是有意义的。
 移动开发组(*Mobile*)、 Web 应用程序项目和文档(*Documentation*)一起在 Hats for Cats 项目下。
 
-image::images/image-2024-01-30-14-31-31-193.png[]
+image::images/demo-hats-for-cats.png[]
 
 == GitLab 问题(Issues)
 
