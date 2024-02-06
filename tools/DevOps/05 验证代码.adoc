@@ -345,17 +345,63 @@ unit-tests:
 
 == 4. 模糊测试
 
+模拟测试技术将**半随机数据**发送到代码的函数，以触发错误。
 
+[NOTE]
+--
+模拟测试仅在使用具有 *Ultimate* 许可证的 GitLab 实例上可用。
+--
 
+GitLab 中有两种执行模糊测试的方法：**覆盖率引导的模糊测试**和**Web API 模糊测试**。
 
-== 检查管道的可访问性
+=== 模糊测试的架构和工作流程
 
+为了使用覆盖率引导的模糊测试，需要四个架构组件：
 
+* **被测代码**
+* **CI/CD 作业**
+* **模糊引擎**
+* **模糊目标**
 
+== 检查可访问性
 
 == 验证代码的其他方法
 
+* 代码覆盖率
++
+[source,xml]
+----
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.10</version>
+    <executions>
+        <execution>
+            <id>jacoco-initialize</id>
+            <phase>initialize</phase>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>prepare-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
++
+[source,shell]
+----
+mvn clean test jacoco:report
+----
 
+* 浏览器性能测试
+
+* 负载性能测试
 
 
 
