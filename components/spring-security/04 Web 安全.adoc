@@ -1,0 +1,301 @@
+= Web 安全
+
+* 安全过滤器链的内部工作原理
+* 定义应用程序中的安全约束的不同元数据选项
+
+[TIP]
+--
+**Spring Boot Security 依赖项**：
+
+[source,groovy]
+----
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+----
+--
+
+== 配置 Spring Security 6
+
+在 Web 应用中激活 Spring Security Web 项目配置，需要配置一个特定的 **servlet 过滤器**：负责预处理和后处理请求以及管理所需的安全约束。
+
+* 使用 `@EnableWebSecurity` 启用 Spring Security 6
+* 配置 `UserDetailsService` Bean 指定用户信息(基于内存临时用户使用 `InMemoryUserDetailsManager`)
+* 使用 `BCryptPasswordEncoder` 配置 `PasswordEncoder` Bean 对用户密码进行编码提高安全性
+* 配置 `SecurityFilterChain` Bean 指定使用用户名/密码身份验证机制进行身份验证
+
+=== 配置 `SecurityFilterChain`
+
+Spring Security 支持在请求级别对授权进行建模。
+
+默认情况下， Spring Security 要求对每个请求进行身份验证。
+每当使用 `HttpSecurity` 实例时，都必须声明授权规则。
+
+* `authorizeHttpRequests` 配置授权规则
+** `requestMatchers()` 指定匹配路径
+** `anyRequest()` 指定所有路径
+
+** `permitAll()` 对指定的匹配路径不对路径做安全控制
+** `hasRole()` 对指定的匹配路径绑定指定角色可访问
+** `denyAll()` 对指定的路径做安全控制
+
+* `logout()` 配置注销
+** `logoutSuccessUrl()` 注销成功跳转 url
+** `deleteCookies()` 设置注销需要删除的 Cookie 值
+** `invalidateHttpSession()` 设置注销时是否需要清空当前 session
+** `permitAll()` 允许所有用户进行注销
+
+* `csrf()` 配置跨站点请求伪造(CSRF)[https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html]
++
+要使用 Spring Security CSRF 保护，必须确保正确的 HTTP 方法(PATCH POST PUT DELETE 等)可以修改状态。
+** `Customizer.withDefaults()` 使用默认配置
+
+* `formLogin()` 配置登录表单
+
+当向配置的 URL 发送 HTTP 请求时，在 servlet 容器处理该请求后，该请求将到达 `DelegatingFilterProxy` ， `DelegatingFilterProxy` 将处理委托给 `FilterChainProxy` 。
+
+一般来说， Spring Security 使用了很多过滤器；
+HTTP 请求过滤器用于执行以下操作：
+
+* 拦截请求
+* 检测身份验证（或是否存在的身份验证）
+* 重定向到身份验证入口点
+* 将请求传递给授权服务器
+* 将请求发送到 servlet 或抛出安全异常
+
+Spring Security 6 中重要的过滤器：
+
+* `ForceEagerSessionCreationFilter`
+* `ChannelProcessingFilter`
+* `WebAsyncManagerIntegrationFilter`
+* `SecurityContextPersistenceFilter`
+* `HeaderWriterFilter`
+* `CorsFilter`
+* `CsrfFilter`
+* `LogoutFilter`
+* `OAuth2AuthorizationRequestRedirectFilter`
+* `Saml2WebSsoAuthenticationRequestFilter`
+* `X509AuthenticationFilter`
+* `AbstractPreAuthenticatedProcessingFilter`
+* `CasAuthenticationFilter`
+* `OAuth2LoginAuthenticationFilter`
+* `Saml2WebSsoAuthenticationFilter`
+* `UsernamePasswordAuthenticationFilter`
+* `DefaultLoginPageGeneratingFilter`
+* `DefaultLogoutPageGeneratingFilter`
+* `ConcurrentSessionFilter`
+* `DigestAuthenticationFilter`
+* `BearerTokenAuthenticationFilter`
+* `BasicAuthenticationFilter`
+* `RequestCacheAwareFilter`
+* `SecurityContextHolderAwareRequestFilter`
+* `JaasApiIntegrationFilter`
+* `RememberMeAuthenticationFilter`
+* `AnonymousAuthenticationFilter`
+* `OAuth2AuthorizationCodeGrantFilter`
+* `SessionManagementFilter`
+* `ExceptionTranslationFilter`
+* `AuthorizationFilter`
+* `SwitchUserFilter`
+
+Spring Security 6 最重要的过滤器：
+
+* `BasicAuthenticationFilter`: 如果在请求上找到基本身份验证 HTTP 标头，则尝试使用标头的用户名和密码对用户进行身份验证
+* `UsernamePasswordAuthenticationFilter`: 如果找到用户名/密码请求参数/ POST 正文，则尝试使用这些值对用户进行身份验证
+* `DefaultLoginPageGeneratingFilter`: 启用 Spring Security 时生成默认登录也买你，除非未显式禁用该功能
+* `DefaultLogoutPageGeneratingFilter`: 生成注销页面，除非明确禁用该功能
+* `FilterSecurityInterceptor`: 执行授权
+
+== 详解 Spring Security 6 过滤器
+
+当浏览器重定向并请求 `/login` 时与第一个请求相同，直接到达 `DefaultLoginPageGenerateFilter` ；
+过滤器检测到 `/login` 请求，将登录表单的 HTML 数据直接写入响应对象中。
+
+* 不正确的凭证登录：提交表单后，过滤器将按相同的顺序再次激活
+. 请求到达 `UsernamePasswordAuthenticationFilter` 时，过滤器检查该请求是否针对 `/login` ，如果是过滤器分别从 HTTP 请求参数 `username` 和 `password` 中提取用户名和密码身份验证信息。
+利用身份验证信息(`username` `password`)创建 `Authentication` 的实现类 `UsernamePasswordAuthenticationToken` 对象，然后将其发送到 `AuthenticationManager`(更确切是 `ProviderManager`)进行身份验证
+. `DaoAuthenticationProvider` 是从 `Authentication` 的子类 `UsernamePasswordAuthenticationToken` 对象被调用；
+`DaoAuthenticationProvider` 使用 `UserDetailsService` 检索存储的用户；
+因为当前是不正确的凭证，所以没有用户拥有此用户名，因此抛出 `UsernameNotFoundException` 异常
+. `DaoAuthenticationProvider` 基类 `AbstractUserDetailsAuthenticationProvider` 将异常转换未 `BadCredentialsException` 异常，隐藏应用程序中不存在此用户的事实。将它视为常见的 *用户名-密码组合错误*。
+. `UsernamePasswordAuthenticationFilter` 捕获异常；
+此过滤器给 `AuthenticationFailureHandler` 的实现实例，该实例又决定将响应重定向到 `/login?error` 。
+登录表单将再次显示在浏览器中，并带有错误消息。
+
+* 正确的凭证登录：
+. 请求遵循与__不正确的凭证登录__相同的过滤过程，找到 `UserDetailsManager` 的子类 `InMemoryUserDetailsManager` /`JdbcUserDetailsManager` 返回所请求用户名的用户并将其返回 `DaoAuthenticationProvider` 创建一个成功的 `Authentication` 对象
+. 验证成功后 `UsernamePasswordAuthenticationFilter` 委托给 `SavedRequestAwareAuthenticationSuccessHandler` 实例，该实例在会话中查找原始请求的 URL 并将响应重定向到该 URL
+
+* 登陆后：请求受保护 URL ；系统中已经有一个经过身份验证的实体，请求到达 `FilterSecurityInterceptor`
+. `FilterSecurityInterceptor` 接受到普通受保护 url 的访问请求；
+然后 `FilterSecurityInterceptor` 恢复该 URL 所需的凭证
+. `AffirmativeBased` 访问决策管理器被调用并调用 `RoleVoter` 投票者；
+投票者评估经过身份验证的实体的权限，并将其与访问资源所需的凭证进行比较；
+投票者找到匹配项（角色信息位于身份验证机构和资源的配置属性中），因此会使用 `ACCESS_GRANTED` 进行投票
+. `FilterSecurityInterceptor` 将请求转发到请求处理链的下一个元素，即 `DispatcherServlet`
+. 请求到达控制器 Controller 返回经过验证的页面
+
+.成功的身份验证和授权过程流程
+image::images/image-2024-01-23-16-35-06-154.png[]
+
+== Spring Security 6 的特殊 URL
+
+在 Spring Security 6 对 Web 安全的支持中定义了一些预配置的 URL 供应用程序使用：
+
+* `/login` 用于应用程序登录表单的 URL ；当需要身份验证时，框架会重定向到此 URL
+* `/logout` 用于应用程序注销登录，使相应的会话和 `SecurityContext` 失效
+
+**对应用程序的用户身份验证请求是通过 `http.authorizeRequests()` 方法发出的**。
+
+=== 自定义登录表单
+
+`HttpSecurity` 实例的 `formLogin()` 方法更改默认登录处理机制：
+
+* `loginPage()`: 指定登录使用 url
++
+需要实现对应的登陆页面控制器，返回登录页面资源告知浏览器登录使用的页面资源部；
+表单数据应使用 `POST` 方式讲信息提交到应用程序。
+
+** `username` 登录提交时，用户名信息
+** `password` 登录提交时，用户密码
+** `remember-me` 登录提交时，是否需要记住我
+
+* `defaultSuccessUrl()` 默认成功跳转 url
+* `failureUrl()`  指定登录失败 url
+* `failureHandler()` 指定授权失败时的处理器
+* `permitAll()`
+
+Spring Security 应用程序身份验证时，需要考虑三个不同接口：
+`AuthenticationSucessHandler` `AuthenticationFailureHandler` `AccessDeniedHandler`
+
+=== 自定义注销
+
+`HttpSecurity` 实例的 `logout()` 方法设置注销登录逻辑：
+
+* `logoutSuccessUrl()` 指定注销成功后跳转 url
+* `deleteCookies()` 指定注销后删除的 Cookies 信息
+* `invalidateHttpSession()` 设置是否失效 Session 信息
+* `permitAll()`
+
+== 基本 HTTP 身份验证
+
+有时无法使用登录表单来验证用户身份(应用程序由其他系统调用，而不是人类)。
+
+在不需要用户访问的 HTTP 开放接口的上下文中，常见的方法是**使用 HTTP 基本身份验证标头**。
+
+HTTP 身份验证标头允许将安全信息(**用户名**和**密码**)嵌入到发送到应用程序的**请求标头**中（而不是登录表单身份验证将其用户名和密码那样将其发送到请求正文中）。
+
+携带安全信息的 HTTP 标准标命名为 `Authorization` ；
+安全信息按照 `username:password` 连接起来，然后使用 Base64 对拼接的字符串进行编码。
+
+在应用中使用基本的 HTTP 身份验证：
+
+. 删除 Spring Security 过滤器 `SecurityFilterChain` 中的其他身份验证方法，然后添加：
++
+[source,jshelllanguage]
+----
+.httpBasic(withDefaults())
+----
+
+使用 httpBasic 配置元素时，将显示 Spring Security 的 `BasicAuthenticationFilter` 。
+启动时将 `BasicAuthenticationFilter` 策略配置到 `ExceptionTranslationFilter` 中。
+当向应用发送第一个请求时，框架的行为域以前相同，引发 `ExceptionTranslationFilter` 处理的访问被拒绝异常。
+`ExceptionTranslationFilter` 过滤器委托给 `AuthenticationEntryPoint` 的特定实现策略，此处为 `BasicAuthenticationEntryPoint` .
+`BasicAuthenticationEntryPoint` 将标头 `WWW-Authennticate: Basic real="Spring Security Application"` 添加到响应中，然后向客户都安响应 401 状态(未授权)。
+对于浏览器，它将显示身份验证弹出的窗口。
+
+当填写了__用户名__和__密码__并提交请求时，请求再次遵循过滤器链，直到到达 `BasicAuthenticationFilter` 。
+`BasicAuthenticationFilter` 将检车请求标头，查找以 `Basic` 开头的 `Authorization` 标头。
+过滤器提取标头的内容，并使用 Base64 对字符串解码，然后提取用户名和密码。
+过滤器创建一个 `UsernamePasswordAuthenticaitonToken` 对象，并将其发送到身份验证管理器，以便以标准方式进行身份验证。
+身份验证管理器要求身份验证提供进程检索用户并创建 `Authenticaiton` 对象(此过程是**标准过程**，独立于使用基于身份验证或表单身份验证)。
+
+== 摘要式身份验证
+
+摘要式身份验证有助于解决基本身份验证的**弱点**（特别是**确保凭证不会通过网络以明文形式传输**）。
+
+摘要式身份验证其主要目的是：**通过在将密码发送到服务器之前对密码进行哈希处理**避免传输明文密码。
+
+摘要式身份验证与 HTTP 标头的配合方式与基本身份验证相同。
+
+摘要式身份验证基于**使用随机数对密码进行哈希处理**。
+**随机数**是**服务器生成的任意数字**，*用于身份验证过程*，并且仅**使用一次**，是**摘要式身份验证的核心**。
+摘要式身份验证通过__用户名__、__密码__、__随机数__、所__请求的 URI__ 等进行摘要计算。
+
+.Spring Security 的 `nonce` 格式：
+[source,text]
+----
+# Digest Syntax
+
+base64(expirationTime + ":" + md5Hex(expirationTime + ":" + key))
+
+expirationTime:   The date and time when the nonce expires, expressed in milliseconds
+
+key:              A private key to prevent modification of the nonce token
+----
+
+摘要式身份验证主要处理位于两个类： `DigestAuthenticationFilter` 和 `DigestAuthenticationEntryPoint` 。
+
+* `DigestAuthenticationFilter`:
+. 查询请求的标头，查找 `Authorization` 标头
+. 检查标头值是否以 `Digest` 开头
+
+* `DigestAuthenticationEntryPoint`: 被调用以生成要求摘要安全身份验证过程开始的响应的累
++
+此类使用正确的值(包括随机数)设置标头 `WWW-Authenticate` 以便客户端代理(浏览器)知道是摘要式身份验证。
+
+当请求到达 `DigestAuthenticationFilter` 时，请求标头包含所需的摘要验证标头。
+此标头中的信息以 CSV 字符串形式到达，其中包含最后一段中显示的所必须信息，包括随机数和客户端随机数 `cnonce` 。
+过滤器从标头中提取信息，从 `UserDetailService` 中检索用户，然后使用检索到的用户的密码计算摘要，验证是否匹配。
+
+=== 配置摘要式身份验证
+
+. 配置 `SecurityFilterChain` :
++
+[source,java]
+----
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint()))
+            .addFilterBefore(digestFilter());
+    return http.build();
+}
+----
+
+== 记住我身份验证
+
+记住我身份验证功能允许返回的应用程序无需每次都登录即可使用。
+
+在**记住我**会话中提供有限功能是常见做法。
+即允许自动登录，但是无法访问引用程序的全部功能；
+应用程序的更敏感部分需要正式登录才能使用它们。
+
+通常通过向浏览器发送 Cookie 来支持**记住我**身份验证，在应用程序的后续会话中，将 Cookie 发送会服务器以进行自定登录。
+
+Spring Security 中的**记住我**功能主要由 `RememberMeService` 接口和 `RemeberMeAuthenticationFilter` 类支持。
+
+=== 登录流程：
+
+. 当应用程序启动时， `RememberMeAuthenticationFilter` 位于服务器的过滤器链中。
+并且实例化 `TokenBasedRememberMeService` 并将其注入 `AbstractAuthenticationProcessingFilter` 中，替换无操作的 `NullRememberMeService` 。
+
+. 请求应用并验证身份，处理流程与介绍的过程一致。
+
+. 身份验证成功后， `UsernamePasswordAuthenticationFilter` 调用配置的 `TokenBasedRememberMeServices` 的 `loginSuccess` 方法。此方法查看请求是否包含参数 `remember-me` 以应用**记住我功能**
+
+. 对于此后的请求，会被 `RememberMeAuthenticationFilter` 拦截，并执行操作。
+.. 过滤器首先检查 `SecurityContext` 中是否有当前的 `Authentication`
+.. 如果没有，则过滤器调用 `RememberMeService` 的 `autoLogin` 方法
++
+在标准配置中 `TokenBasedRememberMeSercie` 是实现 `RememberMeServices` 的具体类。
+.. `autoLogin` 尝试将传入的 Cookie 解析为其组成元素
+.. 从 `UserDetailsService` 中检索 `UserDetails` ，使用检索的用户重新计算哈希值，并将其与用户详细信息进行比较。
+.. 如果不匹配则抛出 `InvalidCookieException`
+.. 如果匹配则则检查 `UserDetails` 并创建一个 `Authentication` 对象并返回给调用者
+
+=== 注销流程：
+
+
+
+== 会话管理

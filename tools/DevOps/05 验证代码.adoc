@@ -1,0 +1,452 @@
+= 验证代码
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+对于大多数项目 GitLab CI/CD 管道应该做的第一件事是**验证代码**。
+
+验证代码通常涉及**检查代码质量**和**运行自动化功能测试**的某种组合。
+
+== 1. 构建代码
+
+通常可以将__解释型语言__视为执行原始源代码，__编译型语言__必须通过编译将源代码转换为可运行的形式，然后执行编译结果。
+
+在配置管道来验证代码时，一个重要的区别：如果您的项目包含任何用编译语言编写的代码(即使只是整个项目的一小部分)，可能需要在进行任何验证作业之前，在管道中包含**构建作业**。
+
+__因为一些通常在管道验证阶段运行的作业直接查看源代码(例如：代码质量），而其他作业则在代码运行时与代码进行交互。__
+*因此管道仅使用侧重于源码的验证扫描，则无论使用哪种语言，都可以省略构建步骤。
+如果要在管道中包含自动化功能测试或模糊测试，则需要先构建代码。*
+
+=== javac 编译 Java
+
+使用 GitLab 的 Web IDE 编辑器创建一个名为 `src/com/hatsforcats/` 的目录存储源码；
+在目录中创建名为 `Login.java` 文件：
+
+[source,java]
+----
+package com.hatsforcats;
+
+class Login {
+    public static void main(String [] args) {
+        System.out.println("Welcome to Hats for Cats!");
+    }
+}
+
+----
+
+==== 配置管道
+
+. 在存储库目录中的空 `.gitlab-ci.yml` 文件使用 `stages` 关键字为管道定义**构建阶段**：
++
+[source,yaml]
+----
+stages:
+  - build
+----
+
+. 定义一个**构建阶段**作业：运行 `javac`
++
+[source,yaml]
+----
+compile-java-with-javac:
+  stage: build # <1>
+  image: openjdk:latest # <2>
+  script: # <3>
+    - javac src/com/hatsforcats/*.java -d target/
+    - ls target/com/hatsforcats
+    - cd target
+    - java com.hatsforcats.Login
+----
++
+<1> 指定作业所属阶段为 `build`
+<2> 指定作业使用的 Docker 镜像，使用 `javac` 构建所以使用 `openjdk` 镜像
+<3> 在 `script` 关键字下列出当前作业需要执行的命令
+
+执行结果：
+[source,log]
+----
+$ javac src/com/hatsforcats/*.java -d target/
+$ ls target/com/hatsforcats
+Login.class
+$ cd target
+$ java com.hatsforcats.Login
+Welcome to Hats for Cats!
+Cleaning up project directory and file based variables
+Job succeeded
+----
+
+=== Maven 编译 Java
+
+. 构建 Maven 项目： `pom.xml`
++
+[source,xml]
+----
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.hatsforcats</groupId>
+  <artifactId>login</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+</project>
+----
+
+. 向项目添加源码：`src/main` 目录下创建 `com.hatsforcats` 包，添加源码
++
+[source,java]
+----
+package com.hatsforcats;
+
+class Login {
+    public static void main(String [] args) {
+        System.out.println("Welcome to Hats for Cats!");
+    }
+}
+
+----
+
+. 配置管道：
++
+[source,yaml]
+----
+stages:
+  - build
+compile-java-with-maven:
+  stage: build
+  image: maven:latest # <1>
+  script:
+    - mvn compile # <2>
+    - ls target/classes/com/hatsforcats
+    - cd target/classes
+    - java com.hatsforcats.Login
+----
++
+<1> 基于 Maven 镜像执行作业
+<2> 使用 mvn 编译
+
+执行结果：
+[source,log]
+----
+[INFO] Compiling 1 source file with javac [debug target 17] to target/classes
+[WARNING] system modules path not set in conjunction with -source 17
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.324 s
+[INFO] Finished at: 2024-02-05T03:03:06Z
+[INFO] ------------------------------------------------------------------------
+$ ls target/classes/com/hatsforcats
+Login.class
+$ cd target/classes
+$ java com.hatsforcats.Login
+Welcome to Hats for Cats!
+Cleaning up project directory and file based variables
+Job succeeded
+----
+
+=== GCC 编译 C
+
+在项目跟目录中添加 `login.c` 文件，添加内容：
+
+[source,c]
+----
+#include <stdio.h>
+int main(void) {
+    puts("Welcome to Hats for Cats!");
+    return 0;
+}
+----
+
+使用 GCC 构建：
+
+[source,yaml]
+----
+stages:
+  - build
+compile-c:
+  stage: build
+  image: gcc:latest # <1>
+  script:
+    - gcc login.c -o login  # <2>
+    - ./login  # <3>
+----
+
+<1> 该作业在包含 GCC 工具的 Docker 镜像中运行
+<2> 在 `script` 关键字下使用 `gcc` 编译源码
+<3> 直接运行边以后的二进制结果
+
+执行结果：
+[source,log]
+----
+$ gcc login.c -o login
+$ ./login
+Welcome to Hats for Cats!
+Cleaning up project directory and file based variables
+Job succeeded
+----
+
+=== 将构建的代码存储为__制品__
+
+管道作业创建的任何文件（包括构建期间生成的文件的编译版本）都会在作业完成后**立即删除**。
+
+``artifacts`` 关键字可以指定 GitLab 应从作业中保留并可供所有后续作业使用的某些**文件或目录**(**制品**)。
+
+.保留 `compile-c` 作业中生成的可执行 `login` 文件: *保留单个文件*
+[source,yaml]
+----
+stages:
+  - build
+compile-c:
+  stage: build
+  image: gcc:latest
+  script:
+    - gcc login.c -o login
+    - ./login
+  artifacts:
+    paths:
+      - login
+----
+
+. 保留 `compile-java-with-maven` Maven编译文件的目录全部内容(Test开头的除外)：*保留目录*
+[source,yaml]
+----
+compile-java-with-javac:
+  stage: build # <1>
+  image: openjdk:latest # <2>
+  script: # <3>
+    - javac src/com/hatsforcats/*.java -d target/
+    - ls target/com/hatsforcats
+    - cd target
+    - java com.hatsforcats.Login
+  artifacts:
+    paths:
+      - target/classes/
+    exclude:
+      - target/classes/**/Test*
+----
+
+== 2. 检查代码质量
+
+GitLab 为 CI/CD 管道提供了一项特殊功能可以保证项目代码遵守某些质量标准，称为**代码质量**。
+
+代码质量功能依赖于称为 **Code Climate** 的外部服务（Code Climate 不能支持所有的语言，但可以支持 Java Python Ruby JavaScript 等大多数常用语言）。
+
+Code Climate 代码质量检查违规示例：
+
+* 带有太多参数的函数
+* 退出点过多的函数
+* 函数或类太长
+* 逻辑表达式过于复杂
+* 垂直空白过多或过少
+* 重复代码
+
+=== 启用代码质量检查
+
+CI/CD 管道中启用代码质量检查：
+
+. 定义测试 `test` 阶段
++
+[source,yaml]
+----
+stages:
+  - test
+----
+
+. 包含 GitLab 提供的 ``Code-Quality.gitlab-ci.yml`` 模板，将代码质量作业添加到管道中
++
+[source,yaml]
+----
+include:
+  - template: Code-Quality.gitlab-ci.yml
+----
+
+. 添加代码: 例如修改 `Login.java`
++
+[source,java]
+----
+package com.hatsforcats;
+public class Login {
+    public static void main(String [] args) {
+        System.out.println("Welcome to Hats for Cats!");
+    }
+    public void register(String username, String password, String phone, String city, String state, String zip) {
+        // TODO finish the code
+    }
+}
+----
+
+
+== 3. 运行自动化功能测试
+
+CI/CD 管道中最常见的任务之一是**运行自动化功能测试**，确保代码执行符合预期。
+
+. 编写测试案例：在 `LoginTests.java` 中编写 `Login.java` 的测试案例
++
+[source,java]
+----
+package com.hatsforcats;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class LoginTests {
+    @Test
+    void testLogin() {
+        assertTrue(true);
+    }
+    @Test
+    void testBadPassword() {
+        assertTrue(true);
+    }
+    @Test
+    void testLoginNoPassword() {
+        assertTrue(true);
+    }
+}
+----
+
+. 添加 Maven 测试报告生成插件：
++
+[source,xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+                <skipTests>false</skipTests>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+. 定义单元测试作业：
++
+[source,yaml]
+----
+unit-tests:
+  stage: test
+  image: maven:latest
+  script:
+    - mvn test # <1>
+  artifacts: # <2>
+    reports:
+        junit: target/surefire-reports/TEST-*.xml # <3>
+    when: always
+----
++
+<1> 运行单元测试
+<2> 制品设置——将测试报告保存
+<3> 指定测试报告的位置
+
+== 4. 模糊测试
+
+模拟测试技术将**半随机数据**发送到代码的函数，以触发错误。
+
+[NOTE]
+--
+模拟测试仅在使用具有 *Ultimate* 许可证的 GitLab 实例上可用。
+--
+
+GitLab 中有两种执行模糊测试的方法：**覆盖率引导的模糊测试**和**Web API 模糊测试**。
+
+=== 模糊测试的架构和工作流程
+
+为了使用覆盖率引导的模糊测试，需要四个架构组件：
+
+* **被测代码**
+* **CI/CD 作业**
+* **模糊引擎**
+* **模糊目标**
+
+== 检查可访问性
+
+== 验证代码的其他方法
+
+* 代码覆盖率
++
+[source,xml]
+----
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.10</version>
+    <executions>
+        <execution>
+            <id>jacoco-initialize</id>
+            <phase>initialize</phase>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>prepare-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
++
+[source,shell]
+----
+mvn clean test jacoco:report
+----
+
+* 浏览器性能测试
+
+* 负载性能测试
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

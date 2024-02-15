@@ -266,7 +266,11 @@ Java: https://www.youtube.com/@java/playlists
 
 ## [有状态 VS 无状态](https://www.redhat.com/zh/topics/cloud-native-apps/stateful-vs-stateless?msclkid=d4a8b346d07d11eca80a98acca934298)
 
+## QT GUI 库
 
+https://qskinny.github.io/
+
+https://github.com/uwerat/qskinny
 
 ## My IDEA Plugins
 

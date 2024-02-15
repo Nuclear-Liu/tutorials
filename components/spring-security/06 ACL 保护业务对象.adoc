@@ -1,0 +1,152 @@
+= ACL(访问控制列表) 保护业务对象
+
+Spring Security ACL(访问控制列表)着眼于保护各个域对象的更细粒度的规则。
+
+使用 ACL 保护域对象的概念是：任何用户对每个域对象都具有一定级别的访问权限(读、写、无权限等)。
+用户对特定域角色的访问级别(*权限*)取决于**用户**或**用户所属的角色或组**。
+
+== ACL 关键概念
+
+Spring Security 的域对象实例安全功能以访问控制列表(ACL)的概念为中心。
+系统中的**每个域对象实例都有自己的 AC**L ，并且 ACL 记录了谁可以和不可以使用该域对象的详细信息。
+Spring Security 为应用程序提供了三个主要的 ACL 相关功能：
+
+* 检索域对象的 ACL 条目的方法
+* 确保在调用方法之**前**允许给定主体使用我们的对象的方法
+* 确保在调用方法之**后**允许给定主体使用我们的对象的方法
+
+Spring Security ACL 模块的主要功能之一：**提供一种检索 ACL 的高性能方法**。
+
+> ACL 存储库功能极其重要，系统中的每个域对象都可能有多个访问控制条目，并且每个 ACL　可能从树状结构中的其他 ACL 继承。
+
+Spring Security ACL 的功能经过精心设计，可提供高性能的 ACL 检索，以及可插入缓存、最小化死锁的数据库更新、独立 ORM 框架、正确的封装和透明的数据库更新。
+
+Spring Security ACL 主要抽象：
+
+* *Security identity(SID)*: **安全标识**是一个**抽象**，表示系统中 ACL 基础设施使用的**安全身份**；安全身份可以是用户、角色、组等；*映射到 `ACL_SID` 表*
+* *Access control entry(ACE)*: **访问控制实体**代表 ACL 中的单个权限，在对象、 SID 和权限之间建立关系；*映射到 `ACL_ENTRY` 表*
+* *Object identity*: **对象标识**代表单个域对象实例的标识；是设置权限的实体；*映射到 `ACL_OBJRCT_IDENTITY` 表**
+* *Entry*: **实体**存储分配给每个授权者的单个权限；列包括 `ACL_OBJECT_IDENTITY` 的外键、授与者(即 `ACL_SID` 的外键)以及表示授予或拒绝的**实际权限的整数位掩码**
+
+ACL 系统使用**整数位掩码**，其中的每一位都代表一种权限。
+默认情况下，权限为**读取(bit 0)**、**写入(bit 1)**、**创建(bit 2)**、**删除(bit 3)**和**管理(bit 4)**。
+可以实现自己的权限实例，以便扩展 ACL 框架。
+
+ACL 关键接口：
+
+* *ACL*: 每个域对象都有一个且唯一的 ACL 对象，该对象内部保存 `AccessControlEntry` 对象并知道 ACL 的所有者，该对象并不直接引用域对象，而是引用一个 `ObjectIdentity` ；
+ACL 存储在 `ACL_OBJECT_IDENTITY` 表
+
+* *AccessControlEntry*: 保存多个 `AccessControlEntity` 对象，在框架中通常缩写为 *ACE*；
+每个 ACE 指的是**权限、 SID 和 ACL 的特定元组**；
+ACE 可以实授予或非授予，并包含审核设置；
+ACE 存储在 `ACL_ENTRY` 表中
+
+* *Permission*: 权限表示特定的不可变位掩码，并为掩码和输出信息提供便利的功能；
+基本权限(0~4 bit)包含在 `BasePermission` 类中
+
+* *SID*: 是**安全标识**的缩写；
+ACL 模块必须引用主体和 `GrantedAuthority` 实例，并且 SID 接口提供间接级别；
+常见的类包括 `PrincipalSid` (代表身份验证对象内的主体) 和 `GrantedAuthoritySid` ；
+SID 存储在 `ACL_SID` 表中
+
+* *ObjectIdentity*: 在内部表示 ACL 模块的每个域对象；
+默认实现是 `ObjectIdentityImpl`
+
+* *AclService*: 检索适用于给定 `ObjectIdentity` 的 ACL ；
+在包含的实现 (`JdbcAclService`) 中，检索操作委托给 `LookupStrategy` ，它提供了用于检索 ACL 信息的高度优化的策略，使用批量检索 (`BasicLookupStrategy`) 并支持使用物化视图、分层查询和类似的以性能为中心的自定义实现、非 ANSI SQL 功能
+
+* *MutableAclService*: 提供了修改后的 ACL 以实现**持久化**；该接口是可选的
+
+`AclService` 和相关__数据库类__使用 ANSI SQL，它应该适用于所有主要关系数据库。
+
+== 使用 ACL
+
+. 添加 Spring Security ACL 依赖：
++
+[source,xml]
+----
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-acl</artifactId>
+</dependency>
+----
+. 实例化 `DataSource` ，将实例化的数据源注入到 `JdbcMutableAclService` 和 `BasicLookupStrategy` 实例中。
+. 创建 ACL 的四张数据库表
+
+** `acl_class`: 存储域对象的类名
+*** `id` 主键
+*** `class` 域对象类全路径名
+
+** `acl_sid`: 系统中的任何规则或授权
+*** `id` 主键
+*** `sid` 用户名或角色名称； SID 代表安全标识
+*** `principal` `0` 或 `1` ，表示对应 SID 是**主体**(用户，如 mary mike jack)或**权限**(角色，如 ROLE_ADMIN ROLE_USER ROLE_EDITOR)
+
+** `acl_object_identity`: 存储每个唯一域对象的信息
+*** `id` 主键
+*** `object_id_class` 域对象类主键，关联到 `ACL_CLASS` 表
+*** `object_id_identity` 目标域对象的主键；域对象可以存储在许多表中，具体取决于类
+*** `parent_object` 指定此对象在当前表中的父对象表示(自关联)
+*** `owner_sid` 对象所有者主键，关联到 `ACL_SID` 表
+*** `entries_inheriting` 该对象的 ACL 条目**是否继承自父对象**(ACL条目在表 `ACL_ENTRY` 定义)
+
+** acl_entry`: 存储**对象主键**上的每个 SID 分配单独权限
+*** `id` 主键
+*** `acl_object_identity` 指定对象主键，链接到 `ACL_OBJECT_IDENTITY` 表主键
+*** `ace_order` 响应对象主键在 ACL 条目列表中当前条目的顺序
+*** `sid` 授予或拒绝权限的目标 SID 链接到 ACL_SID 表
+*** `mask` 表示被授予或拒绝的实际权限的整数位掩码
+*** `granting` 值``1``表示授予，值``0``表示拒绝
+*** `audit_success` 审计信息
+*** `audit_failure` 审计信息
+
+. 确保域模型支持与 Spring Security ACL 包的互操作性
++
+如果域对象主键不是 long 兼容类型，则需要重新实现 `ObjectIdentity` 。
+
+尽量避免在 Spring Security 的 ACL 模块中使用和支持非长整形，因为长整型已经与所有数据库兼容。
+
+
+* 创建 ACL 或修改现有 ACL：
++
+[source,jshelllanguage]
+----
+// Prepare the information to be in the access control entry (ACE)
+ObjectIdentity oi = new ObjectIdentityImpl(Foo.class, new Long(44));
+Sid sid = new PrincipalSid("Massimo");
+Permission p = BasePermission.ADMINISTRATION;
+
+// Create or update the relevant ACL
+MutableAcl acl = null;
+try {
+    acl = (MutableAcl) aclService.readAclById(oi);
+} catch (NotFoundException nfe) {
+    acl = aclService.createAcl(oi);
+}
+
+// Granting permissions via an access control entry (ACE)
+acl.insertAce(acl.getEntries().length, p, sid, true);
+aclService.updateAcl(acl);
+----
++
+. 使用 `ObjectIdentityImpl` 在访问控制条目(ACE)中准备所需的信息。
+. 检索和标识符为 44 的 Foo 域对象关联的 ACL
+. 添加一个 ACE 以便名 Massimo 的主体可以管理该对象。
+. 添加代码以创建或更新相关 ACL
+. 通过现有 ACE 末尾的访问控制条目(ACE)授予权限。
+最后一个参数是布尔值，指示 ACE 是授予(`true`)还是拒绝(`false`)。
+
+Spring Security **不提供**任何特殊的集成来自动创建、更新或删除 ACL 作为 DAO 或存储库操作的一部分。
+必须为域对象编写类似于前面示例的代码。
+应该考虑在**服务层上使用 AOP** ，以自动将 ACL 信息与服务层操作集成。
+
+可以通过编写自己的 `AccessDecisionVoter` 或 `AfterInitationProvider` 来完成在之前触发或者在方法调用之后。
+`AccessDecisionVoter` 或 `AfterInitationProvider` 使用 `AclService` 检索 ACL 。
+然后调用 `Acl.isGranted()` 来决定是否授予权限。
+
+使用以下类，基于声明的方法来在运行时评估 ACL ，是您无需编写任何代码：
+
+* `AclEntryVoter`
+* `AclEntryAfterInvocationProvider`
+* `AclEntryAfterInvocationCollectionFilteringProvider`

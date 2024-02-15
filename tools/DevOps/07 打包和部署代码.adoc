@@ -1,0 +1,208 @@
+= 打包和部署代码
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+结合使用 GitLab 的内置功能和常见的行业工具将代码部署到段带你或环境。
+
+如果希望最大程度地减少需要自行安装和维护的工具数量，建议将 GitLab 与 SaaS 结合起来。
+
+GitLab 项目在技术上支持三种类型的内置仓库：
+
+* 包仓库：支持托管各种格式的软件包和语言包
+* 容器仓库：充当专用容器镜像的仓库
+* 基础设施仓库：专门用于托管 Terraform 模板
+
+== 包仓库
+
+在项目设置中，可以选择 `Packages and registries` 设置包与仓库。
+
+使用包仓库有两个主要步骤：
+
+. 向仓库进行**身份验证**
+. CI/CD 作业**生成和上传包**
+
+[TIP]
+--
+GitLab 支持以下**包格式**：
+
+* 通用软件包
+* maven
+* npm
+* NuGet
+* PyPI
+--
+
+=== 1. 向仓库进行身份验证
+
+对包仓库进行身份验证、上传和使用包的操作由 GitLab CI/CD 配置中定义的作业执行。
+
+可以使用一下四种类型的凭证之一向 GitLab 的仓库进行身份验证：
+
+* 个人访问令牌——用于验证用户的权限
+* 项目部署令牌——用于访问项目中的所有包
+* 组部署令牌——用于访问组或其子组中所有项目中的包
+* 作业令牌——用于访问定义了 CI/CD 作业的项目中的包
+
+[TIP]
+--
+部署令牌和作业令牌是特殊类型的 GitLab 凭证，*不与特定用户绑定*；
+可以作为替代用户凭证使用。
+--
+
+=== 2. 构建包并将其推送到包仓库
+
+GitLab 建议使用 CI/CD 作业来构建并发布到仓库。
+
+从技术上讲，写入仓库只能通过 API 调用进行，因此 GitLab CI/CD 并不是严格要求的。
+但是构建和制品管理非常适合 GitLab Flow。
+
+确切的作业语法取决于用于构建软件的编程语言和包管理器。
+另外可以使用 curl 样式的 API 调用实现通用包上传。
+
+.使用 `curl` 推送示例：
+[source,yaml]
+----
+stages: # <1>
+  - build
+  - publish
+build_app:
+  stage: build
+  script:
+    - make my_app
+    - TIMESTAMP=$(date +%s)
+    - tar -czvf my_app_$TIMESTAMP.tar.gz .
+  artifacts:
+    paths:
+      - my_app.tar.gz
+publish_to_registry:
+  stage: publish
+  script:
+    - $PACKAGE_FILE=$(ls | grep *.tar.gz)
+    - curl --user "hfc-generic-build:<deploy token password>" --upload-file my_app.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/stable_releases/0.0.1/$PACKAGE_FILE"
+  dependencies:
+    - build_app
+----
+
+<1> 定义两个阶段
+
+
+=== 3. 构建包并将其推送到容器仓库
+
+GitLab 有一个容器用于存储 Docker 镜像的容器仓库。
+可以使用 CI/CD 作业创建 Docker 镜像并将其推送到仓库。
+
+使用命令 ``docker login --username "<username>" --password "<deploy token password>" $CI_REGISTRY`` 用于在推送之前进行身份验证。
+
+.容器化应用程序推示例：
+[source,yaml]
+----
+publish_to_container_registry: # <1>
+  stage: publish
+  image: docker:stable # <2>
+  services:
+    - docker:ding # <3>
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE/my_app/0.0.1 # <4>
+  script:
+    - docker login -u "hfc-generic-build" -p "<deploy token password>" $CI_REGISTRY # <5>
+    - docker build -t $IMAGE . # <6>
+    - docker push $IMAGE # <7>
+----
+
+<1> 定义一个 `publish_to_container_registry` 作业
+<2> 一个带有官方 Docker 工具的容器(`docker:stable`)
+<3> 一个带有 Docker-in-Docker 工具的服务容器(`docker:ding`)——以允许在容器化的 CI/CD 环境中构建容器
+<4> 定义一个变量 `IMAGE`，用于存储镜像的名称；在 docker 命令参数中一i你用
+<5> 使用 `docker login` 命令对容器仓库进行身份验证
+<6> 使用 `docker build` 命令构建镜像
+<7> 使用 `docker push` 将构建的镜像推送到容器仓库
+
+[TIP]
+--
+**Docker-in-Docker**
+
+Docker-in-Docker 默认使用 ``--docker-privileged`` 参数；
+该参数可以为运行容器的服务提供对主机的 **root 访问权限**；
+GitLab 提供了名为 *kaniko* 的构建工具，参见相关文档。
+--
+
+在项目文件根目录下添加 Dockerfile 文件：
+
+[source,dockerfile]
+----
+FROM alpine:latest
+# copy all of the files in this project into the Docker image
+RUN mkdir public-app/
+ADD . public-app/
+WORKDIR public-app
+----
+
+== 部署
+
+=== 使用镜像仓库中的镜像
+
+可以在管道中使用推送到 GitLab 容器仓库的镜像，使用 `image` 关键字说明使用的镜像：
+
+[source,yaml]
+----
+use_container_from_registry:
+  stage: run
+  image: registry.gitlab.com/nlotz1/pet-fashion/hats-for-cats/my_app/0.0.1:latest
+  script:
+    - ls -al # <1>
+----
+
+<1> 显示的是**容器**的当前工作目录
+
+=== 使用包仓库中的包
+
+指定包所在的组合项目、包名称和包版本。
+
+[source,yaml]
+----
+use_package_from_registry:
+  stage: run_package
+  script:
+    - 'wget --header="JOB-TOKEN: $CI_JOB_TOKEN" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/stable_releases/0.0.1/my_app_1665515895.tar.gz'
+    - tar -xvf my_app_1665515895.tar.gz
+    - ./my_app
+----
+
+== 使用 GitLab Flow 部署到不同的环境
+
+
+[source,yaml]
+----
+use_package_from_registry:
+  stage: run_package
+  script:
+    - 'wget --header=""'
+    - tar -xvf my_app_1665515895.tar.gz
+    - ./my_app
+  environment:
+    name: testing
+    url: https://test.example.com
+use_container_from_registry:
+  stage: run_container
+  image: registry.gitlab.com/nlotz1/pet-fashion/hats-for-cats/my_app/0.0.1:latest
+  script:
+    - ls -la
+  environment:
+    name: production
+    url: https://prod.exmpale.com
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+

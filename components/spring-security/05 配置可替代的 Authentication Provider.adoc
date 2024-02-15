@@ -1,0 +1,55 @@
+= 配置外部 Authentication Provider
+
+Spring Security 支持将不同的身份研拟征机制插入框架中。
+在**身份验证**层中，存在负责身份验证安全过程的抽象；
+这种抽象主要以 `AuthenticationProvider` 接口形式出现。
+
+Spring Security 6 支持的身份验证机制：
+
+* Database
+* LDAP
+* X.509
+* OAuth 2/OpenId Connect 1.0
+* WebSocket
+* JSON Web Token(JWT)
+* JAAS
+* CAS
+
+主要了解不同身份验证系统如何独立于 Spring Security 工作。
+
+== Database(数据库)
+
+以 H2 数据库为例。
+
+. 在配置文件中启用和配置 H2 内存数据库
++
+[source,properties]
+----
+spring.h2.console.enabled=true
+spring.datasource.name=security-db
+spring.datasource.url=jdbc:h2:mem:security-db
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.datasource.driverClassName=org.h2.Driver
+----
+
+. 添加 HTML 页面（例如 `welcome.html` ）
+
+. 添加 API 控制器（例如 `UserController.java`）
+
+. 添加 Spring Security 配置类（例如 `SecurityConfig.java` ） 配置使用 H2 数据库
+
+== LDAP 认证
+
+=== 使用嵌入式 LDAP
+
+== X.509 认证
+
+== OAuth 2.0
+
+== JSON Web Token
+
+== Spring WebSocket
+
+== JAAS
+
+== CAS

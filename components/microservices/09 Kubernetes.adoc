@@ -1,0 +1,54 @@
+= Kubernetes
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+使用 Helm(Kubernetes 包管理器) 捆绑和配置在不同的运行时环境中部署的微服务。
+
+== kube-proxy 替代 Netflix Eureka
+
+Kubernetes 自带一个基于 Kubernetes 的服务对象和运行时组件
+
+== Spring Boot 对 Kubernetes 环境的支持
+
+相关功能在 Spring Boot v2.3 中添加。
+
+=== 正常关闭
+
+当微服务实例停止时，存在活跃请求受影响的风险。
+为降低这种风险， Spring Boot 添加了对正常关闭的支持。
+应用正常关闭时，微服务会停止接受新请求，并等待活动请求完成可配置的时间，然后再关闭应用进程。
+完成时间超过停止等待期的请求将被中止（被视为关闭过程在停止应用进程之前无法等待的异常情况）。
+
+[source,yaml]
+----
+server.shutdown: graceful
+spring.lifecycle.timeout-per-shutdown-phase: 10s
+----
+
+参考文档: https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#features.graceful-shutdown
+
+== 存活于就绪探测
+
+确定存活和就绪探针的实现对于 Kubernetes 能够管理 Pod 至关重要。
+
+* **存活探针**用于确定某个 Pod 是否需要更换； Spring Boot 提供的存活探针URL： ``/actuator/health/liveness``
+* **就绪探针**用于确定某个 Pod 是否可以接受请求； Spring Boot 提供的就绪探针URL： ``/actuator/health/readiness``
+
+它们可以通过配置或源代码中的实现来声明，如果于配置相比需要增加控制。
+按配置声明探针时，可以为每个探针声明一个运行状况组，指定它应包含哪些现有运行状况指示器。
+（例如：如果微服务无法访问其 MongoDB 数据库，则就绪探测应报告 DOWN 。在这种情况下，就绪探测的运行状况组应包括 Mongo 运行状况指示器）
+有关可用的运行状况指标参阅： https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#actuator.endpoints.health.auto-configured-health-indicators
+
+[source,yaml]
+----
+management.endpoint.health.probes.enabled: true
+management.endpoint.health.group.readiness.include: readinessState, rabbit, db, mongo
+----
+
+Kubernetes Spring Boot Pod 资料参阅： https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#actuator.endpoints.kubernetes-probes
+
+== Helm
+
+

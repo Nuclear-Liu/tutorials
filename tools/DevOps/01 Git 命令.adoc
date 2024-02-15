@@ -1,0 +1,132 @@
+= Git 基本命令
+
+[TIP]
+--
+Git 下载地址: https://git-scm.com/downloads
+
+**基础设置**：
+
+* 查看 git 配置信息: ``git config --list``
+
+使用 Git 之前，必须配置用户名和邮件地址。
+此信息会添加到存储在 Git 中的每个编辑中，以便其他团队成员知道所做的编辑内容。
+
+* 配置 `user.email` 和 `user.name` ：
++
+[source,shell]
+----
+git config --global user.emial "<you's email address>"
+git config --global user.name "<you's username>"
+----
+
+* 配置 Git 使用 `main` 而不是 `master` 作为项目中的默认分支名称： ``git config --global init.defaultBranch main``
+
+--
+
+== 基本功能
+
+创建存储库：
+
+. 使用 ``git init`` 将文件系统上的普通目录转换为 Git 存储库
+
+. 使用 ``git clone`` 从另一个计算机复制现有存储库
+
+提交新文件到暂存区: ``git add``
+
+查看当前 Git 仓库状态: ``git status``
+
+提交暂存区内容到存储库: ``git commit``
+
+查看 Git 仓库提交记录: ``git log``
+
+== `.gitignore` 管理需要忽略的文件或文件夹
+
+在 Git 项目的根目录中创建一个名为 `.gitignore` 的新文件。
+在 `.gitignore` 文件中添加希望 Git 或略的任何文件或目录名称；
+在 `.gitignore` 中使用 `#` 实现行级注释。
+将 `.gitignore` 添加到存储库中。
+在 `.gitignore` 中添加的文件或文件夹将不在被 Git 跟踪；
+在运行 `git status` 时将不会在现实。
+
+== Git Tag
+
+标记 Tag 是一种向提交添加永久标签的方法。
+
+标记目的：
+
+* 标记向客户发布的代码的确切版本
+* 通过标记便于返回到特定版本的代码
+
+创建标记: ``git tag`` (`git tag version-1-0-beta`)
+
+通过 `git log` 查看 Git 标记。
+
+查看仓库所有的标记: ``git tag --list``
+
+删除标记: ``git tag --delete``
+
+== 使用隔离分支做代码开发
+
+分支是一系列有序的提交，按照顺序组装，并通过向后指向的箭头链接。
+
+每次处理 Git 存储库中文件时，都在一个具体分支上；即只能看到该分支上的文件版本，并且所做的任何提交都只会添加到该分支中。
+
+每个存储库至少有一个分支，通常称为**默认分支**(默认分支几乎总是正式命名为 `main`(多数情况下) 或 `master` )。
+
+分支可以使得开发代码库与稳定代码库安全隔离，直到准备好将其添加到稳定代码库为止。
+
+典型工作流程：
+
+. 项目代码位于 Git 仓库中，项目的稳定版本位于该存储库中名为 `main` 的分支中
+. 被分配一个独立**功能项**任务
+. 创建对应功能选项 `xxx-feature` 分支
+. 切换到 `xxx-feature` 分支
+. 编辑文件向分支添加一个或多个提交，实现功能
+. 其他团队成员审查这些提交并提供**反馈**
+. 添加对反馈内容的提交
+. 负责人批准工作结果，并声明功能正确实施；同时 QA 团队可能会批准您的工作
+. 将功能分支合并到主分支中，
+
+== 管理分支的 Git 命令
+
+创建分支 ``git branch xxx-feature``
+
+查看当前 Git 存储库中存在的所有分支列表（当前所在分支会有一个 `*` 标识） ``git branch``
+
+切换分支：
+* ``git checkout xxx-feature``
+* ``git switch xxx-feature``
+
+分支合并操作：
+
+. 切换到要合并的目标分支 ``git checkout target-branch``
+. 指定源分支同事执行合并 ``git merge source-branch``
+
+通常在将功能分支合并到 `main` 主分支后将其删除。
+
+删除分支 ``git branch --delete xxx-feature``
+
+强制删除分支 ``git branch --delete --force xxx-feature``
+
+== 同步本地与远程的副本仓库
+
+=== 配置远程仓库
+
+查看 Git 以配置的远程仓库名称和 URL 列表： ``git remote --verbose``
+
+=== 推送代码到远程仓库
+
+提交推送代码到远程仓库 ``git push``
+
+推送新分支到远程仓库：
+[source,shell]
+----
+git switch xxx-feature
+git push --set-upstream origin xxx-feature
+----
+
+=== 拉取远程仓库代码
+
+拉取远程仓库最新代码到本地，不进行合并操作 ``git fetch``
+
+``git pull``: ``git fetch`` + ``git merge``
