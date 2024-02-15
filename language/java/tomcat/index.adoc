@@ -1,0 +1,174 @@
+= Tomcat
+Hui.Liu <mexn-0808@outlook.com>
+:toc: left
+:toclevels: 5
+:toc-title: 目录
+
+== 概述
+
+Tomcat 是基于 Java 实现的 HTTP Server。
+
+=== 源码目录结构
+
+* ``java``: **Tomcat 源码**
+
+** ``javax``: **Tomcat 需要遵循的 Java EE 规范**
+
+*** ``servlet``: **Servlet 规范**
++
+Servlet 定义了服务端处理 HTTP 请求和响应的方式(规范)
+
+*** ``annotation``: 公共注解，避免在不同的规范中重复定义相同的注解
+
+*** ``ejb``: Enterprise JavaBeans 相关规范
+
+*** ``mail``: 邮件相关规范
+
+*** ``persistence``: 持久化相关
+
+*** ``security``: 安全相关规范
+
+*** ``websocket``: WebSocket 协议相关实现(服务端/客户端 API)
+
+*** ``xml.ws``: SOAP 规范的 XML 实现的 Web 服务
+
+** ``org.apache``: 规范的**具体实现**
+
+*** ``catalina``: Tomcat 的核心模块，完整实现了 Servlet 规范，**源码分析重点**
+
+*** ``coyote``: Tomcat 核心源码，负责处理网络请求处理后提供给 ``Catalina``
+
+*** ``el``: javax 中 el 表达式规范的实现
+
+*** ``jasper``: 负责将 jsp 代码转换为 Java 代码
+
+*** ``juli``: 日志工具
+
+*** ``naming``: 命名空间
+
+*** ``tomcat``: 辅助工具（WebSocket 的实现等）
+
+* ``bin``: Tomcat 启动、关闭等相关脚本
+
+* ``modules``: Tomcat 提供的 ``jdbc-pool`` 默认连接池
+
+* ``conf``: Tomcat 配置信息
+
+* ``test``: 测试目录
+
+=== Tomcat 配置
+
+[TIP]
+====
+服务器配置文件: ``server.xml``
+====
+
+``server.xml`` 是 Tomcat 最重要的配置文件，配置文件中的每个元素对应 Tomcat 的每一个组件；
+通过对配置文件中元素的配置，可以实现对 Tomcat 中各个组件的控制。
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="8005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
+      </Realm>
+      <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+               prefix="localhost_access_log" suffix=".txt"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+        <Context>
+          <!-- 配置外部项目路径 -->
+        </Context>
+      </Host>
+    </Engine>
+  </Service>
+</Server>
+----
+
+==== 配置项
+
+* ``Server``
+** ``GlobalNamingResources``: 全局命名空间(基本不再使用)
+
+** ``Service``: 服务(可以有多个)
+
+*** ``Connector`` 连接器
+
+*** ``Engine`` 容器，执行引擎
+
+**** ``Realm`` 域配置，账户相关信息(基本不再使用)
+
+**** ``Host`` 虚拟主机配置
+
+***** ``Context`` 配置外部项目路径(可以有多个，表示多个项目)
+
+``Server`` 标签内可以有多个 ``Service`` 标签；
+``Service`` 标签内可以有多个 ``Engine`` 标签；
+``Engine`` 标签内有一个 ``Host`` 标签；
+``Host`` 标签内可以有多个 ``Context`` 标签；
+每个 ``Context`` 标签表示一个项目。
+
+=== Tomcat 组件架构
+
+[plantuml, format="svg", id="tomcat-component"]
+----
+@startuml
+skinparam componentStyle uml2
+component Server #F8CECC {
+component Service #DAE8FC {
+component Connector #F5F5F5 {
+portin re
+portout rq
+port Servlet
+}
+component Engine #D5E8D4 {
+portin re2
+portout rq1
+component Host #E1D5E7 {
+component Context #F5F5F5
+}
+}
+}
+}
+http --> Servlet #RED : 请求
+http <--- Servlet #BLUE : 响应
+re -- re2
+@enduml
+----
+
+include::01 lifecycle.adoc[]
+
+
+== 连接器模块
+
+[TIP]
+====
+连接器作用：
+
+* 监听网络端口，接收网络请求
+* 入站解析：根据应用协议(**HTTP/AJP**)解析网络字节流，解析为统一的 Tomcat Request 对象
+* 出站解析：将 Tomcat Response 对象转换为对应协议网络字节流
+====
+
+== Servlet 规范
+
+=== Servlet 作用
+
+=== Servlet 核心 API
+
+==== Servlet: ``javax.servlet.Servlet``
+
+* 方法:
+
+** ``void init(ServletConfig)``
+
+** ``ServletConfig getServletConfig()``
+** ``void service(ServletRequest, ServletResponse) throws ServletException, IOException``
+** ``String getServletInfo()``
+** ``void destroy()``
+

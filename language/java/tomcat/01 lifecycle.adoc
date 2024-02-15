@@ -1,0 +1,73 @@
+== Tomcat 对象生命周期管理
+
+对 Tomcat 内核心对象的声明周期管理。
+
+
+[plantuml, format="svg", id="tomcat-lifecycle"]
+----
+@startuml
+
+[*] --> NEW
+
+NEW --> INITIALIZING : init()
+INITIALIZING --> INITIALIZED : auto
+
+NEW --> STARTING_PREP : start()
+INITIALIZED --> STARTING_PREP : start()
+STOPPED --> STARTING_PREP : start()
+STARTING_PREP --> STARTING : auto
+STARTING --> STARTED : auto
+
+STARTED --> STOPPING_PREP : stop()
+STOPPING_PREP --> STOPPING : auto
+FAILED --> STOPPING : stop()
+NEW --> STOPPED : stop()
+STOPPING --> STOPPED : auto
+
+NEW --> DESTROYING : destroy()
+INITIALIZED --> DESTROYING : destroy()
+FAILED --> DESTROYING : destroy()
+STOPPED --> DESTROYING : destroy()
+DESTROYING --> DESTROYED : auto
+
+DESTROYED --> [*]
+
+state NEW #DAE8FC
+state STARTED #D5E8D4
+state STOPPED #F8CECC
+state FAILED #FFF2CC
+state DESTROYED #BAC8D3
+@enduml
+----
+
+* ``org.apache.catalina.Lifecycle`` 生命周期管理功能描述接口
+* ``org.apache.catalina``
+
+使用模板模式实现对 Tomcat 关键容器声明周期管理：
+[plantuml, format="svg", id="lifecycle-design"]
+----
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+interface Lifecycle << interface >>
+class LifecycleBase
+class LifecycleMBeanBase
+interface Server << interface >>
+interface Service << interface >>
+class StandardServer
+class StandardService
+
+LifecycleBase       -[#008200,dashed]-^  Lifecycle
+LifecycleBase       -[#008200,dashed]-^  Service
+LifecycleMBeanBase  -[#000082,plain]-^  LifecycleBase
+Server              -[#008200,plain]-^  Lifecycle
+Service             -[#008200,plain]-^  Lifecycle
+StandardServer      -[#000082,plain]-^  LifecycleMBeanBase
+StandardServer      -[#008200,dashed]-^  Server
+StandardService     -[#000082,plain]-^  LifecycleMBeanBase
+StandardService     -[#008200,dashed]-^  Service
+@enduml
+----

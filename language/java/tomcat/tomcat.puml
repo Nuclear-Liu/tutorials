@@ -1,0 +1,15 @@
+@startuml
+skinparam componentStyle uml2
+actor brower
+component Server {
+component Service {
+component Connector
+component Engine {
+component Host {
+component Context
+}
+}
+}
+}
+brower -> Connector
+@enduml
