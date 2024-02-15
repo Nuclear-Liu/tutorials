@@ -1,0 +1,10 @@
+server:
+  port: 18621
+spring:
+  application:
+    name: auth-service
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-1:18611/eureka/,http://eureka-2:18612/eureka/,http://eureka-3:18613/eureka/
+

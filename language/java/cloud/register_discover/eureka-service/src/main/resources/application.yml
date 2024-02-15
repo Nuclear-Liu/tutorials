@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: eureka-service
+---
+server:
+  port: 18611
+spring:
+  profiles: eureka-1
+eureka:
+  instance:
+    hostname: eureka-1
+  client:
+    service-url:
+      defaultZone: http://eureka-2:18612/eureka/,http://eureka-3:18613/eureka/
+---
+server:
+  port: 18612
+spring:
+  profiles: eureka-2
+eureka:
+  instance:
+    hostname: eureka-2
+  client:
+    service-url:
+      defaultZone: http://eureka-1:18611/eureka/,http://eureka-3:18613/eureka/
+---
+server:
+  port: 18613
+spring:
+  profiles: eureka-3
+eureka:
+  instance:
+    hostname: eureka-3
+  client:
+    service-url:
+      defaultZone: http://eureka-1:18611/eureka/,http://erueka-2:18612/eureka/
